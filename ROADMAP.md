@@ -14,3 +14,7 @@ Authorized scope: the six community workstreams plus ARM/RISC-V/MIPS hardware wo
 ## Release rules
 
 Keep everything free, monochrome, local for sample analysis and usable without an account. Publish actual implementations and measured verification; keep uncertainty and unsupported behavior visible. No mocked decompiler results or fabricated API success. Native execution is always an explicit analyst-controlled action. Preserve Cloudflare challenge/per-IP protections, source/licenses and a rollback path. Treat continued research as continued research.
+
+## v0.8 browser detection
+
+Real DiE 3.21 with its matching database runs locally on demand, with explicit heuristic labels, raw evidence, report export and sample-bound save/resume. No additional user setup or native debugger bridge is introduced. ExeInfoPE and dnSpyEx integration are outside this release. See docs/DETECTION.md and the release verification record.

@@ -1,4 +1,4 @@
-# SPECTRA 0.7 — Church of Malware
+# SPECTRA 0.8 — Church of Malware
 
 A free browser reverse-engineering workbench. Open a binary, follow the evidence, keep the investigation. Optional explanations use the same tools and evidence as the professional workspace.
 
@@ -16,6 +16,10 @@ Capstone disassembly supports x86/x64, ARM/Thumb, AArch64, RISC-V 32/64 with com
 Native C reconstruction uses the real Ghidra decompiler through Pyre's WASM bridge. Select architecture, instruction/data order, ABI, raw range and load address. Supplied C function prototypes and type declarations are parsed by Ghidra and affect reconstruction. They are analyst assumptions, not recovered truth. Variable notes do not silently rewrite engine types. .NET C# reconstruction and metadata/IL evidence use ILSpy. Local managed dependencies are resolved by exact assembly identity without executing or uploading them.
 
 Recovery supports Base64/hex candidates, bounded single-byte XOR hunts, x86 stack strings, supplied-key XOR/RC4/AES transforms and bounded gzip/DEFLATE expansion. Recovered byte layers have hashes and provenance and can be analyzed again. Encrypted text still needs its actual key; this is not a general executable unpacker.
+
+## Detect
+
+The real Detect It Easy 3.21 engine and matching database run in an on-demand browser worker. Compiler/language, packer/protector and obfuscation fingerprints keep their raw evidence; heuristic labels stay visible. No installs or sample uploads. About 20 MiB initially; 16 MiB sample limit and 180-second cancellation boundary. Reports export and survive saved investigations. See [detection and source notes](docs/DETECTION.md).
 
 ## Experiment
 
@@ -53,7 +57,7 @@ python3 scripts/package-source.py
 python3 scripts/serve.py --port 4173
 ```
 
-Open `http://127.0.0.1:4173/`. Keep the **whole dist directory**, including `engines/v07r1`; a saved HTML file alone does not contain the decompilers or hardware engines. All runtime assets are included locally; no CDN or API is needed. The localhost server applies the production CSP. Training ground also offers a complete offline ZIP download, assembled from verified static parts to fit the host asset limit. A complete offline ZIP can be made with `python3 scripts/package-offline.py`. Engine rebuilds need the documented upstream toolchains, not for ordinary app builds.
+Open `http://127.0.0.1:4173/`. Keep the **whole dist directory**, including `engines/v08`; a saved HTML file alone does not contain the decompilers or hardware engines. All runtime assets are included locally; no CDN or API is needed. The localhost server applies the production CSP. The source ZIP includes all browser runtime assets. To publish the large DiE runtime source archive too, collect the pinned inputs documented in docs/DETECTION.md and run `python3 scripts/package-detection-source.py /path/to/source-inputs` after package-source.py. Training ground also offers a complete offline ZIP download, assembled from verified static parts to fit the host asset limit. A complete offline ZIP can be made with `python3 scripts/package-offline.py`. Engine rebuilds need the documented upstream toolchains, not for ordinary app builds.
 
 ```bash
 python3 scripts/test.py

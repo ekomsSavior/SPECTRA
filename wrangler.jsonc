@@ -48,6 +48,14 @@
         "limit": 240,
         "period": 60
       }
+    },
+    {
+      "name": "SPECTRA_DOWNLOAD_MINUTE",
+      "namespace_id": "202610100801",
+      "simple": {
+        "limit": 4,
+        "period": 60
+      }
     }
   ],
   "observability": {
