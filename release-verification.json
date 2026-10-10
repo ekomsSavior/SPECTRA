@@ -1,0 +1,49 @@
+{
+  "version": "0.7",
+  "status": "release candidate; deployment pending",
+  "generatedAt": "2026-10-10T22:10:13.359949+00:00",
+  "site": "https://spectra.churchofmalware.org/",
+  "sourceRepository": "https://git.churchofmalware.org/ek0mssavi0r/SPECTRA",
+  "baselineWorkerVersion": "ac7f17c7-2e6d-4448-8c08-78cd78acf62a",
+  "testGroups": {
+    "analysis": 18,
+    "recovery": 16,
+    "debugger": 13,
+    "windows": 11,
+    "edge": 7,
+    "native": 2,
+    "hardwareDecompile": 29,
+    "hardwareDebugger": 23,
+    "experiments": 9,
+    "project": 7,
+    "firmware": 9,
+    "comparison": 3,
+    "managed": 7,
+    "dependencies": 8,
+    "harnessIncludingRuntimeAndNet48Compile": 30,
+    "localCompanion": 11
+  },
+  "checksPassed": 203,
+  "browserQA": [
+    "RISC-V64 compressed addition: A0=2,A1=3, result5 and return; Ghidra C return param_1+param_2",
+    "XOR write watchpoint after6 steps; checkpoint, notes, full IndexedDB save; true document reload and replay digest verified",
+    "gzip USTAR extraction: regular bytes only; child notebook parent/child hashes and offsets",
+    "Native patch diff: exact/candidate labels; side-by-side reconstructed return byte vs byte+1",
+    "Local managed Dependency1.2.3.4 resolved; enum Mode.Fast reconstructed; missing framework references still reported",
+    "Linux GDB companion: same-origin browser pairing, load-without-run, explicit benign launch, real registers, clean End"
+  ],
+  "limitations": [
+    "Framework4.8 generated project compiles; no Windows runtime validation",
+    "Linux companion experimental, not a sandbox; no Windows/CLR or hardware adapters",
+    "Hardware emulation admits tested integer profiles; no FP/SIMD, peripherals/MMIO or OS/boot",
+    "SquashFS extraction unsupported",
+    "Low-end laptop hardware matrix not yet performed",
+    "Church Git write authentication pending"
+  ],
+  "publishing": {
+    "worker": "pending",
+    "repository": "prepared local commit; authenticated push pending",
+    "sourceDownload": "prepared",
+    "offlineDownload": "prepared"
+  }
+}

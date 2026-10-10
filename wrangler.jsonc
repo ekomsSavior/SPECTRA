@@ -1,0 +1,56 @@
+{
+  "name": "spectra",
+  "account_id": "9a3738264c656666e119161b8e811746",
+  "main": "edge.mjs",
+  "compatibility_date": "2026-10-10",
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [
+    {
+      "pattern": "spectra.churchofmalware.org",
+      "custom_domain": true
+    }
+  ],
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "run_worker_first": true
+  },
+  "ratelimits": [
+    {
+      "name": "SPECTRA_BURST",
+      "namespace_id": "202610100401",
+      "simple": {
+        "limit": 30,
+        "period": 10
+      }
+    },
+    {
+      "name": "SPECTRA_MINUTE",
+      "namespace_id": "202610100402",
+      "simple": {
+        "limit": 120,
+        "period": 60
+      }
+    },
+    {
+      "name": "SPECTRA_ENGINE_BURST",
+      "namespace_id": "202610100501",
+      "simple": {
+        "limit": 100,
+        "period": 10
+      }
+    },
+    {
+      "name": "SPECTRA_ENGINE_MINUTE",
+      "namespace_id": "202610100502",
+      "simple": {
+        "limit": 240,
+        "period": 60
+      }
+    }
+  ],
+  "observability": {
+    "enabled": false
+  }
+}

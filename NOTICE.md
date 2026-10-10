@@ -1,0 +1,12 @@
+# License scope and engine provenance
+
+Original SPECTRA code and lessons: MIT, copyright (c) 2026 ek0mssavi0r / Church of Malware; see LICENSE. Third-party files keep their original notices. This is not a claim that every bundled file is MIT.
+
+- Unicorn/@alexaltea/unicorn-js 2.1.4: GPL-2.0. Wrapper commit 560284c59c11c8d6c94d537f4354339f069ddcdf; engine 8028ec436f2d9376525352dd38ed9ed6b9f6be10. The unmodified x86/ARM/AArch64/MIPS/RISC-V prebuilt engines are from that pinned package. Corresponding wrapper/engine source, patches and build scripts are in upstream/unicorn-matching-source.tar.gz and the downloadable debugger-source.zip. Distribution of the combined debugger must preserve GPL rights and matching-source availability; original permissive source does not remove that obligation.
+- Capstone/@alexaltea/capstone-js 5.0.9: BSD/LLVM licenses in vendor/capstone.
+- Pyre bridge: MIT, pinned commit 835d7dd871304966165339d8cc7ae2deb0d00789. Ghidra engine and processor specs: Apache-2.0, original notices retained. SPECTRA added bridge exports for prototypes/types. Matching modified engine source/build script is in native-source; original Pyre source is in upstream. Hardware specs derive from Ghidra 12.0.3 commit 09f14c92d3da6e5d5f6b7dea115409719db3cce1, compiled using the pinned vendored SLEIGH compiler. Sources are in upstream/hardware-spec-source.tar.gz. The x86 assets retain their pinned Pyre source provenance.
+- The v0.7 native bridge was built with Emscripten 3.1.56 (57b21b8fdcbe3ebb523178b79465254668eab408), Microsoft SDK pack 10.0.12, and zlib 1.2.13. Runtime libc/libc++ and zlib notices are included. Historical 4.0.16/1.3.1 license files may remain as upstream records; the current manifest identifies the actual build. No claim of bit-for-bit reproducibility on other toolchains is made.
+- .NET WASM runtime 10.0.12 / SDK 10.0.401: MIT and bundled third-party notices. ILSpy 11.1.0.9782, source commit a6909b2e1062d2404a52711926fa74030bd96119: MIT, including Humanizer notices. Managed bridge source is in managed-source. Exact runtime file hashes are in vendor/managed/manifest.json.
+- Creepster by Font Diner: SIL Open Font License 1.1, retained with font and page.
+
+The public distribution includes generated THIRD-PARTY-LICENSES.txt. The source package carries original notices and build material. Engine prebuilt hashes are inventory/provenance checks, not an independent audit of those engines.

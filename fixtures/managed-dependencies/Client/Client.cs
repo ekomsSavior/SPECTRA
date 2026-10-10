@@ -1,0 +1,1 @@
+public static class Client { public static int Value() => LocalLib.Calculator.Read(LocalLib.Mode.Fast); }

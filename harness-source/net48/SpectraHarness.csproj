@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+<PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net48</TargetFramework><LangVersion>12.0</LangVersion><ImplicitUsings>enable</ImplicitUsings><Nullable>enable</Nullable><AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects><GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType><RestorePackagesWithLockFile>true</RestorePackagesWithLockFile></PropertyGroup>
+<ItemGroup>
+<PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net48" Version="1.0.3" PrivateAssets="All" />
+<PackageReference Include="System.Text.Json" Version="10.0.12" />
+<PackageReference Include="System.Reflection.Metadata" Version="10.0.12" />
+<Reference Include="System.Net.Http" />
+</ItemGroup></Project>

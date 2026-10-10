@@ -1,0 +1,20 @@
+{
+  "system": "Linux x86_64",
+  "measurement": {
+    "scenario": "bundled benign demo; cold process, decoder initialized",
+    "sampleBytes": 16384,
+    "analysisMs": 18.844472000000003,
+    "disassemblyMs": 9.676584000000005,
+    "instructions": 22,
+    "processPeakRssKiB": 83592,
+    "node": "v24.19.0"
+  },
+  "assets": {
+    "index.html": 6403130,
+    "engines/v07/hardware/unicorn_mips.js": 2691004,
+    "engines/v07/hardware/unicorn_riscv.js": 563668,
+    "engines/v07/hardware/unicorn_arm.js": 837008,
+    "engines/v07/hardware/unicorn_aarch64.js": 1522535
+  },
+  "note": "Host reference measurement, not a low-end laptop certification or browser peak-memory measurement."
+}

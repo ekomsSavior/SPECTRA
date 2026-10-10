@@ -1,0 +1,16 @@
+/dist/
+/releases/
+/work/
+/.wrangler/
+**/bin/
+**/obj/
+**/__pycache__/
+/native-source/build/
+/native-source/dist/
+/native-source/cache/
+/native-source/ports/
+/native-source/specs/
+/native-source/bundle/
+/native-source/sleigh-build/
+/native-source/ghidra-source/
+/companion/lab target */

@@ -1,0 +1,14 @@
+SPECTRA ILSpy WASM build
+SDK: .NET 10.0.401. Runtime/workload: 10.0.12. NuGet ICSharpCode.Decompiler: 11.1.0.9782.
+Use a workspace-local DOTNET_CLI_HOME and NUGET_PACKAGES if desired.
+From the spectra directory, with the pinned dotnet SDK on PATH:
+  dotnet workload install wasm-tools --skip-manifest-update
+  dotnet publish managed-source/Spectra.Managed.csproj -c Release -o managed-build
+Copy managed-build/wwwroot/_framework into vendor/managed/_framework,
+replacing the previous framework directory. Omit .gz/.br/.map variants.
+Keep vendor/managed/main.mjs and licenses. The production worker is
+src/engines/managed-worker.mjs. Run node build.mjs and the test files.
+A fresh SDK/package restore needs internet; the finished app needs no
+external engine host. The trimmed build emits IL2104 upstream warnings;
+ILSpy is rooted, and tested reconstruction paths are recorded in README.
+The wrapper reads only PEFile/metadata streams. Never Assembly.Load a sample.

@@ -1,0 +1,191 @@
+[
+  {
+    "language": "ARM:LE:32:v8:default",
+    "name": "arm_add",
+    "hex": "010080e01eff2fe1",
+    "base": 4096,
+    "code": "\nint arm_add(int param_1, int param_2)\n\n{\n  return param_1 + param_2;\n}\n"
+  },
+  {
+    "language": "ARM:BE:32:v8:default",
+    "name": "arm_be_add",
+    "hex": "e0800001e12fff1e",
+    "base": 4096,
+    "code": "\nint arm_be_add(int param_1, int param_2)\n\n{\n  return param_1 + param_2;\n}\n"
+  },
+  {
+    "language": "ARM:LE:32:v8T:default",
+    "name": "thumb_add",
+    "hex": "40187047",
+    "base": 4098,
+    "code": "\nint thumb_add(int param_1, int param_2)\n\n{\n  return param_1 + param_2;\n}\n"
+  },
+  {
+    "language": "ARM:BE:32:v8T:default",
+    "name": "thumb_be_add",
+    "hex": "18404770",
+    "base": 4098,
+    "code": "\nint thumb_be_add(int param_1, int param_2)\n\n{\n  return param_1 + param_2;\n}\n"
+  },
+  {
+    "language": "ARM:LE:32:Cortex:default",
+    "name": "cortex_add",
+    "hex": "40187047",
+    "base": 4098,
+    "code": "\nint cortex_add(int param_1, int param_2)\n\n{\n  return param_1 + param_2;\n}\n"
+  },
+  {
+    "language": "AARCH64:LE:64:v8A:default",
+    "name": "aarch64_add",
+    "hex": "0000018bc0035fd6",
+    "base": 4096,
+    "code": "\nint64_t aarch64_add(int64_t param_1, int64_t param_2)\n\n{\n  return param_1 + param_2;\n}\n"
+  },
+  {
+    "language": "AARCH64:BE:64:v8A:default",
+    "name": "aarch64_be_add",
+    "hex": "0000018bc0035fd6",
+    "base": 4096,
+    "code": "\nint64_t aarch64_be_add(int64_t param_1, int64_t param_2)\n\n{\n  return param_1 + param_2;\n}\n"
+  },
+  {
+    "language": "RISCV:LE:32:default:gcc",
+    "name": "rv32_add",
+    "hex": "3305b50067800000",
+    "base": 4096,
+    "code": "\nint rv32_add(int param_1, int param_2)\n\n{\n  return param_1 + param_2;\n}\n"
+  },
+  {
+    "language": "RISCV:LE:64:default:gcc",
+    "name": "rv64_add",
+    "hex": "3305b50067800000",
+    "base": 4096,
+    "code": "\nint64_t rv64_add(int64_t param_1, int64_t param_2)\n\n{\n  return param_1 + param_2;\n}\n"
+  },
+  {
+    "language": "RISCV:LE:32:default:gcc",
+    "name": "rv32_compressed_add",
+    "hex": "2e958280",
+    "base": 4098,
+    "code": "\nint rv32_compressed_add(int param_1, int param_2)\n\n{\n  return param_1 + param_2;\n}\n"
+  },
+  {
+    "language": "RISCV:LE:64:default:gcc",
+    "name": "rv64_compressed_add",
+    "hex": "2e958280",
+    "base": 4098,
+    "code": "\nint64_t rv64_compressed_add(int64_t param_1, int64_t param_2)\n\n{\n  return param_1 + param_2;\n}\n"
+  },
+  {
+    "language": "MIPS:BE:32:default:default",
+    "name": "mips32_be_add_with_delay",
+    "hex": "0085102103e0000824420001",
+    "base": 4096,
+    "code": "\nint mips32_be_add_with_delay(int param_1, int param_2)\n\n{\n  return param_1 + param_2 + 1;\n}\n"
+  },
+  {
+    "language": "MIPS:LE:32:default:default",
+    "name": "mips32_le_add_with_delay",
+    "hex": "211085000800e00301004224",
+    "base": 4096,
+    "code": "\nint mips32_le_add_with_delay(int param_1, int param_2)\n\n{\n  return param_1 + param_2 + 1;\n}\n"
+  },
+  {
+    "language": "MIPS:BE:64:default:default",
+    "name": "mips64_be_add_with_delay",
+    "hex": "0085102d03e0000864420001",
+    "base": 4096,
+    "code": "\nint64_t mips64_be_add_with_delay(int64_t param_1, int64_t param_2)\n\n{\n  return param_1 + param_2 + 1;\n}\n"
+  },
+  {
+    "language": "MIPS:LE:64:default:default",
+    "name": "mips64_le_add_with_delay",
+    "hex": "2d1085000800e00301004264",
+    "base": 4096,
+    "code": "\nint64_t mips64_le_add_with_delay(int64_t param_1, int64_t param_2)\n\n{\n  return param_1 + param_2 + 1;\n}\n"
+  },
+  {
+    "language": "ARM:LE:32:v8:default",
+    "name": "arm_loop_LE",
+    "hex": "0010a0e3000050e3020000da001081e0010050e2fcffff1a0100a0e11eff2fe1",
+    "base": 4096,
+    "code": "\nint arm_loop_LE(int param_1)\n\n{\n  int iVar1;\n  \n  iVar1 = 0;\n  if (0 < param_1) {\n    do {\n      iVar1 = iVar1 + param_1;\n      param_1 = param_1 + -1;\n    } while (param_1 != 0);\n  }\n  return iVar1;\n}\n"
+  },
+  {
+    "language": "ARM:LE:32:v8T:default",
+    "name": "thumb_loop_LE",
+    "hex": "0021002802dd09180138fcd108467047",
+    "base": 4096,
+    "code": "\nint thumb_loop_LE(int param_1)\n\n{\n  int iVar1;\n  \n  iVar1 = 0;\n  if (0 < param_1) {\n    do {\n      iVar1 = iVar1 + param_1;\n      param_1 = param_1 + -1;\n    } while (param_1 != 0);\n  }\n  return iVar1;\n}\n"
+  },
+  {
+    "language": "AARCH64:LE:64:v8A:default",
+    "name": "a64_loop_LE",
+    "hex": "010080d21f0000f18d0000542100008b000400f1c1ffff54e00301aac0035fd6",
+    "base": 4096,
+    "code": "\nint64_t a64_loop_LE(int64_t param_1)\n\n{\n  int64_t iVar1;\n  \n  iVar1 = 0;\n  if (0 < param_1) {\n    do {\n      iVar1 = iVar1 + param_1;\n      param_1 = param_1 + -1;\n    } while (param_1 != 0);\n  }\n  return iVar1;\n}\n"
+  },
+  {
+    "language": "MIPS:LE:32:default:default",
+    "name": "mips32_loop_LE",
+    "hex": "21100000050080180000000021104400ffff8424fdff801c000000000800e00300000000",
+    "base": 4096,
+    "code": "\nint mips32_loop_LE(int param_1)\n\n{\n  int iVar1;\n  \n  iVar1 = 0;\n  for (; 0 < param_1; param_1 = param_1 + -1) {\n    iVar1 = iVar1 + param_1;\n  }\n  return iVar1;\n}\n"
+  },
+  {
+    "language": "MIPS:LE:64:default:default",
+    "name": "mips64_loop_LE",
+    "hex": "2d10000005008018000000002d104400ffff8464fdff801c000000000800e00300000000",
+    "base": 4096,
+    "code": "\nint64_t mips64_loop_LE(int64_t param_1)\n\n{\n  int64_t iVar1;\n  \n  iVar1 = 0;\n  for (; 0 < param_1; param_1 = param_1 + -1) {\n    iVar1 = iVar1 + param_1;\n  }\n  return iVar1;\n}\n"
+  },
+  {
+    "language": "ARM:BE:32:v8:default",
+    "name": "arm_loop_BE",
+    "hex": "e3a01000e3500000da000002e0811000e25000011afffffce1a00001e12fff1e",
+    "base": 4096,
+    "code": "\nint arm_loop_BE(int param_1)\n\n{\n  int iVar1;\n  \n  iVar1 = 0;\n  if (0 < param_1) {\n    do {\n      iVar1 = iVar1 + param_1;\n      param_1 = param_1 + -1;\n    } while (param_1 != 0);\n  }\n  return iVar1;\n}\n"
+  },
+  {
+    "language": "ARM:BE:32:v8T:default",
+    "name": "thumb_loop_BE",
+    "hex": "21002800dd0218093801d1fc46084770",
+    "base": 4096,
+    "code": "\nint thumb_loop_BE(int param_1)\n\n{\n  int iVar1;\n  \n  iVar1 = 0;\n  if (0 < param_1) {\n    do {\n      iVar1 = iVar1 + param_1;\n      param_1 = param_1 + -1;\n    } while (param_1 != 0);\n  }\n  return iVar1;\n}\n"
+  },
+  {
+    "language": "AARCH64:BE:64:v8A:default",
+    "name": "a64_loop_BE",
+    "hex": "010080d21f0000f18d0000542100008b000400f1c1ffff54e00301aac0035fd6",
+    "base": 4096,
+    "code": "\nint64_t a64_loop_BE(int64_t param_1)\n\n{\n  int64_t iVar1;\n  \n  iVar1 = 0;\n  if (0 < param_1) {\n    do {\n      iVar1 = iVar1 + param_1;\n      param_1 = param_1 + -1;\n    } while (param_1 != 0);\n  }\n  return iVar1;\n}\n"
+  },
+  {
+    "language": "MIPS:BE:32:default:default",
+    "name": "mips32_loop_BE",
+    "hex": "000010211880000500000000004410212484ffff1c80fffd0000000003e0000800000000",
+    "base": 4096,
+    "code": "\nint mips32_loop_BE(int param_1)\n\n{\n  int iVar1;\n  \n  iVar1 = 0;\n  for (; 0 < param_1; param_1 = param_1 + -1) {\n    iVar1 = iVar1 + param_1;\n  }\n  return iVar1;\n}\n"
+  },
+  {
+    "language": "MIPS:BE:64:default:default",
+    "name": "mips64_loop_BE",
+    "hex": "0000102d18800005000000000044102d6484ffff1c80fffd0000000003e0000800000000",
+    "base": 4096,
+    "code": "\nint64_t mips64_loop_BE(int64_t param_1)\n\n{\n  int64_t iVar1;\n  \n  iVar1 = 0;\n  for (; 0 < param_1; param_1 = param_1 + -1) {\n    iVar1 = iVar1 + param_1;\n  }\n  return iVar1;\n}\n"
+  },
+  {
+    "language": "RISCV:LE:32:default:gcc",
+    "name": "rv32_loop",
+    "hex": "930500006358a000b385a5001305f5ffe31c05fe1385050067800000",
+    "base": 4096,
+    "code": "\nint rv32_loop(int param_1)\n\n{\n  int iVar1;\n  \n  iVar1 = 0;\n  if (0 < param_1) {\n    do {\n      iVar1 = iVar1 + param_1;\n      param_1 = param_1 + -1;\n    } while (param_1 != 0);\n  }\n  return iVar1;\n}\n"
+  },
+  {
+    "language": "RISCV:LE:64:default:gcc",
+    "name": "rv64_loop",
+    "hex": "930500006358a000b385a5001305f5ffe31c05fe1385050067800000",
+    "base": 4096,
+    "code": "\nint64_t rv64_loop(int64_t param_1)\n\n{\n  int64_t iVar1;\n  \n  iVar1 = 0;\n  if (0 < param_1) {\n    do {\n      iVar1 = iVar1 + param_1;\n      param_1 = param_1 + -1;\n    } while (param_1 != 0);\n  }\n  return iVar1;\n}\n"
+  }
+]

@@ -1,0 +1,60 @@
+{
+  "description": "Benign archive and filesystem test fixtures generated with Python stdlib, GNU cpio, squashfs-tools 4.6.1. No archive was extracted to disk.",
+  "regularFiles": {
+    "etc/issue": {
+      "hex": "535045435452412062656e69676e206669726d7761726520666978747572650a"
+    },
+    "usr/share/config.txt": {
+      "hex": "6c61625f686f73743d3139322e302e322e31300a706f72743d383434330a"
+    }
+  },
+  "symlink": {
+    "banner": "etc/issue"
+  },
+  "archives": {
+    "pax.tar": {
+      "bytes": 20480,
+      "sha256": "c0df7658db5c6e9bc6e8bda12e91d0a27f07eccc483c44c73a93946bd58c9c2d"
+    },
+    "newc.cpio": {
+      "bytes": 1024,
+      "sha256": "d52ce78ed092daaa288fd34e07be58b15a0890545db5caa6f58d57bd2754069a"
+    },
+    "unsafe-names.zip": {
+      "bytes": 504,
+      "sha256": "9c3b7ecbacb5f7a8619d5e68e0c81cc1d5cb937c03e5562e1fb667252256f7ed"
+    },
+    "newc.cpio.gz": {
+      "bytes": 244,
+      "sha256": "4762b30a13d08a0c852a812806d0e68b9fb66400c75a2ff3a39ec44d7f7dce78"
+    },
+    "rootfs-xz.sqfs": {
+      "bytes": 4096,
+      "sha256": "b0166b88981c4b9ece4826395c4f30ade877e68f741faf79b6941dee4f08a305"
+    },
+    "ustar.tar.gz": {
+      "bytes": 272,
+      "sha256": "774984879bd6fa6ea9f53f91273987dda3560060082f607c8eb3c79c3130ab6e"
+    },
+    "stored.zip": {
+      "bytes": 380,
+      "sha256": "44810ee45ff6543a3880ad768a18f895dee91a5cdd0713cfc854761f40e304a2"
+    },
+    "rootfs-zstd.sqfs": {
+      "bytes": 4096,
+      "sha256": "1fe7301eb56a12736332b54bf7aae92eaead3502043d01b2ab89206c6c586c3e"
+    },
+    "deflated.zip": {
+      "bytes": 384,
+      "sha256": "a58eb4438e1e5ffb7ebdcf6246102a4f5d67b9113fae43831c043f46b3354b53"
+    },
+    "ustar.tar": {
+      "bytes": 10240,
+      "sha256": "697176ddaf5c354da94fc73d2c9a1e3fcf4624559e26fecb52c44d57b0954d34"
+    },
+    "rootfs-gzip.sqfs": {
+      "bytes": 4096,
+      "sha256": "72a1148804e8797725115249f8b69bda6980442c2a4b4c41c903cfa6a8c42ba3"
+    }
+  }
+}

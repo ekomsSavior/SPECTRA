@@ -1,0 +1,520 @@
+{
+  "specSource": {
+    "project": "Ghidra",
+    "tag": "Ghidra_12.0.3_build",
+    "commit": "09f14c92d3da6e5d5f6b7dea115409719db3cce1"
+  },
+  "compilerSource": {
+    "project": "Pyre vendored Ghidra SLEIGH compiler",
+    "commit": "835d7dd871304966165339d8cc7ae2deb0d00789"
+  },
+  "profiles": {
+    "ARM:LE:32:v8:default": {
+      "directory": "ARM/data/languages",
+      "files": [
+        "ARM/data/languages/ARM.cspec",
+        "ARM/data/languages/ARM.ldefs",
+        "ARM/data/languages/ARM8_le.sla",
+        "ARM/data/languages/ARMt.pspec"
+      ],
+      "instructionAlignment": 4,
+      "bytes": 303402
+    },
+    "ARM:LE:32:v8:windows": {
+      "directory": "ARM/data/languages",
+      "files": [
+        "ARM/data/languages/ARM.ldefs",
+        "ARM/data/languages/ARM8_le.sla",
+        "ARM/data/languages/ARM_win.cspec",
+        "ARM/data/languages/ARMt.pspec"
+      ],
+      "instructionAlignment": 4,
+      "bytes": 297784
+    },
+    "ARM:LE:32:v8:apcs": {
+      "directory": "ARM/data/languages",
+      "files": [
+        "ARM/data/languages/ARM.ldefs",
+        "ARM/data/languages/ARM8_le.sla",
+        "ARM/data/languages/ARM_apcs.cspec",
+        "ARM/data/languages/ARMt.pspec"
+      ],
+      "instructionAlignment": 4,
+      "bytes": 298192
+    },
+    "ARM:LE:32:v8T:default": {
+      "directory": "ARM/data/languages",
+      "files": [
+        "ARM/data/languages/ARM.cspec",
+        "ARM/data/languages/ARM.ldefs",
+        "ARM/data/languages/ARM8_le.sla",
+        "ARM/data/languages/ARMtTHUMB.pspec"
+      ],
+      "instructionAlignment": 2,
+      "bytes": 303509
+    },
+    "ARM:LE:32:v8T:windows": {
+      "directory": "ARM/data/languages",
+      "files": [
+        "ARM/data/languages/ARM.ldefs",
+        "ARM/data/languages/ARM8_le.sla",
+        "ARM/data/languages/ARM_win.cspec",
+        "ARM/data/languages/ARMtTHUMB.pspec"
+      ],
+      "instructionAlignment": 2,
+      "bytes": 297891
+    },
+    "ARM:LE:32:v8T:apcs": {
+      "directory": "ARM/data/languages",
+      "files": [
+        "ARM/data/languages/ARM.ldefs",
+        "ARM/data/languages/ARM8_le.sla",
+        "ARM/data/languages/ARM_apcs.cspec",
+        "ARM/data/languages/ARMtTHUMB.pspec"
+      ],
+      "instructionAlignment": 2,
+      "bytes": 298299
+    },
+    "ARM:BE:32:v8:default": {
+      "directory": "ARM/data/languages",
+      "files": [
+        "ARM/data/languages/ARM.cspec",
+        "ARM/data/languages/ARM.ldefs",
+        "ARM/data/languages/ARM8_be.sla",
+        "ARM/data/languages/ARMt.pspec"
+      ],
+      "instructionAlignment": 4,
+      "bytes": 301697
+    },
+    "ARM:BE:32:v8:apcs": {
+      "directory": "ARM/data/languages",
+      "files": [
+        "ARM/data/languages/ARM.ldefs",
+        "ARM/data/languages/ARM8_be.sla",
+        "ARM/data/languages/ARM_apcs.cspec",
+        "ARM/data/languages/ARMt.pspec"
+      ],
+      "instructionAlignment": 4,
+      "bytes": 296487
+    },
+    "ARM:BE:32:v8T:default": {
+      "directory": "ARM/data/languages",
+      "files": [
+        "ARM/data/languages/ARM.cspec",
+        "ARM/data/languages/ARM.ldefs",
+        "ARM/data/languages/ARM8_be.sla",
+        "ARM/data/languages/ARMtTHUMB.pspec"
+      ],
+      "instructionAlignment": 2,
+      "bytes": 301804
+    },
+    "ARM:BE:32:v8T:apcs": {
+      "directory": "ARM/data/languages",
+      "files": [
+        "ARM/data/languages/ARM.ldefs",
+        "ARM/data/languages/ARM8_be.sla",
+        "ARM/data/languages/ARM_apcs.cspec",
+        "ARM/data/languages/ARMtTHUMB.pspec"
+      ],
+      "instructionAlignment": 2,
+      "bytes": 296594
+    },
+    "ARM:LE:32:Cortex:default": {
+      "directory": "ARM/data/languages",
+      "files": [
+        "ARM/data/languages/ARM.cspec",
+        "ARM/data/languages/ARM.ldefs",
+        "ARM/data/languages/ARM7_le.sla",
+        "ARM/data/languages/ARMCortex.pspec"
+      ],
+      "instructionAlignment": 2,
+      "bytes": 287092
+    },
+    "ARM:LE:32:Cortex:apcs": {
+      "directory": "ARM/data/languages",
+      "files": [
+        "ARM/data/languages/ARM.ldefs",
+        "ARM/data/languages/ARM7_le.sla",
+        "ARM/data/languages/ARMCortex.pspec",
+        "ARM/data/languages/ARM_apcs.cspec"
+      ],
+      "instructionAlignment": 2,
+      "bytes": 281882
+    },
+    "ARM:BE:32:Cortex:default": {
+      "directory": "ARM/data/languages",
+      "files": [
+        "ARM/data/languages/ARM.cspec",
+        "ARM/data/languages/ARM.ldefs",
+        "ARM/data/languages/ARM7_be.sla",
+        "ARM/data/languages/ARMCortex.pspec"
+      ],
+      "instructionAlignment": 2,
+      "bytes": 285793
+    },
+    "ARM:BE:32:Cortex:apcs": {
+      "directory": "ARM/data/languages",
+      "files": [
+        "ARM/data/languages/ARM.ldefs",
+        "ARM/data/languages/ARM7_be.sla",
+        "ARM/data/languages/ARMCortex.pspec",
+        "ARM/data/languages/ARM_apcs.cspec"
+      ],
+      "instructionAlignment": 2,
+      "bytes": 280583
+    },
+    "AARCH64:LE:64:v8A:default": {
+      "directory": "AARCH64/data/languages",
+      "files": [
+        "AARCH64/data/languages/AARCH64.cspec",
+        "AARCH64/data/languages/AARCH64.ldefs",
+        "AARCH64/data/languages/AARCH64.pspec",
+        "AARCH64/data/languages/AARCH64.sla"
+      ],
+      "instructionAlignment": 4,
+      "bytes": 509409
+    },
+    "AARCH64:LE:64:v8A:windows": {
+      "directory": "AARCH64/data/languages",
+      "files": [
+        "AARCH64/data/languages/AARCH64.ldefs",
+        "AARCH64/data/languages/AARCH64.pspec",
+        "AARCH64/data/languages/AARCH64.sla",
+        "AARCH64/data/languages/AARCH64_win.cspec"
+      ],
+      "instructionAlignment": 4,
+      "bytes": 510643
+    },
+    "AARCH64:BE:64:v8A:default": {
+      "directory": "AARCH64/data/languages",
+      "files": [
+        "AARCH64/data/languages/AARCH64.cspec",
+        "AARCH64/data/languages/AARCH64.ldefs",
+        "AARCH64/data/languages/AARCH64.pspec",
+        "AARCH64/data/languages/AARCH64BE.sla"
+      ],
+      "instructionAlignment": 4,
+      "bytes": 515069
+    },
+    "RISCV:LE:64:default:gcc": {
+      "directory": "RISCV/data/languages",
+      "files": [
+        "RISCV/data/languages/RV64.pspec",
+        "RISCV/data/languages/riscv.ldefs",
+        "RISCV/data/languages/riscv.lp64d.sla",
+        "RISCV/data/languages/riscv64-fp.cspec"
+      ],
+      "instructionAlignment": 2,
+      "bytes": 126282
+    },
+    "RISCV:LE:32:default:gcc": {
+      "directory": "RISCV/data/languages",
+      "files": [
+        "RISCV/data/languages/RV32.pspec",
+        "RISCV/data/languages/riscv.ilp32d.sla",
+        "RISCV/data/languages/riscv.ldefs",
+        "RISCV/data/languages/riscv32-fp.cspec"
+      ],
+      "instructionAlignment": 2,
+      "bytes": 114308
+    },
+    "MIPS:BE:32:default:default": {
+      "directory": "MIPS/data/languages",
+      "files": [
+        "MIPS/data/languages/mips.ldefs",
+        "MIPS/data/languages/mips32.pspec",
+        "MIPS/data/languages/mips32be.cspec",
+        "MIPS/data/languages/mips32be.sla"
+      ],
+      "instructionAlignment": 4,
+      "bytes": 187593
+    },
+    "MIPS:BE:32:default:windows": {
+      "directory": "MIPS/data/languages",
+      "files": [
+        "MIPS/data/languages/mips.ldefs",
+        "MIPS/data/languages/mips32.pspec",
+        "MIPS/data/languages/mips32be.cspec",
+        "MIPS/data/languages/mips32be.sla"
+      ],
+      "instructionAlignment": 4,
+      "bytes": 187593
+    },
+    "MIPS:LE:32:default:default": {
+      "directory": "MIPS/data/languages",
+      "files": [
+        "MIPS/data/languages/mips.ldefs",
+        "MIPS/data/languages/mips32.pspec",
+        "MIPS/data/languages/mips32le.cspec",
+        "MIPS/data/languages/mips32le.sla"
+      ],
+      "instructionAlignment": 4,
+      "bytes": 187045
+    },
+    "MIPS:LE:32:default:windows": {
+      "directory": "MIPS/data/languages",
+      "files": [
+        "MIPS/data/languages/mips.ldefs",
+        "MIPS/data/languages/mips32.pspec",
+        "MIPS/data/languages/mips32le.cspec",
+        "MIPS/data/languages/mips32le.sla"
+      ],
+      "instructionAlignment": 4,
+      "bytes": 187045
+    },
+    "MIPS:BE:64:default:default": {
+      "directory": "MIPS/data/languages",
+      "files": [
+        "MIPS/data/languages/mips.ldefs",
+        "MIPS/data/languages/mips64.pspec",
+        "MIPS/data/languages/mips64be.cspec",
+        "MIPS/data/languages/mips64be.sla"
+      ],
+      "instructionAlignment": 4,
+      "bytes": 197886
+    },
+    "MIPS:LE:64:default:default": {
+      "directory": "MIPS/data/languages",
+      "files": [
+        "MIPS/data/languages/mips.ldefs",
+        "MIPS/data/languages/mips64.pspec",
+        "MIPS/data/languages/mips64le.cspec",
+        "MIPS/data/languages/mips64le.sla"
+      ],
+      "instructionAlignment": 4,
+      "bytes": 197249
+    },
+    "MIPS:LE:64:default:windows": {
+      "directory": "MIPS/data/languages",
+      "files": [
+        "MIPS/data/languages/mips.ldefs",
+        "MIPS/data/languages/mips64.pspec",
+        "MIPS/data/languages/mips64le.cspec",
+        "MIPS/data/languages/mips64le.sla"
+      ],
+      "instructionAlignment": 4,
+      "bytes": 197249
+    },
+    "x86:LE:32:default:windows": {
+      "directory": "x86/data/languages",
+      "files": [
+        "x86/data/languages/x86.pspec",
+        "x86/data/languages/x86.sla",
+        "x86/data/languages/x86win.cspec",
+        "x86/data/languages/x86.ldefs"
+      ],
+      "instructionAlignment": 1,
+      "bytes": 458564
+    },
+    "x86:LE:32:default:gcc": {
+      "directory": "x86/data/languages",
+      "files": [
+        "x86/data/languages/x86.pspec",
+        "x86/data/languages/x86.sla",
+        "x86/data/languages/x86gcc.cspec",
+        "x86/data/languages/x86.ldefs"
+      ],
+      "instructionAlignment": 1,
+      "bytes": 460627
+    },
+    "x86:LE:64:default:windows": {
+      "directory": "x86/data/languages",
+      "files": [
+        "x86/data/languages/x86-64.pspec",
+        "x86/data/languages/x86-64.sla",
+        "x86/data/languages/x86-64-win.cspec",
+        "x86/data/languages/x86.ldefs"
+      ],
+      "instructionAlignment": 1,
+      "bytes": 512239
+    },
+    "x86:LE:64:default:gcc": {
+      "directory": "x86/data/languages",
+      "files": [
+        "x86/data/languages/x86-64.pspec",
+        "x86/data/languages/x86-64.sla",
+        "x86/data/languages/x86-64-gcc.cspec",
+        "x86/data/languages/x86.ldefs"
+      ],
+      "instructionAlignment": 1,
+      "bytes": 516947
+    }
+  },
+  "files": [
+    {
+      "path": "AARCH64/data/languages/AARCH64.cspec",
+      "bytes": 8276,
+      "sha256": "1e54d6a9e6cd98a7b9729ba79187d9f1969a61e2984378445bb67f339d439e00"
+    },
+    {
+      "path": "AARCH64/data/languages/AARCH64.ldefs",
+      "bytes": 3682,
+      "sha256": "488ab13f870dcd0e75eb26cb563f24c39f4d3c6111f5d0f71ae77592925f66be"
+    },
+    {
+      "path": "AARCH64/data/languages/AARCH64.pspec",
+      "bytes": 5512,
+      "sha256": "5256de6e132228a2e3729fad41fa9f06d1d5e9e4d93edd1c31b08261fbe575c3"
+    },
+    {
+      "path": "AARCH64/data/languages/AARCH64.sla",
+      "bytes": 491939,
+      "sha256": "d3a28a0114033eaea85b75108b7af3ce4ad185799a4e78384e968dc102542539"
+    },
+    {
+      "path": "AARCH64/data/languages/AARCH64BE.sla",
+      "bytes": 497599,
+      "sha256": "b1d5c2eb0fd2f9d0926165665ec735e3c5d4bb560fb07cd9841f165e3e68cda1"
+    },
+    {
+      "path": "AARCH64/data/languages/AARCH64_win.cspec",
+      "bytes": 9510,
+      "sha256": "32527efab83a0a5f32f7a5eb3da8fe69dad96b926981fb8ef6982bb1e1ed3ed5"
+    },
+    {
+      "path": "ARM/data/languages/ARM.cspec",
+      "bytes": 13580,
+      "sha256": "a27741e8096ab48aabb365e4216397b7bc5012d6e6b2b3a227b7b356936f3f7e"
+    },
+    {
+      "path": "ARM/data/languages/ARM.ldefs",
+      "bytes": 19966,
+      "sha256": "7882fd4210f4987835c9eddaf1ae00c0391ed11cd5968081965f37490228612f"
+    },
+    {
+      "path": "ARM/data/languages/ARM7_be.sla",
+      "bytes": 249984,
+      "sha256": "2e38b81f28deafe3596457632ca9b37024fc688f8bcc3c72c3c17ca1e825405e"
+    },
+    {
+      "path": "ARM/data/languages/ARM7_le.sla",
+      "bytes": 251283,
+      "sha256": "9bf1ec54f1235ebf5a9e68e791e1160fa8d92ed3b2007099725c04624a007b05"
+    },
+    {
+      "path": "ARM/data/languages/ARM8_be.sla",
+      "bytes": 264899,
+      "sha256": "5c74659eb34c0742a8956055e5bb3136cc33db98f808b17baba7a3f983b505f7"
+    },
+    {
+      "path": "ARM/data/languages/ARM8_le.sla",
+      "bytes": 266604,
+      "sha256": "e0430ed316e87013979434b3e737490f771d68ff8d538531196d90669ac9b023"
+    },
+    {
+      "path": "ARM/data/languages/ARMCortex.pspec",
+      "bytes": 2263,
+      "sha256": "4d28a8ed4ee6f669df7528586abfd5964b5d5e7373a519c66ca059f5baeeac1f"
+    },
+    {
+      "path": "ARM/data/languages/ARM_apcs.cspec",
+      "bytes": 8370,
+      "sha256": "21ebd59e49ded706cbe114130ffc4e459630fec0e0fce6d614c8583412655893"
+    },
+    {
+      "path": "ARM/data/languages/ARM_win.cspec",
+      "bytes": 7962,
+      "sha256": "05c54dc5dc104aea19410db8298ac7757be51a860f71e901a060a78dd7467c96"
+    },
+    {
+      "path": "ARM/data/languages/ARMt.pspec",
+      "bytes": 3252,
+      "sha256": "0b62bd6352eaa5284dd77d083aeb47a0d387d766dfb672b31daea84bcda02c3c"
+    },
+    {
+      "path": "ARM/data/languages/ARMtTHUMB.pspec",
+      "bytes": 3359,
+      "sha256": "60ef79a3af6906435c1ab3ca1c1e5ba097e004f4e340284cbec9a7c86838ddb4"
+    },
+    {
+      "path": "MIPS/data/languages/mips.ldefs",
+      "bytes": 15444,
+      "sha256": "ee8ae0d75adcbe1f3fddd55e916e0eb267f54b418bc592d8a0629923776b39fe"
+    },
+    {
+      "path": "MIPS/data/languages/mips32.pspec",
+      "bytes": 3665,
+      "sha256": "af053f7c02029e95a71e9ca83516919c4c8e2b1758986cda1e24940ec78426a9"
+    },
+    {
+      "path": "MIPS/data/languages/mips32be.cspec",
+      "bytes": 6548,
+      "sha256": "f5dbbb971f5f50c4c97e3661af969ef19229155a71c57416c4a2114e26eee9ea"
+    },
+    {
+      "path": "MIPS/data/languages/mips32be.sla",
+      "bytes": 161936,
+      "sha256": "ce2e29e17247012f2088650a850448b728e093337c8451847ea5d6091fd8be6f"
+    },
+    {
+      "path": "MIPS/data/languages/mips32le.cspec",
+      "bytes": 6271,
+      "sha256": "532ec48ae20f8a5f1e7908796220bc6d6cecb84961c4e82246c6d437c9fda59a"
+    },
+    {
+      "path": "MIPS/data/languages/mips32le.sla",
+      "bytes": 161665,
+      "sha256": "f3cfc085256c34a173368951cee9146220a01d0912fa70f5d827f7914e305f8a"
+    },
+    {
+      "path": "MIPS/data/languages/mips64.pspec",
+      "bytes": 3740,
+      "sha256": "597c91387b850bdec59bde7462f26903398d90c184676afc65b5dfa47363f585"
+    },
+    {
+      "path": "MIPS/data/languages/mips64be.cspec",
+      "bytes": 5465,
+      "sha256": "0106313871a6d122df99db05c4635a869f9af71902021029631d2b94829d1b34"
+    },
+    {
+      "path": "MIPS/data/languages/mips64be.sla",
+      "bytes": 173237,
+      "sha256": "249cb4de7700830046d96732059a21cdaedda7d9ac732e2b5e59253a4461ffa6"
+    },
+    {
+      "path": "MIPS/data/languages/mips64le.cspec",
+      "bytes": 4994,
+      "sha256": "ee2892c549a8c302ec4241762523e009b05229ba1777318bf461643fb531bfd7"
+    },
+    {
+      "path": "MIPS/data/languages/mips64le.sla",
+      "bytes": 173071,
+      "sha256": "2271cf27e04bc681203e02c8e88a86e2a6c860f3169729f6bce35c2ed7a64a61"
+    },
+    {
+      "path": "RISCV/data/languages/RV32.pspec",
+      "bytes": 29519,
+      "sha256": "12a651eaf6d4fa26391716362a747fa32b544f6cc0f918530c1e370f3e042890"
+    },
+    {
+      "path": "RISCV/data/languages/RV64.pspec",
+      "bytes": 29517,
+      "sha256": "46a626a919a4788bb4e5996f3a241de3c6ce560f1288a8deb851dfc659735a22"
+    },
+    {
+      "path": "RISCV/data/languages/riscv.ilp32d.sla",
+      "bytes": 77217,
+      "sha256": "147841d1736fe8b68add9dd99d0b2fee257ea58f2c6bbb06c833a09ae35f87cd"
+    },
+    {
+      "path": "RISCV/data/languages/riscv.ldefs",
+      "bytes": 1349,
+      "sha256": "6e1b6162ff20232fe715f1895a0e801e01cc7e89e3c9b2327e1667786efba46f"
+    },
+    {
+      "path": "RISCV/data/languages/riscv.lp64d.sla",
+      "bytes": 89127,
+      "sha256": "0a58998a9d91eca7d896acdf0548da4fb887e5c9a7fae9bad4ab35a9a4e512e4"
+    },
+    {
+      "path": "RISCV/data/languages/riscv32-fp.cspec",
+      "bytes": 6223,
+      "sha256": "ce24d764afb32ae914373844a96fe400c3c4983428dd5048f56f72fca95a4c54"
+    },
+    {
+      "path": "RISCV/data/languages/riscv64-fp.cspec",
+      "bytes": 6289,
+      "sha256": "c424d9e2f088260b7a7737c55219e0be1ea383d7084fcd31e0b2c1c1349381a9"
+    }
+  ]
+}
