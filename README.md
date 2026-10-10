@@ -71,6 +71,4 @@ The optional Framework build may restore locked NuGet packages. Browser tests sh
 
 ## Hosting
 
-Deploy the combined Cloudflare Worker and assets using `wrangler deploy --config wrangler.jsonc`. Forks must set their own account/domain/limit namespaces. Do not replace it with a static dashboard ZIP; that would remove the delivery gate. The production host has a Cloudflare managed challenge and dedicated per-IP burst/minute limits, with separate engine-download limits. The Worker checks the host, accepts only GET/HEAD and exact assets, fails closed when rate-limit bindings are unavailable, and supplies CSP/security headers. Edge limits are approximate per location and do not guarantee immunity to denial of service.
-
 SPECTRA does not audit or harden the user's network or analysis machine. Static parsing, decompilation and emulation are incomplete models; inspect warnings and preserve uncertainty. Full-process Windows/.NET execution, whole-file unpacking, advanced type recovery, SquashFS extraction and further hardware profiles remain areas for continued research.
