@@ -25,7 +25,7 @@ await mkdir(path.join(root,'dist'),{recursive:true});await writeFile(path.join(r
 const csp="default-src 'none'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; style-src 'unsafe-inline'; img-src data:; font-src data:; worker-src 'self' blob:; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
 await writeFile(path.join(root,'dist/_headers'),`/*\n  Content-Security-Policy: ${csp}\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: no-referrer\n  Permissions-Policy: camera=(), microphone=(), geolocation=()\n  Strict-Transport-Security: max-age=2592000\n  Cache-Control: public, max-age=0, must-revalidate\n`);
 await writeFile(path.join(root,'dist/THIRD-PARTY-LICENSES.txt'),licenses);
-const engines=path.join(root,'dist/engines/v07');await rm(path.join(root,'dist/engines'),{recursive:true,force:true});await mkdir(engines,{recursive:true});
+const engines=path.join(root,'dist/engines/v07r1');await rm(path.join(root,'dist/engines'),{recursive:true,force:true});await mkdir(engines,{recursive:true});
 await cp(path.join(root,'vendor/ghidra'),path.join(engines,'native'),{recursive:true});await cp(path.join(root,'vendor/managed'),path.join(engines,'managed'),{recursive:true});
 await cp(path.join(root,'src/engines/native-worker.mjs'),path.join(engines,'native/worker.mjs'));await cp(path.join(root,'src/native-plan.js'),path.join(engines,'native/native-plan.js'));await cp(path.join(root,'src/engines/managed-worker.mjs'),path.join(engines,'managed/worker.mjs'));
 await mkdir(path.join(engines,'fixtures'),{recursive:true});await cp(path.join(root,'fixtures/ManagedTraining.dll'),path.join(engines,'fixtures/ManagedTraining.dll'));

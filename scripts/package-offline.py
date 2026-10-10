@@ -10,7 +10,7 @@ with zipfile.ZipFile(out,'w',zipfile.ZIP_DEFLATED,compresslevel=6) as z:
 print(f'{out.name}: {out.stat().st_size} bytes')
 # Static-host asset limits: split the download, reassemble and verify in-browser.
 import hashlib,json
-folder=root/'dist/engines/v07/downloads';folder.mkdir(parents=True,exist_ok=True)
+folder=root/'dist/engines/v07r1/downloads';folder.mkdir(parents=True,exist_ok=True)
 for old in folder.glob('offline-part-*.bin'):old.unlink()
 parts=[]
 with out.open('rb') as f:

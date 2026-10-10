@@ -1,5 +1,5 @@
 const decompileState={worker:null,engine:null,ready:false,busy:false,timer:null,id:0,pending:null,result:null,types:[],base64:null,assembly:null,analysisWarnings:[],dependencies:[],harnessSelected:new Set(),harnessFocus:null,message:'Pick a function. The engine downloads on first use; the file never uploads.'};
-const ENGINE_ROOT='./engines/v07/';
+const ENGINE_ROOT='./engines/v07r1/';
 function stopDecompiler(message){decompileState.worker?.terminate();clearTimeout(decompileState.timer);Object.assign(decompileState,{worker:null,ready:false,busy:false,engine:null,pending:null,id:decompileState.id+1});if(message)decompileState.message=message;}
 function resetDecompiler(){stopDecompiler();decompileState.restoreManaged=null;$('harness-recipe').value='';Object.assign(decompileState,{result:null,types:[],base64:null,assembly:null,analysisWarnings:[],dependencies:[],harnessSelected:new Set(),harnessFocus:null,message:'Pick a function. The engine downloads on first use; the file never uploads.'});renderDecompiler();}
 function isManagedImage(){try{const b=state.bytes,v=new DataView(b.buffer,b.byteOffset,b.byteLength);if(v.getUint16(0,true)!==0x5a4d)return false;const opt=v.getUint32(0x3c,true)+24,wide=v.getUint16(opt,true)===0x20b;return v.getUint32(opt+(wide?112:96)+14*8,true)>0;}catch{return false;}}

@@ -17,7 +17,7 @@ function plan(bytes,meta,options={}){
  let compiler=options.compiler||'auto';if(compiler==='auto')compiler=x86?(meta.format?.startsWith('ELF')?'gcc':'windows'):mode.startsWith('riscv')?'gcc':'default';
  if(x86&&!['windows','gcc'].includes(compiler)||!x86&&!mode.startsWith('riscv')&&!['default','windows','apcs'].includes(compiler)||mode.startsWith('riscv')&&compiler!=='gcc')throw Error('Calling convention is unavailable for this processor. Choose Automatic or a supported compiler.');
  const language=x86?'x86:LE:'+bits+':default:'+compiler:mode==='aarch64'?'AARCH64:'+e+':64:v8A:'+compiler:mode.startsWith('riscv')?'RISCV:LE:'+bits+':default:gcc':mode.startsWith('mips')?'MIPS:'+e+':'+bits+':default:'+compiler:'ARM:'+e+':32:'+(mode==='cortex'?'Cortex':mode==='thumb'?'v8T':'v8')+':'+compiler;
- if(!x86)warnings.push('Hardware decompilation uses the selected ISA, endian and compiler spec. Verify mixed ARM/Thumb calls, relocations and inferred prototypes. Debugger execution currently remains x86/x64.');
+ if(!x86)warnings.push('Hardware decompilation uses the selected ISA, endian and compiler spec. Verify mixed ARM/Thumb calls, relocations and inferred prototypes. The debugger supports bounded integer routines for the hardware profiles; it does not emulate an OS or device.');
  if(mode.startsWith('riscv'))warnings.push('RISC-V ABI: ilp32d / lp64d. Soft/single-float prototypes are not supplied by this profile.');
  if(bytes.length>32*1024*1024)throw Error('Native decompilation input cap: 32 MiB.');
  const max=bits===32?0x100000000:0x800000000000,raw=options.raw;

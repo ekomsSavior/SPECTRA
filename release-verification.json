@@ -1,7 +1,7 @@
 {
   "version": "0.7",
-  "status": "release candidate; deployment pending",
-  "generatedAt": "2026-10-10T22:10:13.359949+00:00",
+  "status": "deployed and live browser verified; Church Git push pending",
+  "generatedAt": "2026-10-10T22:40:45.263509+00:00",
   "site": "https://spectra.churchofmalware.org/",
   "sourceRepository": "https://git.churchofmalware.org/ek0mssavi0r/SPECTRA",
   "baselineWorkerVersion": "ac7f17c7-2e6d-4448-8c08-78cd78acf62a",
@@ -30,7 +30,12 @@
     "gzip USTAR extraction: regular bytes only; child notebook parent/child hashes and offsets",
     "Native patch diff: exact/candidate labels; side-by-side reconstructed return byte vs byte+1",
     "Local managed Dependency1.2.3.4 resolved; enum Mode.Fast reconstructed; missing framework references still reported",
-    "Linux GDB companion: same-origin browser pairing, load-without-run, explicit benign launch, real registers, clean End"
+    "Linux GDB companion: same-origin browser pairing, load-without-run, explicit benign launch, real registers, clean End",
+    "Final build: managed dependency, types, selected method, x64 harness target, invocation recipe and reconstructed C# survive true document reload/resume",
+    "Final build: six-step x86 checkpoint survives document reload and verifies replay with current engine fingerprint",
+    "Training ground offline download succeeds; desktop monochrome layout inspected; no captured browser console errors",
+    "Live v0.7: automatic Cloudflare challenge passed; RISC-V 2+3 returned5; real Ghidra C reconstructed addition",
+    "Live v0.7 final engine assets v07r1: ILSpy reconstructed 8281 characters of benign training C#; offline hash-verified download and full source download succeeded; no captured browser console errors"
   ],
   "limitations": [
     "Framework4.8 generated project compiles; no Windows runtime validation",
@@ -41,9 +46,41 @@
     "Church Git write authentication pending"
   ],
   "publishing": {
-    "worker": "pending",
-    "repository": "prepared local commit; authenticated push pending",
-    "sourceDownload": "prepared",
-    "offlineDownload": "prepared"
+    "worker": "deployed to existing custom domain after explicit permission approval",
+    "repository": "local commits prepared; SSH key loaded but repository only advertises HTTPS; missing Git sign-in/SSH clone endpoint",
+    "sourceDownload": "published; live browser download succeeded",
+    "offlineDownload": "published; live multipart download and all part hashes verified in browser"
+  },
+  "packages": {
+    "source": {
+      "path": "dist/debugger-source.zip",
+      "bytes": 23557710,
+      "sha256": "5980d9e0ad2bde0ff2b7f13ac14b529883bceb1ca4cbe5f1c8cd52e06653948b"
+    },
+    "offline": {
+      "path": "releases/spectra-v0.7-offline.zip",
+      "bytes": 36312470,
+      "sha256": "0eb050b5030438e083be6de3c6625e068b1b5d04400b42c7b4394a7f309c5952"
+    },
+    "verification": {
+      "zipIntegrity": "passed",
+      "offlinePartHashesAndReassembly": "passed",
+      "exactEngineAllowlist": 134,
+      "staticFiles": 138,
+      "maximumAssetBytes": 23557710,
+      "cleanSourceRebuild": "133 application and engine assets match byte-for-byte"
+    }
+  },
+  "workerVersion": "f76a8e6b-4de0-4467-bd71-2d718e0c8d77",
+  "engineAssetRoot": "/engines/v07r1/",
+  "protections": {
+    "challenge": "Cloudflare managed challenge observed on live v0.7 and completed automatically",
+    "workerFirst": true,
+    "pageBurst": "30 requests / 10 s / IP",
+    "pageMinute": "120 requests / 60 s / IP",
+    "engineBurst": "100 requests / 10 s / IP",
+    "engineMinute": "240 requests / 60 s / IP",
+    "rateBindings": "all four confirmed in deployment output",
+    "scope": "SPECTRA static delivery only; not a whole-network audit"
   }
 }

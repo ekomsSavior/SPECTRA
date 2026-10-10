@@ -53,7 +53,7 @@ python3 scripts/package-source.py
 python3 scripts/serve.py --port 4173
 ```
 
-Open `http://127.0.0.1:4173/`. Keep the **whole dist directory**, including `engines/v07`; a saved HTML file alone does not contain the decompilers or hardware engines. All runtime assets are included locally; no CDN or API is needed. The localhost server applies the production CSP. Training ground also offers a complete offline ZIP download, assembled from verified static parts to fit the host asset limit. A complete offline ZIP can be made with `python3 scripts/package-offline.py`. Engine rebuilds need the documented upstream toolchains, not for ordinary app builds.
+Open `http://127.0.0.1:4173/`. Keep the **whole dist directory**, including `engines/v07r1`; a saved HTML file alone does not contain the decompilers or hardware engines. All runtime assets are included locally; no CDN or API is needed. The localhost server applies the production CSP. Training ground also offers a complete offline ZIP download, assembled from verified static parts to fit the host asset limit. A complete offline ZIP can be made with `python3 scripts/package-offline.py`. Engine rebuilds need the documented upstream toolchains, not for ordinary app builds.
 
 ```bash
 python3 scripts/test.py
