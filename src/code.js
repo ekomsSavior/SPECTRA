@@ -1,6 +1,8 @@
 /* Local Capstone analysis. No sample instructions are executed. */
 (function(root){
 'use strict';
+const Depth=root.SpectraAnalysis||(typeof require==='function'?require('./analysis.js'):null);
+const Knowledge=root.SpectraKnowledge||(typeof require==='function'?require('./knowledge.js'):null);
 const MAX_INSTRUCTIONS=60000,MAX_BYTES=4*1024*1024;
 function modeFor(cs,r,override){
  const name=override||({'x86':'x86','x86-64':'x64','ARM':r.entryThumb?'thumb':'arm','ARM Thumb':'thumb','ARM64':'arm64','MIPS':r.bits===64?'mips64':'mips32','RISC-V':r.bits===64?'riscv64':'riscv32'})[r.architecture];
@@ -29,7 +31,7 @@ function analyze(cs,bytes,meta,options={}){
  if(!codeMaps.length){d.close();throw Error('No file-backed executable range found. Use a raw range if you know where the code starts.');}
  const instructions=new Map(),queue=[],queued=new Set(),seeds=new Map(),warnings=[],references=[];let decodedBytes=0,failed=0,overlap=0,truncated=false;
  const enqueue=va=>{if(Number.isSafeInteger(va)&&inCode(va)&&!queued.has(va)&&queue.length<MAX_INSTRUCTIONS*3){queued.add(va);queue.push(va);}};
- const seedRank=s=>({'code-address candidate':0,'executable range start':0,'direct call':1,'entry point':2,'PE unwind table':3,'user-selected range':6})[s.source]??5;
+ const seedRank=s=>({'code-address candidate':0,'executable range start':0,'direct call':1,'static indirect-call candidate':1,'analyst indirect target':1,'entry point':2,'PE unwind table':3,'user-selected range':6})[s.source]??5;
  const addSeed=(s)=>{if(!inCode(s.address))return;if(!seeds.has(s.address)){seeds.set(s.address,{...s,size:s.size||0});enqueue(s.address);}else if(seedRank(s)>seedRank(seeds.get(s.address)))seeds.set(s.address,{...s,size:s.size||0});};
  for(const s of r.seeds||[])addSeed(s);
  if(!seeds.size){for(const s of codeMaps)addSeed({address:s.address,name:'range_'+s.address.toString(16),source:'executable range start'});warnings.push('No entry point or function symbols mapped to code. Range starts are only candidates.');}
@@ -49,8 +51,10 @@ function analyze(cs,bytes,meta,options={}){
   for(let n=1;n<row.size;n++)if(instructions.has(address+n)){overlap++;return null;}
   instructions.set(address,row);decodedBytes+=row.size;return row;
  }
+ let deep={references:[],tables:[],warnings:[]},qi=0;
  try{
-  for(let qi=0;qi<queue.length;qi++){
+  for(let round=0;round<4;round++){
+  for(;qi<queue.length;qi++){
    const i=decodeAt(queue[qi]);if(!i){if(manual&&!truncated)enqueue(queue[qi]+mode.alignment);continue;}let next=i.address+i.size;
    if(isMips&&(i.call||i.jump||i.ret)){const delay=decodeAt(next);if(delay){delay.delaySlot=true;i.delaySlotAddress=next;}next+=4;}
    if(isX86&&!i.call&&!i.jump){
@@ -64,16 +68,25 @@ function analyze(cs,bytes,meta,options={}){
    if(manual&&next<manual.address+manual.size)enqueue(next); // Continue scanning without inventing a control-flow edge.
    for(const target of i.successors)enqueue(target);
   }
+  if(!Depth)break;
+  deep=Depth.infer([...instructions.values()].sort((a,b)=>a.address-b.address),bytes,{...r,seeds:[...seeds.values()]},mode.name,options.hints);
+  const before=queue.length;
+  for(const ref of deep.references){if(!ref.follow)continue;const i=instructions.get(ref.from);if(i.call)addSeed({address:ref.to,name:'sub_'+ref.to.toString(16),source:ref.analyst?'analyst indirect target':'static indirect-call candidate'});else if(i.jump&&!i.successors.includes(ref.to)){i.successors.push(ref.to);enqueue(ref.to);}}
+  if(queue.length===before)break;
+  if(round===3)warnings.push('Indirect-analysis expansion limit reached (four passes). Additional targets may remain undecoded.');
+  }
  }finally{d.close();}
+ references.push(...deep.references);warnings.push(...deep.warnings);
  const rows=[...instructions.values()].sort((a,b)=>a.address-b.address);
  const importMap=new Map((r.imports||[]).filter(x=>Number.isSafeInteger(x.address)).map(x=>[x.address,x]));
+ const deepImports=new Set(references.filter(r=>r.kind==='import').map(r=>r.from+'@'+r.to));
  const strings=[...(meta.strings||[])].sort((a,b)=>a.offset-b.offset),ends=[];for(let i=0;i<strings.length;i++)ends.push(Math.max(ends[i-1]||0,strings[i].offset+strings[i].byteLength));
  function stringAt(offset){let lo=0,hi=strings.length;while(lo<hi){const mid=(lo+hi)>>1;if(strings[mid].offset<=offset)lo=mid+1;else hi=mid;}for(let i=lo-1;i>=0&&ends[i]>offset;i--)if(offset<strings[i].offset+strings[i].byteLength)return strings[i];return null;}
  for(const i of rows){
   const candidates=[];
   if(isX86){const re=/\[(rip|eip)\s*(?:([+-])\s*(0x[0-9a-f]+|\d+))?\]/gi;let m;while((m=re.exec(i.operands))){let address=i.address+i.size+(m[2]==='-'?-1:1)*Number(m[3]||0);if(m[1]==='eip')address=address>>>0;candidates.push({address,kind:i.mnemonic==='lea'?'address':'memory',evidence:'PC-relative operand'});}const absolute=/\[(0x[0-9a-f]+)\]/gi;while((m=absolute.exec(i.operands)))candidates.push({address:Number(m[1]),kind:'memory',evidence:'absolute memory operand'});}
   if(!i.call&&!i.jump){for(const m of i.operands.matchAll(/(?:^|,\s*)#?(0x[\da-f]+)(?=\s*(?:,|$))/gi))candidates.push({address:Number(m[1]),kind:'constant',evidence:'address-sized constant; usage unconfirmed'});}
-  const seen=new Set();for(const c of candidates){if(seen.has(c.address))continue;seen.add(c.address);const offset=toOffset(c.address),imp=importMap.get(c.address);if(offset===null&&!imp)continue;const str=offset!==null?stringAt(offset):null;references.push({from:i.address,to:c.address,offset:i.offset,targetOffset:offset,kind:imp&&(i.call||i.jump)?'import':c.kind,evidence:c.evidence,importName:imp?.name,library:imp?.library,stringId:str?.id,stringOffset:str?.offset,stringPreview:str?.text.slice(0,160)});}
+  const seen=new Set();for(const c of candidates){if(seen.has(c.address))continue;seen.add(c.address);const offset=toOffset(c.address),imp=importMap.get(c.address);if(offset===null&&!imp)continue;const str=offset!==null?stringAt(offset):null;if(!deepImports.has(i.address+'@'+c.address))references.push({from:i.address,to:c.address,offset:i.offset,targetOffset:offset,kind:imp&&(i.call||i.jump)?'import':c.kind,evidence:c.evidence,importName:imp?.name,library:imp?.library,stringId:str?.id,stringOffset:str?.offset,stringPreview:str?.text.slice(0,160)});}
  }
  const functions=[...seeds.values()].filter(s=>instructions.has(s.address)).sort((a,b)=>a.address-b.address);let walkBudget=400000;
  for(const f of functions){const pending=[f.address],visited=new Set();f.instructionAddresses=[];for(let k=0;k<pending.length&&walkBudget>0;k++,walkBudget--){const va=pending[k];if(visited.has(va)||va!==f.address&&seeds.has(va))continue;visited.add(va);if(f.size&&va>=f.address+f.size)continue;const i=instructions.get(va);if(!i)continue;f.instructionAddresses.push(va);if(i.functionAddress===null)i.functionAddress=f.address;if(i.delaySlotAddress){const delay=instructions.get(i.delaySlotAddress);if(delay){f.instructionAddresses.push(delay.address);delay.functionAddress=f.address;}}pending.push(...i.successors);}f.instructionAddresses.sort((a,b)=>a-b);f.instructionCount=f.instructionAddresses.length;f.end=f.instructionAddresses.reduce((end,va)=>Math.max(end,va+instructions.get(va).size),f.address);}
@@ -81,9 +94,12 @@ function analyze(cs,bytes,meta,options={}){
  if(truncated)warnings.push('Analysis limit reached (60,000 instructions / 4 MiB decoded). Results are partial.');
  if(failed)warnings.push(failed+' code locations could not be decoded.');if(overlap)warnings.push(overlap+' overlapping instruction starts were left unresolved.');
  if(isMips)warnings.push('MIPS delay slots are shown; branch-likely annul semantics are not modeled.');
- if(['arm','thumb','arm64','mips32','mips64','riscv32','riscv64'].includes(mode.name))warnings.push('Register-built addresses and mixed ARM/Thumb transitions are not resolved. Data references cover mapped address constants only.');
- const unresolved=rows.filter(i=>(i.call||i.jump)&&i.target===null).length;
- return {engine:'Capstone 5 / SPECTRA 0.9',mode:mode.name,manual:!!manual,raw:manual?{...manual}:null,instructions:rows,functions,references,warnings,decodedBytes,unresolved,truncated,limits:{instructions:MAX_INSTRUCTIONS,decodedBytes:MAX_BYTES},method:manual?'linear sweep of user-selected bytes':'recursive traversal from entry, symbols, unwind records, and direct calls'};
+ if(['arm','thumb','arm64','mips32','mips64','riscv32','riscv64'].includes(mode.name))warnings.push('Register-built targets are resolved only for admitted AArch64 constant/load sequences. Other register-built addresses and mixed ARM/Thumb transitions remain unresolved.');
+ const evidence=Knowledge?Knowledge.recognize(bytes,{...r,mode:mode.name},functions,rows,references,options.signatures||[]):[];
+ const recognitionMap=new Map();for(const e of evidence){const list=recognitionMap.get(e.address)||[];list.push(e);recognitionMap.set(e.address,list);}for(const f of functions)f.recognition=recognitionMap.get(f.address)||[];if(evidence.length>=4096)warnings.push('Library evidence limited to 4096 findings.');
+ const resolved=new Set(deep.references.filter(r=>!r.candidate&&r.kind!=='import').map(r=>r.from));
+ const unresolved=rows.filter(i=>!i.ret&&(i.call||i.jump)&&i.target===null&&!resolved.has(i.address)).length;
+ return {engine:'Capstone 5 / SPECTRA 0.11',mode:mode.name,manual:!!manual,raw:manual?{...manual}:null,instructions:rows,functions,references,tables:deep.tables,recognition:evidence,warnings,decodedBytes,unresolved,truncated,limits:{instructions:MAX_INSTRUCTIONS,decodedBytes:MAX_BYTES},method:manual?'linear sweep of user-selected bytes':'recursive traversal from entry, symbols, unwind records, and direct calls'};
 }
 root.SpectraCode={analyze,modeFor,riscvFlow};if(typeof module!=='undefined')module.exports=root.SpectraCode;
 })(globalThis);

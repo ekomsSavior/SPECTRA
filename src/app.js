@@ -125,7 +125,7 @@
     if(!state.result||state.busy){toast('Wait for analysis to finish.');return;}
     if(kind==='project'){saveProject();$('export-dialog').close();return;}
     const rows=state.filtered;
-    if(kind==='json'){const {strings,blocks,...metadata}=state.result;download(baseName()+'.report.json',JSON.stringify({tool:'SPECTRA v0.10',createdAt:new Date().toISOString(),name:state.name,sha256:state.hash,syntheticDemo:state.demo,metadata,filters:{query:$('search').value,encoding:$('encoding').value,tag:state.tag,minLength:$('min-length').value,unique:$('unique').checked},strings:rows.map(s=>({...s,text:fullText(s),clipped:false})),investigation:project(),caveat:'Static text heuristics are not malware verdicts.'},null,2));}
+    if(kind==='json'){const {strings,blocks,...metadata}=state.result;download(baseName()+'.report.json',JSON.stringify({tool:'SPECTRA v0.11',createdAt:new Date().toISOString(),name:state.name,sha256:state.hash,syntheticDemo:state.demo,metadata,filters:{query:$('search').value,encoding:$('encoding').value,tag:state.tag,minLength:$('min-length').value,unique:$('unique').checked},strings:rows.map(s=>({...s,text:fullText(s),clipped:false})),investigation:project(),caveat:'Static text heuristics are not malware verdicts.'},null,2));}
     if(kind==='csv'){const cell=v=>'"'+String(v).replace(/^[=+@-]/,"'$&").replace(/"/g,'""')+'"';const lines=[['offset_hex','offset_decimal','encoding','length','byte_length','tags','text','note'],...rows.map(s=>[hex(s.offset),s.offset,s.encoding,s.length,s.byteLength,s.tags.join(';'),fullText(s),state.notes[key(s)]||''])];download(baseName()+'.strings.csv',lines.map(r=>r.map(cell).join(',')).join('\r\n'),'text/csv;charset=utf-8');}
     if(kind==='txt')download(baseName()+'.strings.txt',rows.map(s=>fullText(s)).join('\n'),'text/plain;charset=utf-8');
     $('export-dialog').close();toast('Exported '+fmt(rows.length)+' filtered strings.');
@@ -140,6 +140,7 @@
 /*__DETECTION_UI__*/
   /*__HARNESS_UI__*/
   /*__PROJECT_UI__*/
+/*__KNOWLEDGE_UI__*/
 /*__LIBRARY_UI__*/
 /*__SYSTEM_UI__*/
   /*__COMPARE_UI__*/

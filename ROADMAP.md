@@ -1,3 +1,7 @@
+## Shipped in 0.11
+
+Bounded indirect targets and guarded switch tables; exact library reference/signature packs and import-thunk evidence; saved structure layouts; same-language callee signature propagation; stale reconstruction protection. See docs/ANALYSIS-DEPTH.md for tested scope. General interprocedural dataflow, automatic C++ class recovery and comprehensive vendor signature catalogs remain future work.
+
 # SPECTRA community RE roadmap
 
 Owner and home: Church of Malware, https://spectra.churchofmalware.org/. Public source destination: https://git.churchofmalware.org/ek0mssavi0r/SPECTRA. The app is not being moved to another host.

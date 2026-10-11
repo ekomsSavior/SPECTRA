@@ -11,3 +11,12 @@ test('hostile imported scalars and instruction links are rejected before renderi
 test('comparison bytes are sample-bound and survive a complete bundle',async()=>{const {sample,m}=await base(),other=enc.encode('second benign version'),bundle=await project.encode(m,sample,[],[],{name:'v2.bin',bytes:other,hadResult:true}),r=await project.decode(bundle,'');assert.deepEqual(r.comparison.bytes,other);assert.equal(r.comparison.hadResult,true);});
 
 test('DiE report persists raw evidence and recomputes displayed rows on import',async()=>{const {sample,m}=await base();m.detection={schema:'spectra-detection-v1',sample:{name:m.name,sha256:m.sha256,bytes:sample.length},engine:{name:'Detect It Easy',version:'3.21'},options:{heuristics:true,deep:false},raw:JSON.stringify({detects:[{values:[{type:'language',name:'C#'}]}]}),rows:[{name:'forged display'}]};const b=await project.encode(m,sample,[]),r=await project.decode(b,'');assert.equal(r.manifest.detection.rows[0].name,'C#');m.detection.sample.sha256='0'.repeat(64);await assert.rejects(project.encode(m,sample,[]),/detection/);});
+
+test('analysis corrections, exact signatures and structures round-trip without executing anything',async()=>{
+ const key='x86:LE:64:default:gcc',{sample,m}=await base();
+ m.analysisKnowledge={revision:7,hints:{edges:[{from:4096,to:8192,note:'reviewed pointer'}],tables:[{from:4100,address:9000,count:3,width:4,encoding:'relative',base:9000,firstCase:1}]},signatures:[{name:'reviewed_function',mode:'x64',endian:'little',bytes:'90'.repeat(15)+'c3',source:'Reviewed fixture'}],structures:[{name:'Record',language:key,size:8,fields:[{name:'count',type:'uint32_t',offset:4,count:1}]}]};
+ m.nativeAssumptions=[[key+'@8192',{declaration:'uint32_t read_count(Record *r);',type:''}]];
+ const result=await project.decode(await project.encode(m,sample,[]),'');assert.deepEqual(result.manifest.analysisKnowledge,m.analysisKnowledge);assert.deepEqual(result.manifest.nativeAssumptions,m.nativeAssumptions);
+ const bad=structuredClone(m);bad.analysisKnowledge.hints.tables[0].count=100000;await assert.rejects(project.encode(bad,sample,[]),/table hypothesis/);
+ bad.analysisKnowledge=m.analysisKnowledge;bad.analysisKnowledge.structures[0].fields[0].offset=5;await assert.rejects(project.encode(bad,sample,[]),/Fields/);
+});

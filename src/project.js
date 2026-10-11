@@ -1,5 +1,6 @@
 (function(root){
 'use strict';
+const Depth=root.SpectraAnalysis||(typeof require==='function'?require('./analysis.js'):null),Knowledge=root.SpectraKnowledge||(typeof require==='function'?require('./knowledge.js'):null);
 const SCHEMA='spectra-project-v2',HASH=/^[0-9a-f]{64}$/;
 function object(o){return o&&typeof o==='object'&&!Array.isArray(o);}
 function text(s,max){if(typeof s!=='string'||s.length>max)throw Error('Project text field exceeds its limit.');return s;}
@@ -15,6 +16,7 @@ function metadata(m){
  
  if(!Array.isArray(m.bookmarks)||m.bookmarks.length>50000||m.bookmarks.some(x=>typeof x!=='string'||x.length>50)||!object(m.notes)||Object.keys(m.notes).length>50000)throw Error('Invalid string evidence.');for(const [k,v]of Object.entries(m.notes)){text(k,50);text(v,20000);}
  m.annotations=annotations(m.annotations||[]);
+ const knowledge=m.analysisKnowledge||{};if(!object(knowledge)||!Number.isSafeInteger(knowledge.revision??0)||(knowledge.revision??0)<0)throw Error('Invalid analysis knowledge.');m.analysisKnowledge={hints:Depth.validateHints(knowledge.hints),signatures:Knowledge.signatures(knowledge.signatures||[]),structures:Knowledge.structures(knowledge.structures||[]),revision:knowledge.revision||0};
  if(m.nativeAssumptions){if(!Array.isArray(m.nativeAssumptions)||m.nativeAssumptions.length>10000)throw Error('Invalid native type assumptions.');for(const pair of m.nativeAssumptions){if(!Array.isArray(pair)||pair.length!==2||!object(pair[1]))throw Error('Invalid native type assumption.');text(pair[0],200);text(pair[1].declaration,4096);text(pair[1].type,16384);}}
  const controls=m.debugControls;if(controls){if(!object(controls)||!Array.isArray(controls.breakpoints)||!Array.isArray(controls.conditions)||controls.breakpoints.length+controls.conditions.length>128||!Array.isArray(controls.watchpoints)||controls.watchpoints.length>32)throw Error('Invalid debugger controls.');const address=a=>{if(!Number.isSafeInteger(a)||a<0)throw Error('Invalid debugger address.');};controls.breakpoints.forEach(address);for(const p of controls.conditions){address(p.address);const c=p.condition;if(!object(c)||typeof c.register!=='string'||!/^([A-Z][A-Z0-9]{0,7})$/.test(c.register)||!['==','!=','<','<=','>','>='].includes(c.operator)||!/^(?:0x[0-9a-f]{1,16}|\d{1,20})$/i.test(c.value))throw Error('Invalid breakpoint condition.');}for(const w of controls.watchpoints){address(w.address);if(!Number.isSafeInteger(w.size)||w.size<1||w.size>65536||!Number.isSafeInteger(w.address+w.size)||!['read','write','read/write'].includes(w.access))throw Error('Invalid memory watchpoint.');}}
  if(m.detection){const d=m.detection;if(!object(d)||d.schema!=="spectra-detection-v1"||d.sample?.sha256!==m.sha256||typeof d.raw!=="string"||d.raw.length>2*1024*1024||!object(d.engine)||typeof d.engine.version!=="string"||!object(d.options))throw Error("Invalid saved detection report.");const parsed=root.SpectraDetection.normalize(d.raw);d.rows=parsed.rows;}

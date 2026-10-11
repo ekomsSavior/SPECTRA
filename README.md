@@ -1,4 +1,4 @@
-# SPECTRA 0.10 — Church of Malware
+# SPECTRA 0.11 — Church of Malware
 
 A free browser reverse-engineering workbench. Open a binary, follow the evidence, keep the investigation. Optional explanations use the same tools and evidence as the professional workspace.
 
@@ -6,6 +6,12 @@ A free browser reverse-engineering workbench. Open a binary, follow the evidence
 - Source: https://git.churchofmalware.org/ek0mssavi0r/SPECTRA
 - No account, paid tier, sample uploads, paid API, or telemetry in the analysis app. Engines are served by the Church. Cloudflare receives normal delivery metadata; sample analysis stays local.
 - Black, gray and white; Creepster wordmark. Teaching defaults off.
+
+## Deeper analysis release (0.11)
+
+Static indirect-target analysis now follows supported x86/x64 and AArch64 constant/import-load sequences, with instruction provenance and explicit file-value uncertainty. Guarded x86 absolute and x64 PIC switch patterns expose cases and extend bounded code discovery; manual target/table hypotheses support other known layouts. Functions shows import thunks, declared names and exact signatures, with 30 source-built reference candidates and local pack import/export. This is not a comprehensive vendor-library database.
+
+The structure workspace generates explicit padded layouts and previews integer fields from bytes. Saved declarations and validated function signatures apply across callers using the same Ghidra language/ABI. Corrections mark old native reconstruction stale; code JSON, projects and library revisions preserve the evidence. Try Disassembly's benign analysis demo. See [analysis depth and limits](docs/ANALYSIS-DEPTH.md).
 
 ## Browser access release (0.10)
 
@@ -53,13 +59,13 @@ Notebook exports a versioned ZIP with notes, annotations, settings, recovery byt
 
 Binary diff compares strings, imports and decoded functions. Exact decoded-byte matches are distinguished from symbol/shape candidates. Ambiguous and unmatched functions remain visible. Open matched functions in side-by-side assembly or reconstruct each side on demand. Partial decoding and clipped string previews are reported; these results do not prove behavioral equivalence.
 
-Firmware files inspects ZIP (stored/deflated), USTAR/PAX, newc/crc CPIO and gzip wrappers. Regular files stay byte buffers; links/devices remain metadata. Opening a child records the parent's hash, path and container offset. SquashFS is detected but not extracted in this release. Nested extraction is manual and bounded.
+Firmware files inspects ZIP (stored/deflated), USTAR/PAX, newc/crc CPIO and gzip wrappers. Regular files stay byte buffers; links/devices remain metadata. Opening a child records the parent's hash, path and container offset. SquashFS4 little-endian gzip/XZ/Zstandard extraction is also supported. Nested extraction is manual and bounded.
 
 For thick clients, select methods/classes and generate a downloadable .NET harness with pinned sample identity, explicit entry/constructor/setup recipes, argument conversion and optional local proxy hooks. Modern .NET harness execution is tested with benign fixtures. The .NET Framework 4.8 AnyCPU/x86/x64 template is compile-tested; **Windows execution has not been validated**. Local dependencies are analyzable, but the downloaded runner still needs the target's real runtime/native dependencies and environment. Original binaries are not included automatically.
 
 ## Learn and contribute
 
-Training ground includes an 18-chapter searchable field guide covering every section and its controls, workflows, FAQs, and a glossary. Download the standalone HTML book or print it to PDF; the guide ships in the offline release too. Its Links area points to Church Git and MalwareBazaar. The guide content lives in `src/guide-content.mjs` and is rendered from that single source into both the reader and `guide.html`.
+Training ground includes a 19-chapter searchable field guide covering every section and its controls, workflows, FAQs, and a glossary. Download the standalone HTML book or print it to PDF; the guide ships in the offline release too. Its Links area points to Church Git and MalwareBazaar. The guide content lives in `src/guide-content.mjs` and is rendered from that single source into both the reader and `guide.html`.
 
 Training ground has a compiled benign C/ELF exercise, an XOR-loop memory experiment and hardware addition/delay-slot exercises. Source, exact fixtures, hints, walkthroughs and evidence checks are included. Optional contextual explanations follow the selected finding or instruction. Nothing forces experienced users through a tutorial.
 
@@ -75,7 +81,7 @@ python3 scripts/package-source.py
 python3 scripts/serve.py --port 4173
 ```
 
-Open `http://127.0.0.1:4173/`. Keep the **whole dist directory**, including `engines/v010`; a saved HTML file alone does not contain the decompilers or hardware engines. All runtime assets are included locally; no CDN or API is needed. The localhost server applies the production CSP. The source ZIP includes all browser runtime assets. To publish the large DiE runtime source archive too, collect the pinned inputs documented in docs/DETECTION.md and run `python3 scripts/package-detection-source.py /path/to/source-inputs` after package-source.py. Training ground also offers a complete offline ZIP download, assembled from verified static parts to fit the host asset limit. A complete offline ZIP can be made with `python3 scripts/package-offline.py`. Engine rebuilds need the documented upstream toolchains, not for ordinary app builds.
+Open `http://127.0.0.1:4173/`. Keep the **whole dist directory**, including `engines/v011`; a saved HTML file alone does not contain the decompilers or hardware engines. All runtime assets are included locally; no CDN or API is needed. The localhost server applies the production CSP. The source ZIP includes all browser runtime assets. To publish the large DiE runtime source archive too, collect the pinned inputs documented in docs/DETECTION.md and run `python3 scripts/package-detection-source.py /path/to/source-inputs` after package-source.py. Training ground also offers a complete offline ZIP download, assembled from verified static parts to fit the host asset limit. A complete offline ZIP can be made with `python3 scripts/package-offline.py`. Engine rebuilds need the documented upstream toolchains, not for ordinary app builds.
 
 ```bash
 npm ci --prefix tests --ignore-scripts

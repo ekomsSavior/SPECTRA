@@ -1,0 +1,217 @@
+{
+  "schema": "spectra-signatures-v1",
+  "sourceSha256": "80a4d56aac7731339f6e9ec02cc951901afdf9355a0ce7f944f179ed269fc426",
+  "note": "Exact Church reference implementation candidates; not a comprehensive libc signature database. Match does not prove library provenance. Import your own reviewed signatures for other builds.",
+  "signatures": [
+    {
+      "name": "strlen",
+      "mode": "x86",
+      "endian": "little",
+      "bytes": "8b542404803a00740d89d083c00180380075f829d0c389d0ebf9",
+      "source": "Church MIT reference.c; gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; -m32 -O1 -ffreestanding -fno-builtin -fno-tree-loop-distribute-patterns -fno-stack-protector -fcf-protection=none -fno-pic -ffunction-sections -c; exact bytes, candidate semantics only"
+    },
+    {
+      "name": "strcmp",
+      "mode": "x86",
+      "endian": "little",
+      "bytes": "8b4c24048b5424080fb60184c074113802750d83c10183c2010fb60184c075ef0fb6c00fb61229d0c3",
+      "source": "Church MIT reference.c; gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; -m32 -O1 -ffreestanding -fno-builtin -fno-tree-loop-distribute-patterns -fno-stack-protector -fcf-protection=none -fno-pic -ffunction-sections -c; exact bytes, candidate semantics only"
+    },
+    {
+      "name": "memcmp",
+      "mode": "x86",
+      "endian": "little",
+      "bytes": "56538b74240c8b4c241485c9742e89f08b54241001ce0fb6080fb61a38d9751183c00183c20139f075ecb800000000eb080fb6c10fb6db29d85b5ec3b800000000ebf6",
+      "source": "Church MIT reference.c; gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; -m32 -O1 -ffreestanding -fno-builtin -fno-tree-loop-distribute-patterns -fno-stack-protector -fcf-protection=none -fno-pic -ffunction-sections -c; exact bytes, candidate semantics only"
+    },
+    {
+      "name": "memcpy",
+      "mode": "x86",
+      "endian": "little",
+      "bytes": "56538b74240c8b5c24108b4c241485c9741589d889f201cb0fb608880a83c00183c20139d875f189f05b5ec3",
+      "source": "Church MIT reference.c; gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; -m32 -O1 -ffreestanding -fno-builtin -fno-tree-loop-distribute-patterns -fno-stack-protector -fcf-protection=none -fno-pic -ffunction-sections -c; exact bytes, candidate semantics only"
+    },
+    {
+      "name": "memset",
+      "mode": "x86",
+      "endian": "little",
+      "bytes": "538b5c24088b4c240c8b54241085d2740d89d801da880883c00139d075f789d85bc3",
+      "source": "Church MIT reference.c; gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; -m32 -O1 -ffreestanding -fno-builtin -fno-tree-loop-distribute-patterns -fno-stack-protector -fcf-protection=none -fno-pic -ffunction-sections -c; exact bytes, candidate semantics only"
+    },
+    {
+      "name": "strlen",
+      "mode": "x86",
+      "endian": "little",
+      "bytes": "8b542404803a00741789d02e8d74260083c00180380075f829d0c32e8d74260031c0c3",
+      "source": "Church MIT reference.c; gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; -m32 -O2 -ffreestanding -fno-builtin -fno-tree-loop-distribute-patterns -fno-stack-protector -fcf-protection=none -fno-pic -ffunction-sections -c; exact bytes, candidate semantics only"
+    },
+    {
+      "name": "strcmp",
+      "mode": "x86",
+      "endian": "little",
+      "bytes": "538b5424088b4c240c0fb60284c07518eb308db6000000000fb6420183c2018d590184c0741289d90fb61938c374e929d85bc32e8d7426000fb6590131c029d85bc30fb61931c0ebe6",
+      "source": "Church MIT reference.c; gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; -m32 -O2 -ffreestanding -fno-builtin -fno-tree-loop-distribute-patterns -fno-stack-protector -fcf-protection=none -fno-pic -ffunction-sections -c; exact bytes, candidate semantics only"
+    },
+    {
+      "name": "memcmp",
+      "mode": "x86",
+      "endian": "little",
+      "bytes": "56538b74241485f674368b44240c8b54241001c6eb142e8db42600000000669083c00183c20139f074160fb6080fb61a38d974ec0fb6c129d85b5ec38d74260031c05b5ec3",
+      "source": "Church MIT reference.c; gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; -m32 -O2 -ffreestanding -fno-builtin -fno-tree-loop-distribute-patterns -fno-stack-protector -fcf-protection=none -fno-pic -ffunction-sections -c; exact bytes, candidate semantics only"
+    },
+    {
+      "name": "memcpy",
+      "mode": "x86",
+      "endian": "little",
+      "bytes": "56538b5c24148b74240c85db74228b44241089f201c32e8db4260000000066900fb60883c00183c201884aff39d875f089f05b5ec3",
+      "source": "Church MIT reference.c; gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; -m32 -O2 -ffreestanding -fno-builtin -fno-tree-loop-distribute-patterns -fno-stack-protector -fcf-protection=none -fno-pic -ffunction-sections -c; exact bytes, candidate semantics only"
+    },
+    {
+      "name": "memset",
+      "mode": "x86",
+      "endian": "little",
+      "bytes": "56538b5c240c8b7424140fb65424108d0c1e85f6742689ce89d829de83e601740f0fb644241088038d430139c8740d90881083c0028850ff39c875f489d85b5ec3",
+      "source": "Church MIT reference.c; gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; -m32 -O2 -ffreestanding -fno-builtin -fno-tree-loop-distribute-patterns -fno-stack-protector -fcf-protection=none -fno-pic -ffunction-sections -c; exact bytes, candidate semantics only"
+    },
+    {
+      "name": "strlen",
+      "mode": "x86",
+      "endian": "little",
+      "bytes": "5589e58b550889d0803800740340ebf829d05dc3",
+      "source": "Church MIT reference.c; gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; -m32 -Os -ffreestanding -fno-builtin -fno-tree-loop-distribute-patterns -fno-stack-protector -fcf-protection=none -fno-pic -ffunction-sections -c; exact bytes, candidate semantics only"
+    },
+    {
+      "name": "strcmp",
+      "mode": "x86",
+      "endian": "little",
+      "bytes": "5531c989e58b45088b550c0fb604080fb6140a84c074054138d074e929d05dc3",
+      "source": "Church MIT reference.c; gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; -m32 -Os -ffreestanding -fno-builtin -fno-tree-loop-distribute-patterns -fno-stack-protector -fcf-protection=none -fno-pic -ffunction-sections -c; exact bytes, candidate semantics only"
+    },
+    {
+      "name": "memcmp",
+      "mode": "x86",
+      "endian": "little",
+      "bytes": "5589e5568b55088b7510538b5d0c01d639f274100fb6020fb60b424338c874f029c8eb0231c05b5e5dc3",
+      "source": "Church MIT reference.c; gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; -m32 -Os -ffreestanding -fno-builtin -fno-tree-loop-distribute-patterns -fno-stack-protector -fcf-protection=none -fno-pic -ffunction-sections -c; exact bytes, candidate semantics only"
+    },
+    {
+      "name": "memcpy",
+      "mode": "x86",
+      "endian": "little",
+      "bytes": "5589e5568b550c8b4508538b5d1089c101d389de39f274098a1a41428859ffebf35b5e5dc3",
+      "source": "Church MIT reference.c; gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; -m32 -Os -ffreestanding -fno-builtin -fno-tree-loop-distribute-patterns -fno-stack-protector -fcf-protection=none -fno-pic -ffunction-sections -c; exact bytes, candidate semantics only"
+    },
+    {
+      "name": "memset",
+      "mode": "x86",
+      "endian": "little",
+      "bytes": "5589e5538b55088b4d1089d001d139c874098a5d0c408858ffebf389d05b5dc3",
+      "source": "Church MIT reference.c; gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; -m32 -Os -ffreestanding -fno-builtin -fno-tree-loop-distribute-patterns -fno-stack-protector -fcf-protection=none -fno-pic -ffunction-sections -c; exact bytes, candidate semantics only"
+    },
+    {
+      "name": "strlen",
+      "mode": "x64",
+      "endian": "little",
+      "bytes": "803f0074104889f84883c00180380075f74829f8c34889f8ebf7",
+      "source": "Church MIT reference.c; gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; -m64 -O1 -ffreestanding -fno-builtin -fno-tree-loop-distribute-patterns -fno-stack-protector -fcf-protection=none -fno-pic -ffunction-sections -c; exact bytes, candidate semantics only"
+    },
+    {
+      "name": "strcmp",
+      "mode": "x64",
+      "endian": "little",
+      "bytes": "0fb60784c074133806750f4883c7014883c6010fb60784c075ed0fb6c00fb61629d0c3",
+      "source": "Church MIT reference.c; gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; -m64 -O1 -ffreestanding -fno-builtin -fno-tree-loop-distribute-patterns -fno-stack-protector -fcf-protection=none -fno-pic -ffunction-sections -c; exact bytes, candidate semantics only"
+    },
+    {
+      "name": "memcmp",
+      "mode": "x64",
+      "endian": "little",
+      "bytes": "4885d2742db8000000000fb60c07440fb604064438c1750f4883c0014839c275e9b800000000c30fb6c1450fb6c04429c0c3b800000000c3",
+      "source": "Church MIT reference.c; gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; -m64 -O1 -ffreestanding -fno-builtin -fno-tree-loop-distribute-patterns -fno-stack-protector -fcf-protection=none -fno-pic -ffunction-sections -c; exact bytes, candidate semantics only"
+    },
+    {
+      "name": "memcpy",
+      "mode": "x64",
+      "endian": "little",
+      "bytes": "4889f84885d27417b900000000440fb6040e448804084883c1014839ca75eec3",
+      "source": "Church MIT reference.c; gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; -m64 -O1 -ffreestanding -fno-builtin -fno-tree-loop-distribute-patterns -fno-stack-protector -fcf-protection=none -fno-pic -ffunction-sections -c; exact bytes, candidate semantics only"
+    },
+    {
+      "name": "memset",
+      "mode": "x64",
+      "endian": "little",
+      "bytes": "4889f84885d274124889f94801fa4088314883c1014839d175f4c3",
+      "source": "Church MIT reference.c; gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; -m64 -O1 -ffreestanding -fno-builtin -fno-tree-loop-distribute-patterns -fno-stack-protector -fcf-protection=none -fno-pic -ffunction-sections -c; exact bytes, candidate semantics only"
+    },
+    {
+      "name": "strlen",
+      "mode": "x64",
+      "endian": "little",
+      "bytes": "803f00741b4889f80f1f8400000000004883c00180380075f74829f8c30f1f0031c0c3",
+      "source": "Church MIT reference.c; gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; -m64 -O2 -ffreestanding -fno-builtin -fno-tree-loop-distribute-patterns -fno-stack-protector -fcf-protection=none -fno-pic -ffunction-sections -c; exact bytes, candidate semantics only"
+    },
+    {
+      "name": "strcmp",
+      "mode": "x64",
+      "endian": "little",
+      "bytes": "0fb60784c0751ceb300f1f80000000000fb647014883c701488d560184c074104889d60fb61638c274e629d0c30f1f000fb6560131c029d0c30fb61631c0ebea",
+      "source": "Church MIT reference.c; gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; -m64 -O2 -ffreestanding -fno-builtin -fno-tree-loop-distribute-patterns -fno-stack-protector -fcf-protection=none -fno-pic -ffunction-sections -c; exact bytes, candidate semantics only"
+    },
+    {
+      "name": "memcmp",
+      "mode": "x64",
+      "endian": "little",
+      "bytes": "4885d2742b31c0eb100f1f80000000004883c0014839c274170fb60c07440fb604064438c174e90fb6c14429c0c3669031c0c3",
+      "source": "Church MIT reference.c; gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; -m64 -O2 -ffreestanding -fno-builtin -fno-tree-loop-distribute-patterns -fno-stack-protector -fcf-protection=none -fno-pic -ffunction-sections -c; exact bytes, candidate semantics only"
+    },
+    {
+      "name": "memcpy",
+      "mode": "x64",
+      "endian": "little",
+      "bytes": "4889f84885d2741a31c9660f1f440000440fb6040e448804084883c1014839ca75eec3",
+      "source": "Church MIT reference.c; gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; -m64 -O2 -ffreestanding -fno-builtin -fno-tree-loop-distribute-patterns -fno-stack-protector -fcf-protection=none -fno-pic -ffunction-sections -c; exact bytes, candidate semantics only"
+    },
+    {
+      "name": "memset",
+      "mode": "x64",
+      "endian": "little",
+      "bytes": "4889f84889f9488d3c3a4189f04885d2742e4889fa4829c283e2017413488d48014088304839f974180f1f80000000004488014883c102448841ff4839f975f0c3c3",
+      "source": "Church MIT reference.c; gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; -m64 -O2 -ffreestanding -fno-builtin -fno-tree-loop-distribute-patterns -fno-stack-protector -fcf-protection=none -fno-pic -ffunction-sections -c; exact bytes, candidate semantics only"
+    },
+    {
+      "name": "strlen",
+      "mode": "x64",
+      "endian": "little",
+      "bytes": "4889f8803800740548ffc0ebf64829f8c3",
+      "source": "Church MIT reference.c; gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; -m64 -Os -ffreestanding -fno-builtin -fno-tree-loop-distribute-patterns -fno-stack-protector -fcf-protection=none -fno-pic -ffunction-sections -c; exact bytes, candidate semantics only"
+    },
+    {
+      "name": "strcmp",
+      "mode": "x64",
+      "endian": "little",
+      "bytes": "31c90fb6040f0fb6140e84c0740748ffc138d074ed29d0c3",
+      "source": "Church MIT reference.c; gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; -m64 -Os -ffreestanding -fno-builtin -fno-tree-loop-distribute-patterns -fno-stack-protector -fcf-protection=none -fno-pic -ffunction-sections -c; exact bytes, candidate semantics only"
+    },
+    {
+      "name": "memcmp",
+      "mode": "x64",
+      "endian": "little",
+      "bytes": "31c94839d174170fb6040f440fb6040e4438c074044429c0c348ffc1ebe431c0c3",
+      "source": "Church MIT reference.c; gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; -m64 -Os -ffreestanding -fno-builtin -fno-tree-loop-distribute-patterns -fno-stack-protector -fcf-protection=none -fno-pic -ffunction-sections -c; exact bytes, candidate semantics only"
+    },
+    {
+      "name": "memcpy",
+      "mode": "x64",
+      "endian": "little",
+      "bytes": "4889f831c94839d1740d408a3c0e40883c0848ffc1ebeec3",
+      "source": "Church MIT reference.c; gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; -m64 -Os -ffreestanding -fno-builtin -fno-tree-loop-distribute-patterns -fno-stack-protector -fcf-protection=none -fno-pic -ffunction-sections -c; exact bytes, candidate semantics only"
+    },
+    {
+      "name": "memset",
+      "mode": "x64",
+      "endian": "little",
+      "bytes": "4889f831c94839d174094088340848ffc1ebf2c3",
+      "source": "Church MIT reference.c; gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0; -m64 -Os -ffreestanding -fno-builtin -fno-tree-loop-distribute-patterns -fno-stack-protector -fcf-protection=none -fno-pic -ffunction-sections -c; exact bytes, candidate semantics only"
+    }
+  ]
+}
