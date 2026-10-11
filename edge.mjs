@@ -3,7 +3,7 @@ import {ENGINE_PATHS} from './asset-paths.mjs';
 import {ARCHIVES} from './archive-manifests.mjs';
 import {archiveResponse} from './downloads.mjs';
 const HOST = 'spectra.churchofmalware.org';
-const PATHS = new Set(['/', '/index.html', '/guide.html', '/debugger-source.zip', '/THIRD-PARTY-LICENSES.txt', '/download-archives.json', '/detection-source.zip']);
+const PATHS = new Set(['/', '/index.html', '/guide.html', '/guide', '/debugger-source.zip', '/THIRD-PARTY-LICENSES.txt', '/download-archives.json', '/detection-source.zip']);
 const HEADERS = {
   'Content-Security-Policy': "default-src 'none'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; style-src 'unsafe-inline'; img-src data:; font-src data:; worker-src 'self' blob:; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'",
   'X-Content-Type-Options': 'nosniff',

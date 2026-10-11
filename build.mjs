@@ -6,6 +6,7 @@ import {fileURLToPath} from 'node:url';
 import path from 'node:path';
 const root=path.dirname(fileURLToPath(import.meta.url)),read=p=>readFile(path.join(root,p),'utf8'),embed=s=>s.replace(/<\/script/gi,'<\\/script');
 let html=await read('src/index.html');
+html=html.replace('__CHURCH_GUIDE_LOGO__',(await readFile(path.join(root,'assets/church-guide-logo.png'))).toString('base64'));
 const engine=(await read('src/engine.js'))+'\n'+(await read('src/binary.js'));
 let app=await read('src/app.js');for(const [key,name]of [['WORKBENCH','workbench'],['RECOVERY_UI','recovery-ui'],['DEBUGGER_UI','debugger-ui'],['DECOMPILER_UI','decompiler-ui'],['DETECTION_UI','detection-ui'],['HARNESS_UI','harness-ui'],['PROJECT_UI','project-ui'],['COMPARE_UI','compare-ui'],['FIRMWARE_UI','firmware-ui'],['LESSONS_UI','lessons-ui'],['GUIDE_UI','guide-ui']]){const source=await read('src/'+name+'.js');app=app.replace('/*__'+key+'__*/',()=>source);}
 app='const SPECTRA_GUIDE='+JSON.stringify(guide)+';\n'+app;

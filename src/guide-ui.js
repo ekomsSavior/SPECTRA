@@ -24,3 +24,5 @@ if(new URLSearchParams(location.search).has('guide'))$('guide-reader').open=true
 showGuideChapter(guideChapter);
 
 $('guide-exercise-jump').onclick=e=>{e.preventDefault();$('training-exercises').focus({preventScroll:true});$('training-exercises').scrollIntoView({block:'start'});};
+
+$('guide-read').onclick=()=>{$('guide-reader').open=true;showGuideChapter(guideChapter,true);};
