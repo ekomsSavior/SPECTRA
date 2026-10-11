@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from pathlib import Path
 import zipfile
-root=Path(__file__).resolve().parents[1];out=root/'releases/spectra-v0.8-source.zip';out.parent.mkdir(exist_ok=True)
+root=Path(__file__).resolve().parents[1];out=root/'releases/spectra-v0.8-guide-source.zip';out.parent.mkdir(exist_ok=True)
 def include(p):
  parts=p.relative_to(root).parts
  return p.is_file() and parts[0] not in ['dist','work','releases','.git','.wrangler'] and not any(x in ['bin','obj','build','cache','ports','__pycache__'] or x.startswith('lab target ') for x in parts) and p.name!='release-verification.json'

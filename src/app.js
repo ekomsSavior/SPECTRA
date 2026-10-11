@@ -141,6 +141,7 @@
   /*__COMPARE_UI__*/
   /*__FIRMWARE_UI__*/
 /*__LESSONS_UI__*/
+/*__GUIDE_UI__*/
   document.querySelector('.brand').onclick=e=>{e.preventDefault();changeView('strings');};
   document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>changeView(b.dataset.view));
   $('open-top').onclick=()=>$('file-input').click();$('file-input').onchange=e=>{if(e.target.files[0])analyzeFile(e.target.files[0]);e.target.value='';};$('demo-button').onclick=loadDemo;

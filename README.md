@@ -43,6 +43,8 @@ For thick clients, select methods/classes and generate a downloadable .NET harne
 
 ## Learn and contribute
 
+Training ground includes an 18-chapter searchable field guide covering every section and its controls, workflows, FAQs, and a glossary. Download the standalone HTML book or print it to PDF; the guide ships in the offline release too. Its Links area points to Church Git and MalwareBazaar. The guide content lives in `src/guide-content.mjs` and is rendered from that single source into both the reader and `guide.html`.
+
 Training ground has a compiled benign C/ELF exercise, an XOR-loop memory experiment and hardware addition/delay-slot exercises. Source, exact fixtures, hints, walkthroughs and evidence checks are included. Optional contextual explanations follow the selected finding or instruction. Nothing forces experienced users through a tutorial.
 
 See [contributing](CONTRIBUTING.md), [budgets and performance](docs/PERFORMANCE.md), [engine builds](docs/BUILDING-ENGINES.md) and [roadmap](ROADMAP.md). Original Church code is MIT licensed; third-party engines retain their licenses. The combined debugger distribution includes GPL-2.0 Unicorn with matching source. See [license scope](NOTICE.md) and the generated third-party notices.

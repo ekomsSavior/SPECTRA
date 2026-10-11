@@ -1,4 +1,5 @@
 import archive from './src/archive.js';
+import {guide,standaloneGuide} from './src/guide-build.mjs';
 import {createHash} from 'node:crypto';
 import {readFile,writeFile,mkdir,cp,readdir,rm} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
@@ -6,11 +7,12 @@ import path from 'node:path';
 const root=path.dirname(fileURLToPath(import.meta.url)),read=p=>readFile(path.join(root,p),'utf8'),embed=s=>s.replace(/<\/script/gi,'<\\/script');
 let html=await read('src/index.html');
 const engine=(await read('src/engine.js'))+'\n'+(await read('src/binary.js'));
-let app=await read('src/app.js');for(const [key,name]of [['WORKBENCH','workbench'],['RECOVERY_UI','recovery-ui'],['DEBUGGER_UI','debugger-ui'],['DECOMPILER_UI','decompiler-ui'],['DETECTION_UI','detection-ui'],['HARNESS_UI','harness-ui'],['PROJECT_UI','project-ui'],['COMPARE_UI','compare-ui'],['FIRMWARE_UI','firmware-ui'],['LESSONS_UI','lessons-ui']]){const source=await read('src/'+name+'.js');app=app.replace('/*__'+key+'__*/',()=>source);}
+let app=await read('src/app.js');for(const [key,name]of [['WORKBENCH','workbench'],['RECOVERY_UI','recovery-ui'],['DEBUGGER_UI','debugger-ui'],['DECOMPILER_UI','decompiler-ui'],['DETECTION_UI','detection-ui'],['HARNESS_UI','harness-ui'],['PROJECT_UI','project-ui'],['COMPARE_UI','compare-ui'],['FIRMWARE_UI','firmware-ui'],['LESSONS_UI','lessons-ui'],['GUIDE_UI','guide-ui']]){const source=await read('src/'+name+'.js');app=app.replace('/*__'+key+'__*/',()=>source);}
+app='const SPECTRA_GUIDE='+JSON.stringify(guide)+';\n'+app;
 const lessonData={nativeSource:await read('tests/fixtures/benign.c'),nativeSha:createHash('sha256').update(await readFile(path.join(root,'tests/fixtures/benign.elf'))).digest('hex'),managedSource:await read('fixtures/managed-source/Fixture.cs'),hardware:JSON.parse(await read('fixtures/hardware-functions.json'))};app=(await read('src/detection.js'))+'\nconst SPECTRA_LESSONS='+JSON.stringify(lessonData)+';\n'+app;
 const recovery=(await read('src/recovery.js'))+'\n'+(await read('src/stack.js'));
 for(const source of [engine,app,recovery,...await Promise.all(['code','windows','native-plan','debugger','debugger-worker'].map(n=>read('src/'+n+'.js')))])new Function(source);
-const font=(await readFile(path.join(root,'assets/fonts/Creepster-Regular.ttf'))).toString('base64'),css=(await read('src/style.css')).replace('__CREEPSTER_BASE64__',()=>font),wasm=(await readFile(path.join(root,'vendor/capstone/dist/capstone.wasm'))).toString('base64');
+const font=(await readFile(path.join(root,'assets/fonts/Creepster-Regular.ttf'))).toString('base64'),css=(await read('src/style.css')).replace('__CREEPSTER_BASE64__',()=>font)+'\n'+await read('src/guide.css'),wasm=(await readFile(path.join(root,'vendor/capstone/dist/capstone.wasm'))).toString('base64');
 const notices=['vendor/die/LICENSES.txt','vendor/unicorn/LICENSE',...['LICENSE','LICENSE.TXT','LICENSE_LLVM.TXT','CREDITS.TXT'].map(n=>'vendor/capstone/'+n),'vendor/ghidra/LICENSE','vendor/ghidra/THIRD_PARTY_NOTICES.md','vendor/ghidra/licenses/Apache-2.0.txt','vendor/ghidra/licenses/emscripten-3.1.56-LICENSE','vendor/ghidra/licenses/musl-COPYRIGHT','vendor/ghidra/licenses/libcxx-LICENSE.TXT','vendor/ghidra/licenses/libcxxabi-LICENSE.TXT','vendor/ghidra/licenses/zlib-1.2.13-LICENSE',...['dotnet-LICENSE.txt','dotnet-THIRD-PARTY-NOTICES.txt','ILSpy-LICENSE.txt','ILSpy-THIRD-PARTY-NOTICES.txt','Humanizer-LICENSE.txt'].map(n=>'vendor/managed/licenses/'+n)];
 const licenses=(await Promise.all(notices.map(async n=>n+'\n'+await read(n)))).join('\n\n');
 const harnessTemplates={program:await read('harness-source/Program.cs'),hooks:await read('harness-source/LabHooks.cs'),readme:await read('harness-source/README.txt'),net48Program:await read('harness-source/net48/Program.cs'),net48Hooks:await read('harness-source/net48/LabHooks.cs'),net48Project:await read('harness-source/net48/SpectraHarness.csproj'),net48Readme:await read('harness-source/net48/README.txt'),net48Lock:await read('harness-source/net48/packages.lock.json')};
@@ -22,6 +24,7 @@ for(const [key,file]of Object.entries({HARDWARE_DEBUGGER:'src/hardware-debugger.
 for(const [key,value]of Object.entries(replacements))html=html.replace(key,()=>value);
 if(/__\w+__/.test(html.slice(0,200000)))throw Error('Unresolved build placeholder');
 await mkdir(path.join(root,'dist'),{recursive:true});await writeFile(path.join(root,'dist/download-archives.json'),'{}\n');await writeFile(path.join(root,'archive-manifests.mjs'),'export const ARCHIVES={};\n');await writeFile(path.join(root,'dist/index.html'),html);
+await writeFile(path.join(root,'dist/guide.html'),standaloneGuide());
 const csp="default-src 'none'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; style-src 'unsafe-inline'; img-src data:; font-src data:; worker-src 'self' blob:; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
 await writeFile(path.join(root,'dist/_headers'),`/*\n  Content-Security-Policy: ${csp}\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: no-referrer\n  Permissions-Policy: camera=(), microphone=(), geolocation=()\n  Strict-Transport-Security: max-age=2592000\n  Cache-Control: public, max-age=0, must-revalidate\n`);
 await writeFile(path.join(root,'dist/THIRD-PARTY-LICENSES.txt'),licenses);
