@@ -1,4 +1,4 @@
-# SPECTRA 0.12 — Church of Malware
+# SPECTRA 0.12.1 — Church of Malware
 
 A free browser reverse-engineering workbench. Open a binary, follow the evidence, keep the investigation. Optional explanations use the same tools and evidence as the professional workspace.
 
@@ -6,6 +6,10 @@ A free browser reverse-engineering workbench. Open a binary, follow the evidence
 - Source: https://git.churchofmalware.org/ek0mssavi0r/SPECTRA
 - No account, paid tier, sample uploads, paid API, or telemetry in the analysis app. Engines are served by the Church. Cloudflare receives normal delivery metadata; sample analysis stays local.
 - Black, gray and white; Creepster wordmark. Teaching defaults off.
+
+## ILSpy startup hotfix (0.12.1)
+
+Managed worker startup now reports module/runtime errors and offers Retry ILSpy without reopening the sample or dependencies. Startup timeouts are distinct from analysis timeouts. A live .NET sample previously reported as failing successfully reconstructed on v0.12 before this change; the original intermittent failure was not reproduced, so no specific cause is claimed. See [verification](docs/releases/ilspy-startup-verification.md).
 
 ## Deeper analysis release (0.12)
 

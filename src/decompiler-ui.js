@@ -1,6 +1,6 @@
-const decompileState={worker:null,engine:null,ready:false,busy:false,timer:null,id:0,pending:null,result:null,types:[],base64:null,assembly:null,analysisWarnings:[],dependencies:[],harnessSelected:new Set(),harnessFocus:null,message:'Pick a function. The engine downloads on first use; the file never uploads.'};
-const ENGINE_ROOT='./engines/v012/';
-function stopDecompiler(message){decompileState.worker?.terminate();clearTimeout(decompileState.timer);Object.assign(decompileState,{worker:null,ready:false,busy:false,engine:null,pending:null,id:decompileState.id+1});if(message)decompileState.message=message;}
+const decompileState={worker:null,engine:null,ready:false,busy:false,retry:false,timer:null,id:0,pending:null,result:null,types:[],base64:null,assembly:null,analysisWarnings:[],dependencies:[],harnessSelected:new Set(),harnessFocus:null,message:'Pick a function. The engine downloads on first use; the file never uploads.'};
+const ENGINE_ROOT='./engines/v0121/';
+function stopDecompiler(message){decompileState.worker?.terminate();clearTimeout(decompileState.timer);Object.assign(decompileState,{worker:null,ready:false,busy:false,retry:false,engine:null,pending:null,id:decompileState.id+1});if(message)decompileState.message=message;}
 function resetDecompiler(){stopDecompiler();decompileState.restoreManaged=null;$('harness-recipe').value='';Object.assign(decompileState,{result:null,types:[],base64:null,assembly:null,analysisWarnings:[],dependencies:[],harnessSelected:new Set(),harnessFocus:null,message:'Pick a function. The engine downloads on first use; the file never uploads.'});renderDecompiler();}
 function isManagedImage(){try{const b=state.bytes,v=new DataView(b.buffer,b.byteOffset,b.byteLength);if(v.getUint16(0,true)!==0x5a4d)return false;const opt=v.getUint32(0x3c,true)+24,wide=v.getUint16(opt,true)===0x20b;return v.getUint32(opt+(wide?112:96)+14*8,true)>0;}catch{return false;}}
 function setDecompilerDefaults(){if(!state.result)return;$('decompile-engine').value=isManagedImage()?'managed':'native';$('decompile-address').value=hex(state.result.entry||0x100000);$('decompile-compiler').value='auto';$('decompile-architecture').value='auto';$('decompile-endian').value='auto';$('decompile-raw').checked=false;$('decompile-use-types').checked=false;$('decompile-prototype').value='';$('decompile-types-input').value='';$('decompile-size').value=hex(Math.min(state.bytes.length,65536));renderDecompiler();}
@@ -23,21 +23,29 @@ function nativeOptions(){
 function selectNativeAssumptions(){try{const o=nativeBaseOptions(),p=SpectraNative.plan(state.bytes,state.result,o),a=investigation.nativeAssumptions.get(p.language+'@'+p.entry);$('decompile-use-types').checked=!!a;$('decompile-prototype').value=a?.declaration||'';$('decompile-types-input').value=a?.type||'';}catch{}}
 
 
-function decompileTimer(ms){clearTimeout(decompileState.timer);decompileState.timer=setTimeout(()=>{stopDecompiler('Engine stopped at the time limit. Pick a smaller function/type and try again.');renderDecompiler();},ms);}
+function decompilerFailure(detail,phase='startup'){
+ const managed=decompileState.engine==='managed',label=managed?'ILSpy':'Ghidra';
+ const guidance=phase==='startup'?(location.protocol==='file:'?'Start the offline release with its included local server, or open the hosted site.':managed?'Your file and dependencies are still open. Retry ILSpy; if loading keeps failing, check your connection or site access.':'Retry Decompile; if loading keeps failing, check your connection or site access.'):'Try a smaller type or function. Your file and dependencies are still open.';
+ stopDecompiler(label+(phase==='startup'?' could not load its engine: ':' stopped during analysis: ')+String(detail||'The browser did not provide an error detail.').slice(0,3000)+' '+guidance);
+ decompileState.retry=managed&&phase==='startup';renderDecompiler();
+}
+function decompileTimer(ms){clearTimeout(decompileState.timer);decompileState.timer=setTimeout(()=>decompilerFailure(decompileState.ready?'Analysis reached the time limit.':'Engine loading reached the time limit.',decompileState.ready?'analysis':'startup'),ms);}
 function sendDecompile(){const m=decompileState.pending;if(!m)return;decompileState.pending=null;decompileState.message=m.token===-1?'Reading managed metadata…':'Reconstructing code locally…';decompileTimer(60000);if(m.buffer)decompileState.worker.postMessage(m,[m.buffer]);else decompileState.worker.postMessage(m);renderDecompiler();}
 function runDecompiler(token=0){
  if(state.busy||!state.result||decompileState.busy)return toast('Let the current job finish, or cancel it.');
  const engine=$('decompile-engine').value;let job;
  try{
   if(engine==='native'){if(isManagedImage())throw Error('This is a managed PE. Choose ILSpy for its C#.');const options=nativeOptions(),{strings,blocks,...meta}=state.result;SpectraNative.plan(state.bytes,meta,options);job={buffer:state.bytes.slice().buffer,meta,options};}
-  else{if(state.bytes.length>16*1024*1024)throw Error('.NET input cap: 16 MiB.');if(!decompileState.base64){let text='';for(let i=0;i<state.bytes.length;i+=32768)text+=String.fromCharCode(...state.bytes.subarray(i,i+32768));decompileState.base64=btoa(text);}job={base64:decompileState.base64,token,dependencies:decompileState.dependencies.map(d=>({name:d.name,base64:d.base64}))};}
+  else{if(!isManagedImage())throw Error('ILSpy needs a managed .NET PE assembly. Use Ghidra for native machine code.');if(state.bytes.length>16*1024*1024)throw Error('.NET input cap: 16 MiB.');if(!decompileState.base64){let text='';for(let i=0;i<state.bytes.length;i+=32768)text+=String.fromCharCode(...state.bytes.subarray(i,i+32768));decompileState.base64=btoa(text);}job={base64:decompileState.base64,token,dependencies:decompileState.dependencies.map(d=>({name:d.name,base64:d.base64}))};}
  }catch(e){return toast(e.message);}
- if(decompileState.engine!==engine)stopDecompiler();const id=++decompileState.id,sourceJob=state.job;decompileState.busy=true;decompileState.assumptionUpdate=job.options?.assumptionUpdate;decompileState.pending={id,...job};
+ if(decompileState.engine!==engine)stopDecompiler();const id=++decompileState.id,sourceJob=state.job;decompileState.busy=true;decompileState.retry=false;decompileState.assumptionUpdate=job.options?.assumptionUpdate;decompileState.pending={id,...job};
  if(!decompileState.worker){
   decompileState.message='Loading '+(engine==='native'?'Ghidra + selected processor specs':'ILSpy + .NET runtime (~13 MiB)')+' from this site. Your sample stays local…';
-  try{decompileState.worker=new Worker(ENGINE_ROOT+(engine==='native'?'native/worker.mjs?rev=1':'managed/worker.mjs'),{type:'module'});decompileState.engine=engine;
+  decompileState.engine=engine;
+  try{decompileState.worker=new Worker(ENGINE_ROOT+(engine==='native'?'native/worker.mjs?rev=1':'managed/worker.mjs?rev=2'),{type:'module'});const worker=decompileState.worker;
    decompileState.worker.onmessage=({data:m})=>{
-    if(sourceJob!==state.job)return;
+    if(sourceJob!==state.job||decompileState.worker!==worker)return;
+    if(m.engineError){decompilerFailure(m.engineError,m.phase==='analysis'?'analysis':'startup');return;}
     if(m.ready){decompileState.ready=true;sendDecompile();return;}
     if(m.id!==undefined&&m.id!==decompileState.id)return;
     clearTimeout(decompileState.timer);decompileState.busy=false;
@@ -45,15 +53,15 @@ function runDecompiler(token=0){
     if(m.result){const r=m.result;if(engine==='native'&&decompileState.assumptionUpdate){const {key,value}=decompileState.assumptionUpdate,old=investigation.nativeAssumptions.get(key)||null;if(JSON.stringify(old)!==JSON.stringify(value)){if(value)investigation.nativeAssumptions.set(key,value);else investigation.nativeAssumptions.delete(key);investigation.revision++;invalidateComparison();}decompileState.assumptionUpdate=null;}if(r.types){decompileState.types=SpectraHarness.enrich(r.types);decompileState.assembly=r.assembly;decompileState.analysisWarnings=r.analysisWarnings||[];}decompileState.result={...r,sha256:state.hash,sample:state.name,knowledgeRevision:investigation.revision,stale:false,selection:engine==='native'?{entry:r.plan.entry}:{token:decompileState.lastToken},engineKind:engine,createdAt:new Date().toISOString()};decompileState.message=r.code?((engine==='native'?'Ghidra reconstructed C':'ILSpy reconstructed C#')+' · review the warnings below.'):'Metadata loaded. Pick a type or method to reconstruct its C#.';}
     const restored=decompileState.restoreManaged;if(restored&&m.result?.types){decompileState.result=restored.result;decompileState.restoreManaged=null;}renderDecompiler();if(restored&&m.result?.types)setSettings(restored.settings);renderLearning();scheduleWorkspace();
    };
-   decompileState.worker.onerror=e=>{if(sourceJob!==state.job)return;stopDecompiler('Engine could not start: '+(e.message||'worker error')+'. Retry, or use the hosted page if you opened an offline HTML file.');renderDecompiler();};decompileTimer(120000);
-  }catch(e){stopDecompiler(e.message);}
+   decompileState.worker.onerror=e=>{if(sourceJob!==state.job||decompileState.worker!==worker)return;decompilerFailure(e.message||'The worker stopped without an error detail.',decompileState.ready?'analysis':'startup');};decompileTimer(120000);
+  }catch(e){decompilerFailure(e.message);}
  }else sendDecompile();
  decompileState.lastToken=token;renderDecompiler();
 }
 function renderDecompiler(){
  if(!$('decompile-status'))return;if($('code-paired'))renderPairedCode();const d=decompileState,managed=$('decompile-engine').value==='managed';
  $('structure-panel').hidden=managed;renderStructureList();$('decompile-dependencies-panel').hidden=!managed;$('decompile-dependency-list').textContent=d.dependencies.map(dep=>dep.name+' · '+human(dep.bytes.length)+' · '+dep.sha256).join('\n')||'No local dependencies selected.';
- $('decompile-status').textContent=d.message;$('decompile-run').disabled=d.busy||state.busy;$('decompile-tree').disabled=d.busy||state.busy;$('decompile-tree').hidden=!managed;$('decompile-cancel').hidden=!d.busy;$('decompile-engine').disabled=d.busy;
+ $('decompile-status').textContent=d.message;$('decompile-retry').hidden=!d.retry;$('decompile-retry').disabled=d.busy||state.busy;$('decompile-run').disabled=d.busy||state.busy;$('decompile-tree').disabled=d.busy||state.busy;$('decompile-tree').hidden=!managed;$('decompile-cancel').hidden=!d.busy;$('decompile-engine').disabled=d.busy;
  $('decompile-address-wrap').hidden=managed;$('decompile-selected').hidden=managed;$('decompile-native-controls').hidden=managed;$('decompile-hardware-controls').hidden=managed;$('decompile-selected').disabled=!selectedFunction()||d.busy;
  for(const id of ['decompile-copy','decompile-export'])$(id).disabled=!d.result?.code||d.result.stale;$('decompile-report').disabled=!d.result;
  const funcs=codeState.data?.functions||state.result?.seeds||[],value=$('decompile-functions').value;$('decompile-functions').innerHTML='<option value="">Entry / custom address</option>'+funcs.slice(0,2000).map(f=>'<option value="'+f.address+'">'+esc(f.name||'sub_'+f.address.toString(16))+' · '+hex(f.address)+'</option>').join('');$('decompile-functions').value=value;
@@ -64,12 +72,12 @@ function renderDecompiler(){
  $('decompile-imports').innerHTML='<table class="simple-table"><thead><tr><th>LIBRARY</th><th>IMPORT</th><th>SLOT VA</th></tr></thead><tbody>'+(state.result?.imports||[]).slice(0,1000).map(i=>'<tr><td>'+esc(i.library)+'</td><td>'+esc(i.name)+'</td><td>'+esc(i.address!==undefined?hex(i.address):'—')+'</td></tr>').join('')+'</tbody></table>';
 }
 $('decompile-engine').onchange=()=>{stopDecompiler();decompileState.result=null;decompileState.message='Choose a function, or browse managed types.';renderDecompiler();};
-$('decompile-run').onclick=()=>runDecompiler(0);$('decompile-tree').onclick=()=>runDecompiler(-1);$('decompile-cancel').onclick=()=>{stopDecompiler('Cancelled. The engine worker was terminated.');renderDecompiler();};
+$('decompile-retry').onclick=()=>runDecompiler(decompileState.lastToken??0);$('decompile-run').onclick=()=>runDecompiler(0);$('decompile-tree').onclick=()=>runDecompiler(-1);$('decompile-cancel').onclick=()=>{stopDecompiler('Cancelled. The engine worker was terminated.');renderDecompiler();};
 $('decompile-selected').onclick=()=>{const f=selectedFunction();if(f)useFunctionDecompiler(f.address);};$('decompile-discover').onclick=()=>{startCode();};
 $('decompile-functions').onchange=e=>{if(e.target.value){$('decompile-address').value=hex(Number(e.target.value));selectNativeAssumptions();}};$('decompile-search').oninput=renderDecompiler;
 $('decompile-copy').onclick=()=>copy(decompileState.result.code);
 $('decompile-export').onclick=()=>download(baseName()+(decompileState.result.engineKind==='managed'?'.cs':'.c'),decompileState.result.code,'text/plain');
-$('decompile-report').onclick=()=>download(baseName()+'.decompilation.json',JSON.stringify({tool:'SPECTRA 0.12',...decompileState.result},null,2));
+$('decompile-report').onclick=()=>download(baseName()+'.decompilation.json',JSON.stringify({tool:'SPECTRA 0.12.1',...decompileState.result},null,2));
 $('decompile-native-demo').onclick=async()=>{const job=state.job+1,b=SpectraWindows.demo();b.fill(0x90,512,1024);b.set([0x31,0xc0,0x85,0xc9,0x7e,6,1,0xc8,0xff,0xc9,0x75,0xfa,0xc3],512);await analyzeFile(new File([b],'spectra-native-loop.exe'),true);if(state.job===job)changeView('decompile');};
 $('decompile-managed-demo').onclick=async()=>{const job=state.job;try{const r=await fetch(ENGINE_ROOT+'fixtures/ManagedTraining.dll');if(!r.ok)throw Error('Demo unavailable ('+r.status+').');const bytes=await r.arrayBuffer();if(state.job!==job)return;await analyzeFile(new File([bytes],'ManagedTraining.dll'),true);if(state.job===job+1)changeView('decompile');}catch(e){toast(e.message);}};
 

@@ -1,56 +1,32 @@
 {
-  "version": "0.12",
-  "status": "v0.12 deployed; debugger/browser/archive checks passed",
-  "generatedAt": "2026-10-11T22:44:56.224559+00:00",
+  "version": "0.12.1",
+  "status": "Deployed; ILSpy startup recovery and static decompilation verified",
+  "generatedAt": "2026-10-11T23:36:42.513447+00:00",
   "site": "https://spectra.churchofmalware.org/",
   "sourceRepository": "https://git.churchofmalware.org/ek0mssavi0r/SPECTRA",
-  "baselineWorkerVersion": "db8d4bce-12cf-47ef-950b-c40cc56ba03a",
+  "baselineWorkerVersion": "7313c4e2-7137-44b2-8810-014409964443",
+  "baselineGitCommit": "30029a936bb4b589fc205d7aa42a7f07b5f712da",
+  "engineAssetRoot": "/engines/v0121/",
+  "checksPassed": 38,
   "testGroups": {
-    "analysis": 18,
-    "recovery": 16,
-    "debugger": 13,
-    "windows": 11,
-    "edge": 9,
-    "native": 3,
-    "hardwareDecompile": 29,
-    "hardwareDebugger": 23,
-    "experiments": 9,
-    "project": 9,
-    "firmware": 9,
-    "comparison": 3,
+    "managedWorker": 8,
     "managed": 7,
     "dependencies": 8,
-    "harnessIncludingRuntimeAndNet48Compile": 30,
-    "detection": 6,
-    "archiveStreaming": 3,
-    "advancedLab": 33,
-    "investigationLibrary": 4,
-    "experimentForms": 3,
-    "codeNavigation": 2,
-    "squashfs": 8,
-    "deepAnalysis": 13,
-    "runtimePreflightAndLinux": 15,
-    "retiredSystemResearch": 4
+    "native": 3,
+    "edge": 9,
+    "archiveStreaming": 3
   },
-  "checksPassed": 288,
-  "testNote": "Complete existing suite plus 15 integrated-runtime checks. Final ARM user-mode and partial-write changes reran runtime and advanced-lab checks. Only benign fixtures executed.",
-  "engineAssetRoot": "/engines/v012/",
-  "priorReleaseRecord": "docs/releases/v0.11-verification.json",
-  "browserQA": [
-    "Thumb ELF: startup at zero steps, syscall memory watchpoint, before/after trace bytes, virtual stdout, verified checkpoint restore",
-    "ARM ELF: final user-mode process startup, virtual input file picker, output and memory map",
-    "Wrong CPU blocks initialization; detected setup restores the correct selection",
-    "Windows demo loader and modeled import coverage",
-    "Training ground has 18 chapters, no System lab chapter; navigation has no System lab",
-    "390-pixel viewport has no document-wide horizontal overflow; no physical iOS/Safari verification",
-    "No browser console errors observed"
+  "originalFailure": "Not reproduced. Exact reported file succeeded on live v0.12 before edits. Root cause remains unconfirmed.",
+  "changes": [
+    "Catch ILSpy runtime import and asynchronous startup failures",
+    "Retry without reopening sample or dependencies",
+    "Separate startup from analysis errors and timeouts",
+    "Ignore stale-worker responses and reject non-managed inputs before engine loading"
   ],
-  "limitations": [
-    "Static Linux ET_EXEC only: no dynamic linker, PIE, ELF TLS, threads, signals, native shared libraries or live network",
-    "Windows remains a bounded x86/x64 API model; no CLR or general real-DLL execution",
-    "Static import coverage cannot predict every runtime-resolved dependency or syscall",
-    "Whole OS/device boot is unshipped research, not a separate user workflow",
-    "Checkpoint engine identity changes in this release; older replay evidence needs its matching engine"
+  "browserQA": [
+    "Intentional module HTTP503 under production CSP reports startup detail; Retry succeeds, retaining original metadata request",
+    "Managed fixture C# reconstruction and Ghidra native loop after engine switching",
+    "Reported managed executable metadata and whole-assembly C# on live v0.12 and final local build; eight missing framework references remain"
   ],
   "protections": {
     "challenge": "Existing Cloudflare challenge policy retained; live page loaded successfully without a manual CAPTCHA action.",
@@ -59,20 +35,14 @@
     "pageMinute": "120 requests / 60 s / IP",
     "engineBurst": "100 requests / 10 s / IP",
     "engineMinute": "240 requests / 60 s / IP",
-    "rateBindings": "All five existing per-IP rate-limit bindings confirmed in v0.12 deployment",
+    "rateBindings": "All five existing per-IP bindings confirmed in v0.12.1 deployment",
     "scope": "SPECTRA static delivery only; not a whole-network audit",
     "sourceDownloadMinute": "4 archive requests / 60 s / IP"
   },
-  "publishing": {
-    "worker": "Deployed to existing custom domain",
-    "repository": "Prepared for authenticated Church Git Apply Patch; commit identity recorded after server confirmation",
-    "sourceDownload": "v0.12 source archive and verified parts deployed",
-    "offlineDownload": "v0.12 offline archive and verified parts deployed"
-  },
   "packages": {
     "/debugger-source.zip": {
-      "bytes": 44326968,
-      "sha256": "136c28a0fe50b8a333cb8b5256e80d772fca67341fcf2f91455d9b11a9964f05",
+      "bytes": 44330921,
+      "sha256": "17e7664cbc18d1e7e44bf2d456fbfc53143ebbc767b0dad9bd3d811f95c6c03e",
       "parts": 3
     },
     "/detection-source.zip": {
@@ -81,15 +51,15 @@
       "parts": 31
     },
     "offline": {
-      "bytes": 78154844,
-      "sha256": "9eddb2ceabfc909c7621ac00a39295ba47b2490ffb7c1ec196a81606de62084c"
+      "bytes": 78160405,
+      "sha256": "fe027b0f4271a610cc190f260a5860a67ea06fae1a3631e29b7750c09c4df1c3"
     }
   },
-  "packageQA": "Source and offline ZIP CRCs verified; source and detection part/combined hashes verified; final delivery 9 and streaming 3 checks passed.",
-  "workerVersion": "7313c4e2-7137-44b2-8810-014409964443",
-  "liveBrowserQA": [
-    "Public Thumb ELF initialized without executing instructions, then read virtual stdin, wrote stdout and exited with status 0",
-    "Public Training ground displays 18 chapters with no standalone System lab",
-    "No captured browser console errors"
-  ]
+  "packageQA": "Source/offline ZIP CRCs and source/DiE part/combined hashes verified.",
+  "scope": "Static inspection only. No malware execution or upload; no samples or reconstructed malware source shipped.",
+  "publishing": {
+    "worker": "Deployed to the existing custom domain",
+    "repository": "Prepared for signed-in Church Git Apply Patch; final commit recorded in local work plan"
+  },
+  "workerVersion": "ffee683a-47c8-43b8-a431-853c2ff247aa"
 }
