@@ -17,7 +17,7 @@ Disassembly now has local Back/Forward navigation, a resolved control-flow graph
 
 Firmware extraction adds SquashFS 4.0 little-endian gzip, XZ and Zstandard, with fragments, sparse files, inert symlinks and per-member hashes in the downloadable inventory. XZ/Zstandard use a pinned 16 MiB WASM decoder; source and licenses are included under vendor/firmware. LZMA/LZO/LZ4 and older/big-endian SquashFS remain unsupported.
 
-Training ground includes a 20-chapter field guide with System lab and Browser access & verification chapters. Chromium desktop and a 390-pixel viewport were exercised; physical iPad/iPhone/Safari testing is still needed. A narrow desktop viewport is not evidence of mobile browser compatibility.
+Training ground includes a 19-chapter field guide including System lab. Chromium desktop and a 390-pixel viewport were exercised; physical iPad/iPhone/Safari testing is still needed. A narrow desktop viewport is not evidence of mobile browser compatibility.
 
 ## Investigate
 

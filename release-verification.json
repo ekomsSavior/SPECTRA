@@ -1,7 +1,7 @@
 {
   "version": "0.10",
   "status": "v0.10 deployed; implementation source pushed; live checks passed",
-  "generatedAt": "2026-10-11T21:19:54.551377+00:00",
+  "generatedAt": "2026-10-11T21:27:00.646263+00:00",
   "site": "https://spectra.churchofmalware.org/",
   "sourceRepository": "https://git.churchofmalware.org/ek0mssavi0r/SPECTRA",
   "baselineWorkerVersion": "3ed9b6d9-3a42-4ca6-aab2-ec839cf55559",
@@ -64,7 +64,7 @@
   },
   "publishing": {
     "worker": "v0.10 deployed to existing custom domain",
-    "repository": "implementation c26c99d pushed; this verification follows",
+    "repository": "Implementation c26c99d and verification a427785 pushed; guide follow-up submitted through the existing authenticated web session.",
     "implementationCommit": "c26c99d",
     "sourceDownload": "v0.10 source archive CRC and all source parts verified locally; production assets deployed",
     "offlineDownload": "public browser completed all five verified parts and triggered offline ZIP download"
@@ -72,8 +72,8 @@
   "priorReleaseRecord": "docs/releases/v0.9-verification.json",
   "packages": {
     "/debugger-source.zip": {
-      "bytes": 44280760,
-      "sha256": "ec08896d34220df1fe7c2c2fe7367a95d2238086792f5e441e7930f21a3263a3",
+      "bytes": 44279630,
+      "sha256": "e4db2ceaad0fb91505e83bb55b755ae39d012cb13d6794f0f09f1ddfa777d06c",
       "parts": 3
     },
     "/detection-source.zip": {
@@ -82,13 +82,13 @@
       "parts": 31
     },
     "offline": {
-      "bytes": 78087130,
-      "sha256": "fa356e7a626ac26669c78f32d34d2afea3ce65551c76839f325d877383812b94",
+      "bytes": 78083792,
+      "sha256": "d0aa66e5c937cbafdf6584433c0a9aab28aa6e47abb5fe2c110016d4aa3b7c6c",
       "parts": 5
     }
   },
   "packageQA": "Source/offline ZIP CRC verified; source/detection part and combined SHA256 verified; edge9 and archive streaming3 checks passed on final build.",
-  "workerVersion": "f94e2739-d178-4de2-8b58-e18c8fe4fda9",
+  "workerVersion": "869e7637-aba1-4e1c-b2f5-85482d106856",
   "liveBrowserQA": [
     "Public v0.10 System lab started real Linux4.19.172 i686 guest; no captured console errors",
     "Created /mnt/live.txt containing live browser RE plus newline; saved80.7MiB guest checkpoint; changed file; restored and resumed; original16bytes returned",
@@ -116,5 +116,18 @@
     },
     "armLowMemory": "1GiB/64MiB cache reached GPIO initialization but no verified shell before test was ended. Unmodified2300MiB/64MiB profile did run shell and file commands.",
     "riscv": "No full-OS browser execution verified; upstream build instructions reviewed only."
+  },
+  "guideFollowUp": {
+    "request": "Remove the Browser access & verification chapter",
+    "chapters": 19,
+    "checks": [
+      "Public reader shows 19 chapters and removed chapter is absent",
+      "Old compatibility chapter link opens Start here",
+      "Public printable/downloadable book omits removed chapter",
+      "Source and offline ZIP guide contents and CRC checked",
+      "Static delivery9 and archive streaming3 checks passed after rebuild"
+    ],
+    "workerVersion": "869e7637-aba1-4e1c-b2f5-85482d106856",
+    "credentials": "Original temporary Git token revoked and local copy removed; follow-up uses existing signed-in web editor without creating another token."
   }
 }
