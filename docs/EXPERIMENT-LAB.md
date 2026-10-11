@@ -6,7 +6,7 @@ The lab asks a small, useful question: **with these bytes and these inputs, what
 
 Open **Debugger lab → Load function + batch demo**. Initialization maps bytes and supplies arguments; it executes no instructions. The demo computes `left ? left + right : right`. Run / continue returns 5 for 2 and 3. Run cases tries zero, two and seven in separate emulators and returns 3, 5 and 10. The two nonzero cases share a path; the zero case takes another. The interactive session is unchanged by the batch.
 
-Use **Load ARM register demo** to read an analyst-supplied 41 from address `0x20000000`, increment it, and capture a write of 42. Use **Load Linux demo** to read virtual stdin and echo it to virtual stdout; select x64 or AArch64 first. These demos replace the current sample. Source/bytes are in `src/lab-ui.js`, `src/linux.js` and `tests/advanced-lab.test.cjs`.
+Use **Load ARM register demo** to read an analyst-supplied 41 from address `0x20000000`, increment it, and capture a write of 42. Use **Load Linux demo** to read virtual stdin and echo it to virtual stdout; select x86, x64, ARM, Thumb or AArch64 first. These demos replace the current sample. Source/bytes are in `src/lab-ui.js`, `src/linux.js` and `tests/advanced-lab.test.cjs`.
 
 ## 1. Native function inputs
 
@@ -82,7 +82,7 @@ Regions must be page aligned, cannot overlap existing memory, and allow R/RW/RX/
 
 ## 3. Focused Linux userspace
 
-Choose **Linux static ELF model** for little-endian **ELF64 ET_EXEC on x64 or AArch64**. The model loads PT_LOAD segments, zeros BSS, merges page permissions, and builds argc/argv/env and a small auxiliary vector. Program headers must be present in a load segment. Entry must be in executable file bytes; startup begins at that entry. Dynamic/PIE/interpreter/TLS images are rejected. Most normal distribution binaries expect much more than this profile; start with small static syscall-only programs.
+Choose **Linux static ELF model** for little-endian **ELF32/ELF64 ET_EXEC on x86, x64, ARM/Thumb EABI5 or AArch64**. ARM starts in user mode; the Thumb entry bit is preserved. Startup stack words match the CPU pointer width. The model loads PT_LOAD segments, zeros BSS, merges page permissions, and builds argc/argv/env and a small auxiliary vector. Program headers must be present in a load segment. Entry must be in executable file bytes; startup begins at that entry. Dynamic/PIE/interpreter/TLS images are rejected. Most normal distribution binaries expect much more than this profile; start with small static syscall-only programs.
 
 `argv` and `env` are string arrays; env entries use NAME=value. Empty argv defaults to `["sample"]`. `stdin` is hex. UID/GID 1000, PID 1337, 4 KiB pages and deterministic AT_RANDOM bytes `01..10` are explicit model values. There is no randomness source, clock, shell, dynamic linker, threads, signals, scheduler, `/proc`, kernel or live networking. Unsupported syscalls stop before supplying a result.
 
@@ -102,6 +102,8 @@ Choose **Linux static ELF model** for little-endian **ELF64 ET_EXEC on x64 or AA
 | exit, exit_group | 60,231 / 93,94 | Record low-byte exit code and stop this session |
 
 Open flags are RDONLY/WRONLY/RDWR, optional CREAT/TRUNC/CLOEXEC; permissions/ownership are not modeled. Unknown flags stop. File data is capped at 64 KiB/file, 512 KiB total, 64 file records and 64 descriptors. I/O is capped at 64 KiB/call; combined stdout/stderr at 64 KiB. The report retains separate stdout/stderr hex and combined emission-order hex; displayed text can contain decoding replacements for non-UTF-8 bytes. Closing stdout/stderr and later writing must yield EBADF, like other closed descriptors. No FD duplication or pipes are modeled.
+
+The complete architecture-specific syscall map is exported as `SpectraLinux.ABI` / `CALLS` in `src/linux.js`; `tests/runtime.test.cjs` exercises all five profiles. Added process queries include UID/GID/EUID/EGID, PPID/TID, synthetic uname, getcwd, access/readlink on virtual regular files and bounded readv/writev. ELF32 uses mmap2 with zero offset; legacy mmap argument-block entry is unsupported. ARM OABI SVC immediates and nonzero AArch64 SVC immediates stop explicitly.
 
 A modeled syscall is one observed boundary, not an emulated kernel instruction trace. x64 records RCX/R11 syscall clobbers. The experiment logs arguments, results and model notes. Virtual files can go to Recovery lab. Supply only relevant data; secrets placed in recipes can be included in project/report exports.
 

@@ -9,6 +9,7 @@ function prepare(bytes,options={}){
  const u16=o=>{check(fits(o,2),'Truncated PE field.');return v.getUint16(o,true);},u32=o=>{check(fits(o,4),'Truncated PE field.');return v.getUint32(o,true);},u64=o=>{check(fits(o,8),'Truncated PE field.');const n=Number(v.getBigUint64(o,true));check(Number.isSafeInteger(n),'PE address exceeds exact range.');return n;};
  check(u16(0)===0x5a4d,'Windows mode requires a PE file.');const pe=u32(0x3c);check(u32(pe)===0x4550,'Invalid PE signature.');
  const machine=u16(pe+4),wide=machine===0x8664;check(wide||machine===0x14c,'Windows emulation supports native x86/x64 PE files.');
+ check(!options.mode||options.mode===(wide?'x64':'x86'),'CPU mismatch: this PE requires '+(wide?'x64':'x86')+'.');
  const word=wide?8:4,opt=pe+24,optSize=u16(pe+20),count=u16(pe+6);
  check(count>0&&count<=96&&fits(opt,optSize)&&optSize>=(wide?112:96),'Invalid optional header or section count.');
  check(u16(opt)===(wide?0x20b:0x10b),'PE machine and optional header disagree.');
@@ -58,6 +59,7 @@ const APIS={
  CreateFileA:[7,'fileA'],CreateFileW:[7,'fileW'],ReadFile:[5,'readFile'],WriteFile:[5,'writeFile'],GetFileSize:[2,'fileSize'],SetFilePointer:[4,'filePointer'],CloseHandle:[1,'close']
 };
 const DLLS=new Set(['kernel32.dll','kernelbase.dll','ntdll.dll','msvcrt.dll','ucrtbase.dll','vcruntime140.dll']);
+const apiSupport=(library,name)=>{const lib=canon(library);return !!((DLLS.has(lib)||lib.startsWith('api-ms-win-'))&&Object.hasOwn(APIS,name)&&(!CRT.has(name)||['msvcrt.dll','ucrtbase.dll','vcruntime140.dll'].includes(lib)||lib.startsWith('api-ms-win-crt-')));};
 const CRT=new Set(['memcpy','memmove','memset','strlen','wcslen','malloc','calloc','free']);
 const canon=s=>{const n=String(s).replace(/^.*[\\/]/,'').toLowerCase();return n.includes('.')?n:n+'.dll';};
 class Environment{
@@ -91,7 +93,7 @@ class Environment{
  note(api,detail,behavior='modeled',extra={}){this.eventCount++;this.events.push({id:this.eventCount,step:this.s.steps,api,detail,behavior,...extra});if(this.events.length>500)this.events.shift();}
  module(name,create=false){const key=canon(name);if(this.modules.has(key))return this.modules.get(key);if(!create)return 0;check(this.modules.size<64,'Module cap: 64.');const h=ENV+0x8000+this.modules.size*0x100;this.modules.set(key,h);return h;}
  trap(library,name){const lib=canon(library),key=lib+'!'+name;if(this.lookup.has(key))return this.lookup.get(key);check(this.api.size<4000,'API trap cap: 4,000.');
-  const address=STUB+this.api.size*16,known=DLLS.has(lib)||lib.startsWith('api-ms-win-'),def=known?APIS[name]:null;
+  const address=STUB+this.api.size*16,def=apiSupport(lib,name)?APIS[name]:null;
   const valid=def&&(!CRT.has(name)||['msvcrt.dll','ucrtbase.dll','vcruntime140.dll'].includes(lib)||lib.startsWith('api-ms-win-crt-'));
   this.api.set(address,{address,library:lib,name,definition:valid?def:null});this.lookup.set(key,address);return address;
  }
@@ -182,5 +184,5 @@ function demo(mode='x64'){
  if(wide)emit(0x31,0xc9);else emit(0x6a,0);call(3);emit(0xcc);b.set(code,0x200);return b;
 }
 
-root.SpectraWindows={prepare,Environment,APIS,ENV,STUB,demo};if(typeof module!=='undefined')module.exports=root.SpectraWindows;
+root.SpectraWindows={prepare,Environment,APIS,apiSupport,apiKey:(library,name)=>canon(library)+'!'+name,ENV,STUB,demo};if(typeof module!=='undefined')module.exports=root.SpectraWindows;
 })(globalThis);

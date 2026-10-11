@@ -32,7 +32,7 @@ class Lab{
  event(kind,data){this.events.push({id:++this.eventCount,step:this.s.steps,kind,...data});if(this.events.length>256)this.events.shift();}
  map(address,size,perms,name){const s=this.s,regions=s.e.mem_regions();check(Number.isSafeInteger(address+size)&&address>=P&&address%P===0&&size>0&&size%P===0&&address+size<=(s.word===4?0x100000000:0x800000000000),'Invalid experiment mapping.');check(!regions.some(r=>address<=Number(r.end)&&address+size>Number(r.begin)),'Experiment mapping overlaps existing memory.');check(regions.reduce((n,r)=>n+Number(r.end)-Number(r.begin)+1,0)+size<=D.MAX_MEMORY,'16 MiB total memory budget reached.');s.e.mem_map(address,size,perms);s.e.mem_write(address,new Uint8Array(size));this.extra.push({address,size,perms,name});}
  read(at,size){check(Number.isSafeInteger(at)&&Number.isInteger(size)&&size>=0&&size<=65536,'Invalid modeled read.');if(!size)return new Uint8Array();check(this.s.region(at,size,1),'Modeled read outside readable memory.');this.s.noteAccess('read',at,size,'lab');return Uint8Array.from(this.s.e.mem_read(at,size));}
- write(at,b,source='analyst-hook'){if(!b.length)return;check(this.s.region(at,b.length,2)&&!this.s.region(at,b.length,4),'Modeled writes require non-executable writable memory.');this.s.e.mem_write(at,b);this.s.noteAccess('write',at,b.length,source);}
+ write(at,b,source='analyst-hook'){if(!b.length)return;check(this.s.region(at,b.length,2)&&!this.s.region(at,b.length,4),'Modeled writes require non-executable writable memory.');const record=this.modeledWrites&&this.modeledWrites.length<32?{address:at,size:Math.min(b.length,256),actualSize:b.length,before:Array.from(this.s.e.mem_read(at,Math.min(b.length,256)))}:null;if(this.modeledWrites)this.modeledWriteCount++;this.s.e.mem_write(at,b);if(record){record.after=Array.from(this.s.e.mem_read(at,record.size));this.modeledWrites.push(record);}this.s.noteAccess('write',at,b.length,source);}
  put(at,n,width){const b=new Uint8Array(width),big=this.s.plan.endian==='big';for(let i=0;i<width;i++)b[big?width-1-i:i]=Number(n>>BigInt(8*i)&255n);this.s.e.mem_write(at,b);}
  ptr(at,width){const b=this.read(at,width),big=this.s.plan.endian==='big';let n=0n;for(let i=0;i<width;i++)n|=BigInt(b[big?width-1-i:i])<<BigInt(i*8);return n;}
  resolve(x,bits=this.s.word*8){if(x&&typeof x==='object'){const b=this.buffers.find(b=>b.name===x.buffer);check(b,'Unknown buffer reference.');return value(b.address+(x.offset||0),bits);}return value(x,bits);}
@@ -68,8 +68,9 @@ class Lab{
  modeled(i,callback){
   const s=this.s,before=s.regs();s.attempts++;const last=s.journal.at(-1);if(last?.kind==='steps')last.count++;else s.journal.push({kind:'steps',count:1});
   if(s.attempts>100000||s.steps>=100000)return s.halt('limit','Experiment instruction budget reached.');s.hits=[];s.hitsTruncated=false;s.breakAt=null;s.executing=true;
-  try{callback();}catch(e){this.event('model-stop',{address:i.address,reason:e.message});return s.halt('unsupported',e.message+' State may be partial. Review the explicit recipe before reinitializing.');}finally{s.executing=false;}
-  s.steps++;const after=s.regs();s.trace.push({...i,step:s.steps,changes:Object.fromEntries(s.names.filter(n=>before[n]!==after[n]).map(n=>[n,{before:before[n],after:after[n]}])),writes:[],modeled:true});if(s.trace.length>200)s.trace.shift();
+  this.modeledWrites=[];this.modeledWriteCount=0;let fault='';
+  try{callback();}catch(e){fault=e.message;this.event('model-stop',{address:i.address,reason:fault});s.halt('unsupported',fault+' State may be partial. Review the explicit recipe before reinitializing.');}finally{s.executing=false;}
+  s.steps++;const after=s.regs(),writes=this.modeledWrites;this.modeledWrites=null;s.trace.push({...i,step:s.steps,changes:Object.fromEntries(s.names.filter(n=>before[n]!==after[n]).map(n=>[n,{before:before[n],after:after[n]}])),writes,writesTruncated:this.modeledWriteCount>32||writes.some(w=>w.actualSize>w.size),partial:!!fault,modeled:true});if(s.trace.length>200)s.trace.shift();
   if(s.stopped)return false;if(s.pc()===(s.plan.returnBoundary||0))return s.halt('returned','Returned to the experiment boundary.');if(s.hits.length)return s.halt('watchpoint','Watchpoint after the modeled operation.');s.status='stepped';s.reason='Completed explicit '+i.mnemonic+' model.';return true;
  }
  invoke(h){const s=this.s,a=abi(s,h.abi),args=this.args(a,h.argc),sp=num(s.readReg(s.sp)),target=a.link?s.readReg(a.link):this.ptr(sp,a.word),ret=this.resolve(h.result,a.word*8),writes=h.writes.map(w=>({address:num(args[w.argument])+w.offset,bytes:bytes(w.hex)}));
@@ -83,7 +84,7 @@ class Lab{
  step(original){const s=this.s;if(s.stopped)return false;const at=s.pc(),steps=s.steps;let result;
   try{const api=s.windows?.api.get(at),h=this.recipe.hooks.find(h=>h.address===at)||this.recipe.hooks.find(h=>api&&h.api?.toLowerCase()===(api.library+'!'+api.name).toLowerCase());
    if(h)result=this.modeled({address:at,size:0,bytes:[],mnemonic:'HOOK',operands:h.api||h.label},()=>this.invoke(h));
-   else{const i=s.decode(at);if(s.linux&&i&&(s.mode==='x64'&&i.mnemonic==='syscall'||s.mode==='aarch64'&&i.mnemonic==='svc'))result=this.modeled(i,()=>s.linux.syscall(i));else result=original();}
+   else{const i=s.decode(at);if(s.linux&&i&&(s.mode==='x64'&&i.mnemonic==='syscall'||['arm','thumb','aarch64'].includes(s.mode)&&i.mnemonic==='svc'||s.mode==='x86'&&i.mnemonic==='int'&&i.operands==='0x80'))result=this.modeled(i,()=>s.linux.syscall(i));else result=original();}
    if(this.lastError){s.halt('unsupported',this.lastError+' The last CPU operation may be partial.');if(s.trace.at(-1))s.trace.at(-1).partial=true;result=false;this.lastError=null;}
    this.record(at,steps);return result;
   }catch(e){return s.halt('fault','Experiment stopped: '+e.message);}

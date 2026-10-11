@@ -50,7 +50,7 @@ class Session{
  }
  bits(n){return ['CPSR','NZCV'].includes(n)?32:this.profile.bits;}
  readReg(n){const id=this.uc[this.profile.prefix+'_REG_'+n];return this.bits(n)===64?BigInt.asUintN(64,this.e.reg_read_i64(id)):BigInt(this.e.reg_read_i32(id)>>>0);}
- writeReg(n,v){const id=this.uc[this.profile.prefix+'_REG_'+n];if(this.bits(n)===64)this.e.reg_write_i64(id,BigInt.asIntN(64,v));else this.e.reg_write_i32(id,Number(BigInt.asIntN(32,v)));}
+ writeReg(n,v){const thumb=n==='PC'&&this.profile.prefix==='ARM'?this.readReg('CPSR'):null;const id=this.uc[this.profile.prefix+'_REG_'+n];if(this.bits(n)===64)this.e.reg_write_i64(id,BigInt.asIntN(64,v));else this.e.reg_write_i32(id,Number(BigInt.asIntN(32,v)));if(thumb!==null)this.e.reg_write_i32(this.uc.ARM_REG_CPSR,Number(thumb));}
  verificationRegisters(){return this.regs();}
  liveThumb(){return this.profile.prefix==='ARM'&&(this.readReg('CPSR')&32n)!==0n;}
  decoder(){const thumb=this.liveThumb(),key=thumb?'thumb':this.mode==='thumb'?'arm':this.mode;let d=this.decoders.find(d=>d.key===key);if(!d){const name=key==='aarch64'?'arm64':key,m=root.SpectraCode.modeFor(this.cs,{endian:this.plan.endian},name);d=new this.cs.Capstone(m.arch,m.mode);d.option(this.cs.OPT_DETAIL,this.cs.OPT_ON);d.key=key;this.decoders.push(d);}return d;}

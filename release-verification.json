@@ -1,10 +1,10 @@
 {
-  "version": "0.11",
-  "status": "v0.11 deployed; full regression and browser workflows passed",
-  "generatedAt": "2026-10-11T22:06:59.411280+00:00",
+  "version": "0.12",
+  "status": "v0.12 deployed; debugger/browser/archive checks passed",
+  "generatedAt": "2026-10-11T22:44:56.224559+00:00",
   "site": "https://spectra.churchofmalware.org/",
   "sourceRepository": "https://git.churchofmalware.org/ek0mssavi0r/SPECTRA",
-  "baselineWorkerVersion": "869e7637-aba1-4e1c-b2f5-85482d106856",
+  "baselineWorkerVersion": "db8d4bce-12cf-47ef-950b-c40cc56ba03a",
   "testGroups": {
     "analysis": 18,
     "recovery": 16,
@@ -28,32 +28,29 @@
     "experimentForms": 3,
     "codeNavigation": 2,
     "squashfs": 8,
-    "systemGuest": 4,
-    "deepAnalysis": 13
+    "deepAnalysis": 13,
+    "runtimePreflightAndLinux": 15,
+    "retiredSystemResearch": 4
   },
-  "checksPassed": 273,
-  "testNote": "Full scripts/test.py completed successfully with the local .NET SDK and permission for its benign localhost proxy fixture. No target malware executed.",
-  "engineAssetRoot": "/engines/v011/",
-  "priorReleaseRecord": "docs/releases/v0.10-verification.json",
+  "checksPassed": 288,
+  "testNote": "Complete existing suite plus 15 integrated-runtime checks. Final ARM user-mode and partial-write changes reran runtime and advanced-lab checks. Only benign fixtures executed.",
+  "engineAssetRoot": "/engines/v012/",
+  "priorReleaseRecord": "docs/releases/v0.11-verification.json",
   "browserQA": [
-    "Actual Capstone analysis demo:81 instructions,8 functions,20 references; five symbol hints plus five exact reference implementation matches",
-    "Real Ghidra structure assumption reconstructed record->count; a caller received Record * and the renamed read_record_count symbol",
-    "Changing a correction marked native reconstruction stale and disabled copying/exporting its source until recomputed",
-    "Saved named investigation reopened after a fresh document load; structure, signature and rename persisted and actual Ghidra reconstruction reproduced corrected caller",
-    "Structure byte preview at fileoffset0x2010 returned tag7 and count123",
-    "Recovered signed-relative guarded switch displayed three exact file entries and code targets; analyst indirect hypothesis added and removed through UI",
-    "390 CSS pixel viewport had no document-wide horizontal overflow; physical mobile devices not tested",
-    "Imported30 local reference signatures through file chooser; matching candidates increased from10to15; no captured console errors.",
-    "Final browser Binary diff reconstructed corrected first-binary caller with Record * and read_record_count while the second binary kept its original read_count and inferred argument",
-    "Changing an annotation cleared stale comparison output and marked refresh required"
+    "Thumb ELF: startup at zero steps, syscall memory watchpoint, before/after trace bytes, virtual stdout, verified checkpoint restore",
+    "ARM ELF: final user-mode process startup, virtual input file picker, output and memory map",
+    "Wrong CPU blocks initialization; detected setup restores the correct selection",
+    "Windows demo loader and modeled import coverage",
+    "Training ground has 18 chapters, no System lab chapter; navigation has no System lab",
+    "390-pixel viewport has no document-wide horizontal overflow; no physical iOS/Safari verification",
+    "No browser console errors observed"
   ],
   "limitations": [
-    "Automatic local register/value patterns cover x86/x64 and selected AArch64 sequences, not whole-program symbolic analysis or general virtual-call resolution",
-    "Automatic switch patterns cover guarded x86 absolute and x64 relative layouts; other supported decoders can use explicit bounded hypotheses",
-    "Bundled exact fingerprints are30 Church reference builds across x86/x64 GCC optimization variants, not vendor libc identification or a comprehensive FLIRT database",
-    "Structure editor handles explicit naturally aligned fixed-width scalar/array fields with padding; no automatic complete C++ class recovery",
-    "Saved native signatures/types propagate only across the same full Ghidra language/ABI; import-slot signatures are not supplied by the current bridge",
-    "Existing System lab, browser memory and native/.NET runtime limitations continue; see v0.10 verification record"
+    "Static Linux ET_EXEC only: no dynamic linker, PIE, ELF TLS, threads, signals, native shared libraries or live network",
+    "Windows remains a bounded x86/x64 API model; no CLR or general real-DLL execution",
+    "Static import coverage cannot predict every runtime-resolved dependency or syscall",
+    "Whole OS/device boot is unshipped research, not a separate user workflow",
+    "Checkpoint engine identity changes in this release; older replay evidence needs its matching engine"
   ],
   "protections": {
     "challenge": "Existing Cloudflare challenge policy retained; live page loaded successfully without a manual CAPTCHA action.",
@@ -62,36 +59,37 @@
     "pageMinute": "120 requests / 60 s / IP",
     "engineBurst": "100 requests / 10 s / IP",
     "engineMinute": "240 requests / 60 s / IP",
-    "rateBindings": "all five confirmed in v0.11 deployment output",
+    "rateBindings": "All five existing per-IP rate-limit bindings confirmed in v0.12 deployment",
     "scope": "SPECTRA static delivery only; not a whole-network audit",
     "sourceDownloadMinute": "4 archive requests / 60 s / IP"
   },
+  "publishing": {
+    "worker": "Deployed to existing custom domain",
+    "repository": "Prepared for authenticated Church Git Apply Patch; commit identity recorded after server confirmation",
+    "sourceDownload": "v0.12 source archive and verified parts deployed",
+    "offlineDownload": "v0.12 offline archive and verified parts deployed"
+  },
   "packages": {
     "/debugger-source.zip": {
-      "bytes": 44315410,
-      "sha256": "1b32dce34c3077bc99661797f34f3c179cb8b4a20e49cdf8f592da62316fdd1d",
+      "bytes": 44326968,
+      "sha256": "136c28a0fe50b8a333cb8b5256e80d772fca67341fcf2f91455d9b11a9964f05",
       "parts": 3
     },
     "/detection-source.zip": {
       "bytes": 512138304,
-      "sha256": "931cbfe05874fc2875216a25be0a852749e4ce156ca50358ae585c4cac71a21b",
+      "sha256": "a473aa2a85ec7edfb1b4d795a4b1dc9ed741afd5945c06c701616aca73c6d8b9",
       "parts": 31
     },
     "offline": {
-      "bytes": 78146008,
-      "sha256": "0b183a5f774a8fdf4c66c7fd34b01a53f0d5842ae687ebb4afca78f36b6f52ec"
+      "bytes": 78154844,
+      "sha256": "9eddb2ceabfc909c7621ac00a39295ba47b2490ffb7c1ec196a81606de62084c"
     }
   },
-  "packageQA": "Source/offline ZIP CRC verified; source/detection part and combined hashes verified; final static delivery9 and streaming3 tests passed.",
-  "workerVersion": "db8d4bce-12cf-47ef-950b-c40cc56ba03a",
+  "packageQA": "Source and offline ZIP CRCs verified; source and detection part/combined hashes verified; final delivery 9 and streaming 3 checks passed.",
+  "workerVersion": "7313c4e2-7137-44b2-8810-014409964443",
   "liveBrowserQA": [
-    "Public v0.11 analysis demo decoded81instructions/8functions/20references and recognized10library findings",
-    "Public Ghidra reconstructed the demo entry from v011 engine assets; no captured console errors"
-  ],
-  "publishing": {
-    "worker": "Deployed to the existing custom domain",
-    "repository": "Source prepared for authenticated Church Git Apply Patch; commit identity recorded separately after server confirmation",
-    "sourceDownload": "v0.11 packaged and deployed with verified parts",
-    "offlineDownload": "v0.11 packaged and deployed with verified ZIP CRC"
-  }
+    "Public Thumb ELF initialized without executing instructions, then read virtual stdin, wrote stdout and exited with status 0",
+    "Public Training ground displays 18 chapters with no standalone System lab",
+    "No captured browser console errors"
+  ]
 }

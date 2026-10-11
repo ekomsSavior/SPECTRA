@@ -32,3 +32,8 @@ All five middle-ground workstreams are implemented: native integer/pointer funct
 Implemented: touch tool navigation and recipe forms; named collections/revisions; connected assembly/native C and resolved control-flow graph; gzip/XZ/Zstandard SquashFS; an isolated local Linux System lab with bounded transfers and temporary whole-guest checkpoints. No companion is required. The original routine debugger and its engine fingerprint are unchanged.
 
 Research: full-system ARM/x64/RISC-V engines, reduced memory budgets, cold-boot images, and physical mobile browser verification. Passing one kernel boot is not arbitrary device compatibility. Full Windows and managed process debugging require separate environment work; no Windows image is redistributed.
+
+
+## v0.12 — integrated debugger priority
+
+The standalone System lab described in the historical v0.10 entry is no longer shipped. CPU/format selection, loader and dependency checks, Windows import support, ELF32 ARM/Thumb/x86 process loading, process inputs, live memory maps and modeled-write traces now belong in Debugger lab. Full OS/device boot stays unshipped research until it contributes to this workflow. Dynamic ELF linking, TLS, PIE, native dependency execution and broader OS compatibility are still future work.

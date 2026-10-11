@@ -1,4 +1,4 @@
-# SPECTRA 0.11 — Church of Malware
+# SPECTRA 0.12 — Church of Malware
 
 A free browser reverse-engineering workbench. Open a binary, follow the evidence, keep the investigation. Optional explanations use the same tools and evidence as the professional workspace.
 
@@ -7,7 +7,7 @@ A free browser reverse-engineering workbench. Open a binary, follow the evidence
 - No account, paid tier, sample uploads, paid API, or telemetry in the analysis app. Engines are served by the Church. Cloudflare receives normal delivery metadata; sample analysis stays local.
 - Black, gray and white; Creepster wordmark. Teaching defaults off.
 
-## Deeper analysis release (0.11)
+## Deeper analysis release (0.12)
 
 Static indirect-target analysis now follows supported x86/x64 and AArch64 constant/import-load sequences, with instruction provenance and explicit file-value uncertainty. Guarded x86 absolute and x64 PIC switch patterns expose cases and extend bounded code discovery; manual target/table hypotheses support other known layouts. Functions shows import thunks, declared names and exact signatures, with 30 source-built reference candidates and local pack import/export. This is not a comprehensive vendor-library database.
 
@@ -19,11 +19,11 @@ Touch navigation and experiment forms keep the same tools usable on narrow scree
 
 Disassembly now has local Back/Forward navigation, a resolved control-flow graph with keyboard-accessible block links, and a paired native C pane. It pairs by sample hash and function entry; it does not pretend to map every C line to an instruction. Signature/type editing still uses Ghidra's real assumption controls.
 
-**System lab** starts a real i686 Linux 4.19.172 guest from a clean booted baseline in a dedicated browser worker. It offers a touch serial console, pause/resume/discard, one temporary CPU/RAM/filesystem checkpoint, bounded file transfers and guest-output capture into Recovery lab. Guest networking is disabled. No companion, account or second computer is required. This small guest is not a Windows/x86-64/ARM environment and is not full-process GDB-style debugging. See [the browser lab guide](docs/BROWSER-LAB.md).
+**Debugger lab** now selects setup from the sample and checks loader compatibility before initialization. Static Linux ELF32/64 adds x86 and ARM/Thumb EABI5 alongside x64/AArch64; missing interpreter/library/TLS support is explicit. Windows import coverage distinguishes built-in models, supplied responses and missing APIs. Every profile shares stepping, breakpoints, registers, live memory maps and replay. The standalone shell experiment is no longer shipped. See [debugger environments](docs/BROWSER-LAB.md).
 
 Firmware extraction adds SquashFS 4.0 little-endian gzip, XZ and Zstandard, with fragments, sparse files, inert symlinks and per-member hashes in the downloadable inventory. XZ/Zstandard use a pinned 16 MiB WASM decoder; source and licenses are included under vendor/firmware. LZMA/LZO/LZ4 and older/big-endian SquashFS remain unsupported.
 
-Training ground includes a 19-chapter field guide including System lab. Chromium desktop and a 390-pixel viewport were exercised; physical iPad/iPhone/Safari testing is still needed. A narrow desktop viewport is not evidence of mobile browser compatibility.
+Training ground includes a 18-chapter field guide with integrated debugger setup and environment checks. Chromium desktop and a 390-pixel viewport were exercised; physical iPad/iPhone/Safari testing is still needed. A narrow desktop viewport is not evidence of mobile browser compatibility.
 
 ## Investigate
 
@@ -47,7 +47,7 @@ x86/x64 can run bare routines or a bounded Windows PE model with rebasing, impor
 
 ARM/Thumb/AArch64, RV32/RV64+C and MIPS32/64 integer routines have separate lazy-loaded engines. CPU defaults are documented in [hardware notes](docs/HARDWARE.md). System instructions, FP/SIMD and unmodeled operations stop before execution. ARM/Thumb transitions use live CPU mode. MIPS branch/delay pairs step atomically; slot breakpoints pause before the pair, and conditions see pre-pair registers. A synthetic mapped return boundary is explicit. Analyst-defined ARM MMIO responses are available; no full board, peripherals, RTOS or firmware boot is emulated.
 
-SPECTRA 0.9 adds native integer/pointer function harnesses for System V/Windows x64, x86 cdecl/stdcall, ARM/Thumb AAPCS32 and AArch64 AAPCS64; before/after input buffers; saved data-only environment recipes; explicit address/API hooks; mapped captured memory; and virtual file fixtures. ARM register sequences and captured MMIO writes expose supplied hardware behavior. A focused Linux model supports little-endian static ELF64 ET_EXEC on x64 and AArch64, argc/argv/env/auxv, BSS and a small explicit syscall set. It does not supply a Linux kernel or general libc/runtime compatibility.
+SPECTRA 0.9 adds native integer/pointer function harnesses for System V/Windows x64, x86 cdecl/stdcall, ARM/Thumb AAPCS32 and AArch64 AAPCS64; before/after input buffers; saved data-only environment recipes; explicit address/API hooks; mapped captured memory; and virtual file fixtures. ARM register sequences and captured MMIO writes expose supplied hardware behavior. A focused Linux model supports little-endian static ELF32/64 ET_EXEC on x86, x64, ARM/Thumb EABI5 and AArch64, argc/argv/env/auxv, BSS and a small explicit syscall set. It does not supply a Linux kernel or general libc/runtime compatibility.
 
 Coverage records observed instruction locations/transitions, including labeled modeled boundaries. Batches run up to 16 independent recipes and compare return values, buffers and observed paths. Complete reports save with investigations. Three benign demos provide ready-to-run function, Linux and ARM experiments. See [the experiment reference](docs/EXPERIMENT-LAB.md) for all controls, schemas, modeled syscalls, reproducibility limits and examples.
 
@@ -81,7 +81,7 @@ python3 scripts/package-source.py
 python3 scripts/serve.py --port 4173
 ```
 
-Open `http://127.0.0.1:4173/`. Keep the **whole dist directory**, including `engines/v011`; a saved HTML file alone does not contain the decompilers or hardware engines. All runtime assets are included locally; no CDN or API is needed. The localhost server applies the production CSP. The source ZIP includes all browser runtime assets. To publish the large DiE runtime source archive too, collect the pinned inputs documented in docs/DETECTION.md and run `python3 scripts/package-detection-source.py /path/to/source-inputs` after package-source.py. Training ground also offers a complete offline ZIP download, assembled from verified static parts to fit the host asset limit. A complete offline ZIP can be made with `python3 scripts/package-offline.py`. Engine rebuilds need the documented upstream toolchains, not for ordinary app builds.
+Open `http://127.0.0.1:4173/`. Keep the **whole dist directory**, including `engines/v012`; a saved HTML file alone does not contain the decompilers or hardware engines. All runtime assets are included locally; no CDN or API is needed. The localhost server applies the production CSP. The source ZIP includes all browser runtime assets. To publish the large DiE runtime source archive too, collect the pinned inputs documented in docs/DETECTION.md and run `python3 scripts/package-detection-source.py /path/to/source-inputs` after package-source.py. Training ground also offers a complete offline ZIP download, assembled from verified static parts to fit the host asset limit. A complete offline ZIP can be made with `python3 scripts/package-offline.py`. Engine rebuilds need the documented upstream toolchains, not for ordinary app builds.
 
 ```bash
 npm ci --prefix tests --ignore-scripts
