@@ -1,7 +1,7 @@
 {
   "version": "0.10",
-  "status": "local release verified; publication pending",
-  "generatedAt": "2026-10-11T21:08:09.168806+00:00",
+  "status": "v0.10 deployed; implementation source pushed; live checks passed",
+  "generatedAt": "2026-10-11T21:19:54.551377+00:00",
   "site": "https://spectra.churchofmalware.org/",
   "sourceRepository": "https://git.churchofmalware.org/ek0mssavi0r/SPECTRA",
   "baselineWorkerVersion": "3ed9b6d9-3a42-4ca6-aab2-ec839cf55559",
@@ -52,19 +52,22 @@
   ],
   "engineAssetRoot": "/engines/v010/",
   "protections": {
-    "challenge": "Cloudflare security verification appeared and completed automatically in the live v0.9 browser check",
+    "challenge": "Existing Cloudflare challenge policy retained; live page loaded successfully without a manual CAPTCHA action.",
     "workerFirst": true,
     "pageBurst": "30 requests / 10 s / IP",
     "pageMinute": "120 requests / 60 s / IP",
     "engineBurst": "100 requests / 10 s / IP",
     "engineMinute": "240 requests / 60 s / IP",
-    "rateBindings": "all five confirmed in v0.9 deployment output",
+    "rateBindings": "all five confirmed in v0.10 deployment output",
     "scope": "SPECTRA static delivery only; not a whole-network audit",
     "sourceDownloadMinute": "4 archive requests / 60 s / IP"
   },
   "publishing": {
-    "worker": "pending",
-    "repository": "pending"
+    "worker": "v0.10 deployed to existing custom domain",
+    "repository": "implementation c26c99d pushed; this verification follows",
+    "implementationCommit": "c26c99d",
+    "sourceDownload": "v0.10 source archive CRC and all source parts verified locally; production assets deployed",
+    "offlineDownload": "public browser completed all five verified parts and triggered offline ZIP download"
   },
   "priorReleaseRecord": "docs/releases/v0.9-verification.json",
   "packages": {
@@ -84,5 +87,34 @@
       "parts": 5
     }
   },
-  "packageQA": "Source/offline ZIP CRC verified; source/detection part and combined SHA256 verified; edge9 and archive streaming3 checks passed on final build."
+  "packageQA": "Source/offline ZIP CRC verified; source/detection part and combined SHA256 verified; edge9 and archive streaming3 checks passed on final build.",
+  "workerVersion": "f94e2739-d178-4de2-8b58-e18c8fe4fda9",
+  "liveBrowserQA": [
+    "Public v0.10 System lab started real Linux4.19.172 i686 guest; no captured console errors",
+    "Created /mnt/live.txt containing live browser RE plus newline; saved80.7MiB guest checkpoint; changed file; restored and resumed; original16bytes returned",
+    "Captured rewound live.txt into Recovery lab; SHA2566b0fcc4dfa5eb386d7e6d1cabf642a9c4dcdf86965d3ac4bd6e4692d997cdde4",
+    "Public XZ SquashFS worker extracted six entries and62regular bytes; symlink remained metadata; no captured browser errors",
+    "Public Training ground completed offline ZIP download after five part hashes verified by browser",
+    "Final preview mobile tool menu follows desktop order;20guidechapters at390 and1280CSSpixels; physical devices untested"
+  ],
+  "researchAfterPackaging": {
+    "source": "https://github.com/ktock/qemu-wasm",
+    "distributed": false,
+    "x64": {
+      "guest": "Alpine Linux6.12.43 kernel and initramfs BusyBox shell",
+      "bootChanges": "noapic resolves initial timer panic; rdinit=/bin/sh enters initramfs directly; /bin/busybox --install -s /bin exposes tools",
+      "wasmMemoryMiB": 2300,
+      "guestMemoryMiB": 512,
+      "translationCacheMiB": 64,
+      "observed": [
+        "uname -m returned x86_64",
+        "MemTotal480560kB",
+        "/proc/net/dev listed only lo",
+        "wrote and read SPECTRA_X64_OK in /probe"
+      ],
+      "limits": "No job control; no full Alpine session, snapshot, debugger bridge, or physical mobile verification"
+    },
+    "armLowMemory": "1GiB/64MiB cache reached GPIO initialization but no verified shell before test was ended. Unmodified2300MiB/64MiB profile did run shell and file commands.",
+    "riscv": "No full-OS browser execution verified; upstream build instructions reviewed only."
+  }
 }
