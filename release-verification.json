@@ -1,7 +1,7 @@
 {
   "version": "0.8",
-  "status": "local checks passed; production deployment in progress",
-  "generatedAt": "2026-10-10T22:40:45.263509+00:00",
+  "status": "production deployed; live browser detection verified",
+  "generatedAt": "2026-10-11T00:01:00.649057+00:00",
   "site": "https://spectra.churchofmalware.org/",
   "sourceRepository": "https://git.churchofmalware.org/ek0mssavi0r/SPECTRA",
   "baselineWorkerVersion": "f76a8e6b-4de0-4467-bd71-2d718e0c8d77",
@@ -39,7 +39,10 @@
     "Live v0.7 final engine assets v07r1: ILSpy reconstructed 8281 characters of benign training C#; offline hash-verified download and full source download succeeded; no captured browser console errors",
     "v0.8 preview: real DiE identified the benign managed sample as MSIL/C# and .NET Core, with 6 findings in 44.9 seconds",
     "v0.8 preview: real DiE identified UPX on benign packed ELF, 2 findings in 28.1 seconds",
-    "v0.8 preview: saved full investigation, reloaded the document, resumed and retained raw DiE evidence tied to the sample"
+    "v0.8 preview: saved full investigation, reloaded the document, resumed and retained raw DiE evidence tied to the sample",
+    "Live v0.8: real DiE identified UPX on benign ELF in 29.2 seconds; sample was not executed",
+    "Live v0.8: real DiE identified MSIL/C# and .NET Core on benign ManagedTraining.dll in 43.5 seconds, six findings with heuristic labeling; no captured browser errors",
+    "Live v0.8 final deployment: complete offline download finished with all five part hashes verified in the browser"
   ],
   "limitations": [
     "Framework4.8 generated project compiles; no Windows runtime validation",
@@ -52,36 +55,41 @@
     "ExeInfoPE and dnSpyEx integration excluded from v0.8 per user direction"
   ],
   "publishing": {
-    "worker": "v0.8 deployment in progress",
-    "repository": "v0.7 published and verified; v0.8 push pending",
-    "sourceDownload": "published; live browser download succeeded",
-    "offlineDownload": "published; live multipart download and all part hashes verified in browser",
-    "implementationCommit": "0201827ed5b317067732df50ada5e395191a11a9",
-    "repositoryVerifiedAt": "2026-10-10T23:26:51.852829+00:00"
+    "worker": "deployed to existing custom domain",
+    "repository": "implementation and preserved user README edit pushed and verified at c57427e",
+    "sourceDownload": "v0.8 archives published; local CRC, per-part and whole-archive hashes verified; browser download links invoked; final browser file bytes not inspected",
+    "offlineDownload": "v0.8 live browser download completed; all five parts verified against SHA-256 before archive assembly",
+    "implementationCommit": "57d002d",
+    "repositoryVerifiedAt": "2026-10-11T00:01:00.649087+00:00"
   },
   "packages": {
     "/debugger-source.zip": {
-      "bytes": 42802019,
-      "sha256": "03ff21bba68a6fd8cd75dd1bf68690e6189b85d0e52716a68f22670bfae9c7a4",
+      "bytes": 42803813,
+      "sha256": "c160165cb7fce22185341f022dd20e6a69d53418f2786d9d2cb1fd2a83bbf23f",
       "parts": 3
     },
     "/detection-source.zip": {
       "bytes": 512138304,
       "sha256": "931cbfe05874fc2875216a25be0a852749e4ce156ca50358ae585c4cac71a21b",
       "parts": 31
+    },
+    "offline": {
+      "bytes": 75124134,
+      "sha256": "de4d907da833a797bfcf5fc4c27eb4f4a8675bcb0b9eb08714c136ce448e3c8f"
     }
   },
   "engineAssetRoot": "/engines/v08/",
   "protections": {
-    "challenge": "Cloudflare managed challenge observed on live v0.7 and completed automatically",
+    "challenge": "Cloudflare managed challenge completed in browser; unauthenticated curl received challenge response",
     "workerFirst": true,
     "pageBurst": "30 requests / 10 s / IP",
     "pageMinute": "120 requests / 60 s / IP",
     "engineBurst": "100 requests / 10 s / IP",
     "engineMinute": "240 requests / 60 s / IP",
-    "rateBindings": "all four confirmed in deployment output",
+    "rateBindings": "all five confirmed in v0.8 deployment output",
     "scope": "SPECTRA static delivery only; not a whole-network audit",
     "sourceDownloadMinute": "4 archive requests / 60 s / IP"
   },
-  "unchangedCompanion": "11 checks passed in v0.7; companion not changed or rerun for v0.8"
+  "unchangedCompanion": "11 checks passed in v0.7; companion not changed or rerun for v0.8",
+  "workerVersion": "e7884fb3-d86d-4293-9a2a-a48d5f5f35c6"
 }
