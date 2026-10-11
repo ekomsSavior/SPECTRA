@@ -1,7 +1,7 @@
 {
   "version": "0.9",
-  "status": "implementation and regression checks passed; publication pending",
-  "generatedAt": "2026-10-11T02:39:45.446402+00:00",
+  "status": "deployed; source implementation pushed; live browser checks passed",
+  "generatedAt": "2026-10-11T02:52:23.917822+00:00",
   "site": "https://spectra.churchofmalware.org/",
   "sourceRepository": "https://git.churchofmalware.org/ek0mssavi0r/SPECTRA",
   "baselineWorkerVersion": "15b7baa2-d865-4062-93c9-ac1e64ff8a79",
@@ -48,25 +48,27 @@
   "limitations": [
     "Framework4.8 generated project compiles; no Windows runtime validation",
     "Linux companion experimental, not a sandbox; no Windows/CLR or hardware adapters",
-    "Hardware emulation admits tested integer profiles; no FP/SIMD, peripherals/MMIO or OS/boot",
+    "Hardware integer profiles support analyst-supplied exact-width ARM/Thumb/AArch64 MMIO; no FP/SIMD, complete peripherals, interrupts, OS or board boot",
     "SquashFS extraction unsupported",
     "Low-end laptop hardware matrix not yet performed",
     "DiE is pinned to engine 3.21 and its matching database, not latest signatures",
     "DiE sample cap 16 MiB, 180-second timeout, 128 MiB guest RAM plus browser overhead",
-    "ExeInfoPE and dnSpyEx integration excluded from v0.8 per user direction"
+    "ExeInfoPE and dnSpyEx integration excluded from v0.8 per user direction",
+    "Linux model supports only static little-endian ELF64 ET_EXEC x64/AArch64 and selected syscalls; no dynamic linking, threads or guest networking",
+    "Native function harness arguments are single-word integers/pointers; no inferred floating-point, aggregate or variadic ABI handling"
   ],
   "publishing": {
-    "worker": "deployed to existing custom domain",
-    "repository": "implementation and preserved user README edit pushed and verified at c57427e",
-    "sourceDownload": "v0.8 archives published; local CRC, per-part and whole-archive hashes verified; browser download links invoked; final browser file bytes not inspected",
-    "offlineDownload": "v0.8 live browser download completed; all five parts verified against SHA-256 before archive assembly",
-    "implementationCommit": "57d002d",
-    "repositoryVerifiedAt": "2026-10-11T00:01:00.649087+00:00"
+    "worker": "v0.9 deployed to existing custom domain",
+    "repository": "v0.9 source implementation pushed as b2f4d68; live-verification record follows",
+    "implementationCommit": "b2f4d68",
+    "repositoryVerifiedAt": "2026-10-11T02:52:23.917822+00:00",
+    "sourceDownload": "v0.9 source archive packaged, CRC verified locally, production link invoked; downloaded file bytes not inspected",
+    "offlineDownload": "v0.9 live browser download completed; all five parts verified against SHA-256 by the browser before assembly"
   },
   "packages": {
     "/debugger-source.zip": {
-      "bytes": 42803813,
-      "sha256": "c160165cb7fce22185341f022dd20e6a69d53418f2786d9d2cb1fd2a83bbf23f",
+      "bytes": 43859998,
+      "sha256": "0e1c0379eceae122b6bcb9f51cc9ca23213f1b5a1be9faeed063ff3b40bfc4be",
       "parts": 3
     },
     "/detection-source.zip": {
@@ -75,24 +77,29 @@
       "parts": 31
     },
     "offline": {
-      "bytes": 75124134,
-      "sha256": "de4d907da833a797bfcf5fc4c27eb4f4a8675bcb0b9eb08714c136ce448e3c8f"
+      "bytes": 77268531,
+      "sha256": "233053d6a6341294561ae1d0f7766c6d0d493ee83137cb1eef69dbae9726a0b1",
+      "parts": 5
+    },
+    "guide": {
+      "bytes": 102071,
+      "sha256": "4e8900d059c9464fa4cbc6cb94c7569c0dc09e1711057770b7c13b5daf354d3c"
     }
   },
-  "engineAssetRoot": "/engines/v08/",
+  "engineAssetRoot": "/engines/v09/",
   "protections": {
-    "challenge": "Cloudflare managed challenge completed in browser; unauthenticated curl received challenge response",
+    "challenge": "Cloudflare security verification appeared and completed automatically in the live v0.9 browser check",
     "workerFirst": true,
     "pageBurst": "30 requests / 10 s / IP",
     "pageMinute": "120 requests / 60 s / IP",
     "engineBurst": "100 requests / 10 s / IP",
     "engineMinute": "240 requests / 60 s / IP",
-    "rateBindings": "all five confirmed in v0.8 deployment output",
+    "rateBindings": "all five confirmed in v0.9 deployment output",
     "scope": "SPECTRA static delivery only; not a whole-network audit",
     "sourceDownloadMinute": "4 archive requests / 60 s / IP"
   },
-  "unchangedCompanion": "11 checks passed in v0.7; companion not changed or rerun for v0.8",
-  "workerVersion": "e7884fb3-d86d-4293-9a2a-a48d5f5f35c6",
+  "unchangedCompanion": "11 checks passed in v0.7; companion unchanged and not rerun for v0.9",
+  "workerVersion": "3ed9b6d9-3a42-4ca6-aab2-ec839cf55559",
   "fieldGuideUpdate": {
     "verifiedAt": "2026-10-11T01:21:36.321108+00:00",
     "workerVersion": "15b7baa2-d865-4062-93c9-ac1e64ff8a79",
@@ -173,6 +180,18 @@
         "bytes": 77268531,
         "sha256": "233053d6a6341294561ae1d0f7766c6d0d493ee83137cb1eef69dbae9726a0b1"
       }
-    }
+    },
+    "verifiedAt": "2026-10-11T02:52:23.917822+00:00",
+    "workerVersion": "3ed9b6d9-3a42-4ca6-aab2-ec839cf55559",
+    "liveBrowserQA": [
+      "Automatic Cloudflare challenge completed; page identifies v0.9",
+      "Native function batches returned 3, 5 and 10; alternate paths showed two added/two missing locations; interactive session remained at zero steps",
+      "ARM register demo recorded analyst MMIO read41 and captured write42",
+      "AArch64 Linux demo loaded without executing, then echoed virtual stdin and exited0",
+      "No captured browser console errors during the live experiment checks",
+      "Training Ground identifies guide0.9; public /guide reload includes all five workflows",
+      "Offline archive browser download completed with all five part hashes verified",
+      "Public app source archive link invoked; final downloaded source bytes not inspected"
+    ]
   }
 }
