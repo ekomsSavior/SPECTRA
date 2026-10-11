@@ -2,23 +2,23 @@
 export const ARCHIVES={
   "/debugger-source.zip": {
     "name": "spectra-v0.9-source.zip",
-    "bytes": 43859971,
-    "sha256": "274b79e14d1f146115e11de25f5cfa3516c10959c30550bdcbb6888a6ffba8c8",
+    "bytes": 43859998,
+    "sha256": "0e1c0379eceae122b6bcb9f51cc9ca23213f1b5a1be9faeed063ff3b40bfc4be",
     "parts": [
       {
         "path": "/engines/v09/downloads/source-part-00.bin",
         "bytes": 16777216,
-        "sha256": "fd00069a74c5eb54d7117c67d5e34ff76db35a444ae0522ea0706115ca2c93dd"
+        "sha256": "97a6a84b6beebffa0f7ea83eb3e14bbafac854f6b34d77ac0a9aaf9ce454252e"
       },
       {
         "path": "/engines/v09/downloads/source-part-01.bin",
         "bytes": 16777216,
-        "sha256": "79dc768a0b72fff6fafdf7deb7857efb7d9119e7842659fb31f9cc4d2ab179c8"
+        "sha256": "da8392288dc551236e74187aa3ec4ae05c7a6ab5239d4e0c0837c92202e265d7"
       },
       {
         "path": "/engines/v09/downloads/source-part-02.bin",
-        "bytes": 10305539,
-        "sha256": "eade6236562e89ea791a9564d679695d57fcedab07f5037851169be7ecf7b6dd"
+        "bytes": 10305566,
+        "sha256": "4402c4752a0a7f3189350e9633a64139491c2006d79f7fcff325cc79494b75ae"
       }
     ]
   },

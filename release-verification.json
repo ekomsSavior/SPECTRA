@@ -160,17 +160,18 @@
       "x64 and AArch64 Linux demos echo virtual input and exit0; ARM stack shows argc/argv/auxv",
       "Linux cases hello/science produce independent output",
       "Linux recipe, two cases and current state survive document reload; explicit replay verifies saved CPU/model state",
-      "Windows Sleep override skips body and returns supplied zero; seeded and program-written virtual files remain local"
+      "Windows Sleep override skips body and returns supplied zero; seeded and program-written virtual files remain local",
+      "Final engine 34fd5c2ec226: native batch and current function state survive full reload and verified replay"
     ],
     "scope": "No full OS or board boot, dynamic Linux linking, threads, CLR or live guest networking. Single-word native argument ABIs only. Model responses and partial operations remain labeled.",
     "archives": {
       "spectra-v0.9-source.zip": {
-        "bytes": 43859971,
-        "sha256": "274b79e14d1f146115e11de25f5cfa3516c10959c30550bdcbb6888a6ffba8c8"
+        "bytes": 43859998,
+        "sha256": "0e1c0379eceae122b6bcb9f51cc9ca23213f1b5a1be9faeed063ff3b40bfc4be"
       },
       "spectra-v0.9-offline.zip": {
-        "bytes": 77268476,
-        "sha256": "16a0843ff44e5db55d366d382889a6b4732a108f8bfb8986623838e4be8f6364"
+        "bytes": 77268531,
+        "sha256": "233053d6a6341294561ae1d0f7766c6d0d493ee83137cb1eef69dbae9726a0b1"
       }
     }
   }
