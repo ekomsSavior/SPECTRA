@@ -27,3 +27,9 @@ Memory comparison is page-level, not an exact changed-byte count. Traces are bou
 `spectra-comparison-v1` identifies both hashes, metadata, string/import additions/removals, decoded function matches, basis/confidence, unmatched functions and ambiguous groups. Exact decoded-byte equality is not whole-function or behavioral proof when boundaries/decoding are partial.
 
 `spectra-harness/1` selection.json identifies the original assembly SHA-256/MVID and chosen tokens/signatures. invocation.json carries the selected call, JSON arguments, constructor and setup sequence. Downloaded code has a dry-run default; explicit execution invokes real target code outside the browser. Templates and limitations are shipped with each ZIP.
+
+## Recipes and batch evidence (0.9)
+
+`spectra-lab-v1` is bounded recipe data: native harness ABI/arguments, named buffers, mappings, registers, explicit hooks, ARM MMIO sequences, virtual files and Linux argv/env/stdin. `spectra-recipe-export-v1` wraps it in a sample SHA-256 and CPU initialization options; UI import checks the current sample and does not execute. Recipe editor values are saved in project settings.
+
+`spectra-batch-v1` identifies the sample, engine fingerprint, initialized CPU options, budget, per-case recipe, stop reason, output buffers, return register and observed coverage. Batches cap at 16 cases and 8 MiB report data. Project imports validate its shape and sample binding; stored reports remain unverified evidence. No auto-execution follows import. Replay summaries now include lab mappings, model events, coverage, buffer state, MMIO read indices/writes, Linux file bytes/FD positions/heap/output and the recipe, alongside CPU and mapped page digests. See EXPERIMENT-LAB.md for full semantics and limits.

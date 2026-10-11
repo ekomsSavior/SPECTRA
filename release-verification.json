@@ -1,16 +1,16 @@
 {
-  "version": "0.8",
-  "status": "production deployed; live browser detection verified",
-  "generatedAt": "2026-10-11T00:01:00.649057+00:00",
+  "version": "0.9",
+  "status": "implementation and regression checks passed; publication pending",
+  "generatedAt": "2026-10-11T02:39:45.446402+00:00",
   "site": "https://spectra.churchofmalware.org/",
   "sourceRepository": "https://git.churchofmalware.org/ek0mssavi0r/SPECTRA",
-  "baselineWorkerVersion": "f76a8e6b-4de0-4467-bd71-2d718e0c8d77",
+  "baselineWorkerVersion": "15b7baa2-d865-4062-93c9-ac1e64ff8a79",
   "testGroups": {
     "analysis": 18,
     "recovery": 16,
     "debugger": 13,
     "windows": 11,
-    "edge": 8,
+    "edge": 9,
     "native": 2,
     "hardwareDecompile": 29,
     "hardwareDebugger": 23,
@@ -22,9 +22,10 @@
     "dependencies": 8,
     "harnessIncludingRuntimeAndNet48Compile": 30,
     "detection": 6,
-    "archiveStreaming": 3
+    "archiveStreaming": 3,
+    "advancedLab": 33
   },
-  "checksPassed": 203,
+  "checksPassed": 237,
   "browserQA": [
     "RISC-V64 compressed addition: A0=2,A1=3, result5 and return; Ghidra C return param_1+param_2",
     "XOR write watchpoint after6 steps; checkpoint, notes, full IndexedDB save; true document reload and replay digest verified",
@@ -137,5 +138,40 @@
     },
     "downloadAssetRoot": "/engines/v08guide3/downloads/",
     "priorEngineVerification": "The earlier 203-check engine release record above is retained as history; those engine groups were not all rerun for this documentation update."
+  },
+  "advancedLabUpdate": {
+    "features": [
+      "Native integer/pointer function harnesses for seven ABI/CPU combinations",
+      "Saved environment recipes, explicit hooks, memory mappings and virtual input files",
+      "Static ELF64 ET_EXEC Linux profile on x64/AArch64 with bounded syscall models",
+      "ARM/Thumb/AArch64 exact-width MMIO sequences and captured writes",
+      "Observed coverage and up to sixteen independent batch cases"
+    ],
+    "tests": {
+      "fullSuiteExitCode": 0,
+      "fullSuiteChecks": 235,
+      "finalAdvancedLabChecks": 33,
+      "finalHardwareRegressionChecks": 23,
+      "distinctChecks": 237
+    },
+    "browserQA": [
+      "Function batch returns 3/5/10 with differing observed paths; interactive session remains at zero steps",
+      "ARM MMIO read41 and write42 recorded as analyst model",
+      "x64 and AArch64 Linux demos echo virtual input and exit0; ARM stack shows argc/argv/auxv",
+      "Linux cases hello/science produce independent output",
+      "Linux recipe, two cases and current state survive document reload; explicit replay verifies saved CPU/model state",
+      "Windows Sleep override skips body and returns supplied zero; seeded and program-written virtual files remain local"
+    ],
+    "scope": "No full OS or board boot, dynamic Linux linking, threads, CLR or live guest networking. Single-word native argument ABIs only. Model responses and partial operations remain labeled.",
+    "archives": {
+      "spectra-v0.9-source.zip": {
+        "bytes": 43859971,
+        "sha256": "274b79e14d1f146115e11de25f5cfa3516c10959c30550bdcbb6888a6ffba8c8"
+      },
+      "spectra-v0.9-offline.zip": {
+        "bytes": 77268476,
+        "sha256": "16a0843ff44e5db55d366d382889a6b4732a108f8bfb8986623838e4be8f6364"
+      }
+    }
   }
 }

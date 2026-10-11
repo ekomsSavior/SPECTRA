@@ -19,23 +19,24 @@ const allow={
 };
 function prepare(bytes,meta,options){
  const p=profiles[options.mode];if(!p)throw Error('Choose a supported hardware CPU.');if(options.environment==='windows')throw Error('Windows modeling supports x86/x64. Hardware CPUs use bare routines.');
+ if(options.environment==='linux')return {...root.SpectraLinux.prepare(bytes,meta,options),cpu:p.cpu};
  const endian=options.endian==='auto'||!options.endian?meta.endian||'little':options.endian;
  if(!['little','big'].includes(endian)||p.module==='riscv'&&endian==='big')throw Error('Unsupported instruction byte order. RISC-V is little endian.');
  root.SpectraNative.plan(bytes,meta,{mode:options.mode,endian,entry:options.start,acceptAbi:true,raw:options.raw?{offset:options.raw.offset,size:options.raw.size,address:options.raw.base}:null});
  const plan=D.prepare(bytes,meta,{...options,mode:p.bits===64?'x64':'x86'});
  if(plan.mapped.some(m=>m.address<RETURN+4096&&m.address+m.size>RETURN))throw Error('Mapping overlaps the synthetic return-boundary page.');
  if(plan.memoryBytes+4096>D.MAX_MEMORY)throw Error('Hardware session exceeds 16 MiB mapped-memory budget.');
- return {...plan,mode:options.mode,endian,memoryBytes:plan.memoryBytes+4096,returnBoundary:RETURN,cpu:p.cpu,scope:'Integer routines only; no FP/SIMD, OS, firmware boot, MMIO, or devices.'};
+ return {...plan,mode:options.mode,endian,memoryBytes:plan.memoryBytes+4096,returnBoundary:RETURN,cpu:p.cpu,scope:'Integer routines; optional analyst MMIO responses. No FP/SIMD, firmware boot, board or device simulation.'};
 }
 class Session{
  constructor(uc,cs,bytes,meta,options){
   this.uc=uc;this.cs=cs;this.plan=prepare(bytes,meta,options);this.mode=this.plan.mode;this.profile=profiles[this.mode];const p=this.profile;
-  Object.assign(this,{steps:0,trace:[],edits:[],status:'ready',reason:'Hardware routine ready. Registers, stack, scratch, and a return boundary are analyst-supplied state.',breakAt:null,stopped:false,journal:[],attempts:0,frames:[],watchpoints:[],hits:[],executing:false,names:p.names,ip:'PC',sp:p.sp,word:p.bits/8});
+  Object.assign(this,{steps:0,trace:[],edits:[],status:'ready',reason:this.plan.environment==='linux'?'Linux startup ready. No instructions have run.':'Hardware routine ready. Registers, stack, scratch, and a return boundary are analyst-supplied state.',breakAt:null,stopped:false,journal:[],attempts:0,frames:[],watchpoints:[],hits:[],executing:false,names:p.names,ip:'PC',sp:p.sp,word:p.bits/8});
   const modeName=({arm:'ARM',thumb:'THUMB',aarch64:'ARM',riscv32:'RISCV32',riscv64:'RISCV64',mips32:'MIPS32',mips64:'MIPS64'})[this.mode];
   this.e=new uc.Unicorn(uc['ARCH_'+p.prefix],uc['MODE_'+modeName]|(this.plan.endian==='big'?uc.MODE_BIG_ENDIAN:0));this.decoders=[];
   try{
    for(const m of this.plan.mapped){this.e.mem_map(m.address,m.size,m.perms);this.e.mem_write(m.address,new Uint8Array(m.size));}
-   for(const r of this.plan.regions)this.e.mem_write(r.address,bytes.subarray(r.offset,r.offset+r.size));
+   for(const r of this.plan.regions)this.e.mem_write(r.address,bytes.subarray(r.offset,r.offset+(r.fileSize??r.size)));
    this.e.mem_map(STACK,AREA,3);this.e.mem_map(SCRATCH,AREA,3);this.e.mem_write(STACK,new Uint8Array(AREA));this.e.mem_write(SCRATCH,new Uint8Array(AREA));this.e.mem_map(RETURN,4096,5);this.e.mem_write(RETURN,new Uint8Array(4096));
    for(const n of this.names)if(!['CPSR','NZCV'].includes(n))this.writeReg(n,0n);
    this.writeReg(this.sp,BigInt(STACK+AREA-0x100));this.writeReg(p.link,BigInt(RETURN));this.writeReg('PC',BigInt(this.plan.start));

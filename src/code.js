@@ -83,7 +83,7 @@ function analyze(cs,bytes,meta,options={}){
  if(isMips)warnings.push('MIPS delay slots are shown; branch-likely annul semantics are not modeled.');
  if(['arm','thumb','arm64','mips32','mips64','riscv32','riscv64'].includes(mode.name))warnings.push('Register-built addresses and mixed ARM/Thumb transitions are not resolved. Data references cover mapped address constants only.');
  const unresolved=rows.filter(i=>(i.call||i.jump)&&i.target===null).length;
- return {engine:'Capstone 5 / SPECTRA 0.7',mode:mode.name,manual:!!manual,raw:manual?{...manual}:null,instructions:rows,functions,references,warnings,decodedBytes,unresolved,truncated,limits:{instructions:MAX_INSTRUCTIONS,decodedBytes:MAX_BYTES},method:manual?'linear sweep of user-selected bytes':'recursive traversal from entry, symbols, unwind records, and direct calls'};
+ return {engine:'Capstone 5 / SPECTRA 0.9',mode:mode.name,manual:!!manual,raw:manual?{...manual}:null,instructions:rows,functions,references,warnings,decodedBytes,unresolved,truncated,limits:{instructions:MAX_INSTRUCTIONS,decodedBytes:MAX_BYTES},method:manual?'linear sweep of user-selected bytes':'recursive traversal from entry, symbols, unwind records, and direct calls'};
 }
 root.SpectraCode={analyze,modeFor,riscvFlow};if(typeof module!=='undefined')module.exports=root.SpectraCode;
 })(globalThis);

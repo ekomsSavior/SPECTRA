@@ -77,8 +77,8 @@ class Environment{
  }
  map(address,size,perms,name){
   check(Number.isSafeInteger(address)&&address>=PAGE&&address%PAGE===0&&size>0&&size%PAGE===0,'Invalid memory mapping.');check(Number.isSafeInteger(address+size)&&address+size<=(this.wide?0x800000000000:0x100000000),'Allocation exceeds CPU address range.');
-  check(this.memoryBytes+size<=MAX,'16 MiB mapped-memory budget reached.');
-  const all=[...this.s.plan.mapped,...this.extra,{address:0x60000000,size:AREA},{address:0x70000000,size:AREA}];
+  const all=this.s.e.mem_regions().map(r=>({address:Number(r.begin),size:Number(r.end)-Number(r.begin)+1}));
+  check(all.reduce((n,r)=>n+r.size,0)+size<=MAX,'16 MiB mapped-memory budget reached.');
   check(!all.some(r=>address<r.address+r.size&&address+size>r.address),'Allocation overlaps mapped memory.');
   this.s.e.mem_map(address,size,perms);this.s.e.mem_write(address,new Uint8Array(size));this.extra.push({address,size,perms,name});this.memoryBytes+=size;
  }

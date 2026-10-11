@@ -48,7 +48,7 @@ async function inspect(s){
   windows.files=await Promise.all([...w.files].map(async([path,f])=>({path,size:f.bytes.length,sha256:await sha(f.bytes)})));
   windows.handles=[...w.handles].map(([handle,h])=>({handle,path:h.file.path,position:h.position,access:h.access}));
  }
- const summary={registers:registers(s),memory,windows,steps:s.steps,attempts:s.attempts,frames:s.frames,edits:s.edits,terminal:s.stopped?{status:s.status,reason:s.reason}:null};
+ const summary={registers:registers(s),memory,windows,...(s.lab?{lab:s.lab.snapshot()}:{}),steps:s.steps,attempts:s.attempts,frames:s.frames,edits:s.edits,terminal:s.stopped?{status:s.status,reason:s.reason}:null};
  return {summary:stable(summary),digest:await sha(new TextEncoder().encode(canonical(summary)))};
 }
 async function capture(s,sha256,options,engine=ENGINE){const end=await inspect(s);return {schema:VERSION,engine,sha256,options:JSON.parse(JSON.stringify(options)),actions:JSON.parse(JSON.stringify(s.journal)),...end};}
@@ -64,7 +64,7 @@ function compare(a,b){
  for(const k of new Set([...Object.keys(x.registers),...Object.keys(y.registers)]))if(canonical(x.registers[k])!==canonical(y.registers[k]))changes.push({register:k,before:x.registers[k],after:y.registers[k]});
  const ma=new Map(x.memory.map(r=>[r.address,r])),mb=new Map(y.memory.map(r=>[r.address,r])),pages=[];
  for(const at of new Set([...ma.keys(),...mb.keys()]))if(canonical(ma.get(at))!==canonical(mb.get(at)))pages.push({address:at,before:ma.get(at)||null,after:mb.get(at)||null});
- return {fromSteps:x.steps,toSteps:y.steps,registers:changes,memoryPages:pages,windowsChanged:canonical(x.windows)!==canonical(y.windows),beforeFiles:x.windows?.files||[],afterFiles:y.windows?.files||[],beforeEvents:x.windows?.events||[],afterEvents:y.windows?.events||[],note:'Memory differences are 4 KiB pages, including mapping/permission changes. API traces retain the latest 500 events.'};
+ return {fromSteps:x.steps,toSteps:y.steps,registers:changes,memoryPages:pages,labChanged:canonical(x.lab)!==canonical(y.lab),beforeLab:x.lab||null,afterLab:y.lab||null,windowsChanged:canonical(x.windows)!==canonical(y.windows),beforeFiles:x.windows?.files||[],afterFiles:y.windows?.files||[],beforeEvents:x.windows?.events||[],afterEvents:y.windows?.events||[],note:'Memory differences are 4 KiB pages, including mapping/permission changes. API traces retain the latest 500 events.'};
 }
 root.SpectraExperiments={VERSION,ENGINE,sha,stable,canonical,validate,validateEvidence,inspect,capture,replay,compare};if(typeof module!=='undefined')module.exports=root.SpectraExperiments;
 })(globalThis);

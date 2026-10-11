@@ -1,4 +1,4 @@
-# SPECTRA 0.8 — Church of Malware
+# SPECTRA 0.9 — Church of Malware
 
 A free browser reverse-engineering workbench. Open a binary, follow the evidence, keep the investigation. Optional explanations use the same tools and evidence as the professional workspace.
 
@@ -25,9 +25,13 @@ The real Detect It Easy 3.21 engine and matching database run in an on-demand br
 
 The browser debugger uses Unicorn WASM. Initialize never executes a sample instruction. Step, step over/out, conditional register breakpoints, memory read/write watchpoints, register edits, patches, memory capture and traces are bounded and inspectable. Save up to eight experiments; restore replays recorded attempts and analyst edits in a fresh emulator, verifies its state, then swaps sessions. Compare registers, mapped-page digests, permissions and Windows-model events/files.
 
-x86/x64 can run bare routines or a bounded Windows PE model with rebasing, imports, TLS initialization, 56 modeled APIs, API traces and virtual files. Unknown APIs, guest syscalls and unsupported operations stop; no guest networking is supplied. It is not a complete Windows OS or CLR debugger.
+x86/x64 can run bare routines or a bounded Windows PE model with rebasing, imports, TLS initialization, 56 modeled APIs, API traces and virtual files. Unknown APIs and unsupported operations stop; no guest networking is supplied. It is not a complete Windows OS or CLR debugger.
 
-ARM/Thumb/AArch64, RV32/RV64+C and MIPS32/64 integer routines have separate lazy-loaded engines. CPU defaults are documented in [hardware notes](docs/HARDWARE.md). System instructions, FP/SIMD and unmodeled operations stop before execution. ARM/Thumb transitions use live CPU mode. MIPS branch/delay pairs step atomically; slot breakpoints pause before the pair, and conditions see pre-pair registers. A synthetic mapped return boundary is explicit. No board, peripherals, MMIO, OS, RTOS or firmware boot is emulated.
+ARM/Thumb/AArch64, RV32/RV64+C and MIPS32/64 integer routines have separate lazy-loaded engines. CPU defaults are documented in [hardware notes](docs/HARDWARE.md). System instructions, FP/SIMD and unmodeled operations stop before execution. ARM/Thumb transitions use live CPU mode. MIPS branch/delay pairs step atomically; slot breakpoints pause before the pair, and conditions see pre-pair registers. A synthetic mapped return boundary is explicit. Analyst-defined ARM MMIO responses are available; no full board, peripherals, RTOS or firmware boot is emulated.
+
+SPECTRA 0.9 adds native integer/pointer function harnesses for System V/Windows x64, x86 cdecl/stdcall, ARM/Thumb AAPCS32 and AArch64 AAPCS64; before/after input buffers; saved data-only environment recipes; explicit address/API hooks; mapped captured memory; and virtual file fixtures. ARM register sequences and captured MMIO writes expose supplied hardware behavior. A focused Linux model supports little-endian static ELF64 ET_EXEC on x64 and AArch64, argc/argv/env/auxv, BSS and a small explicit syscall set. It does not supply a Linux kernel or general libc/runtime compatibility.
+
+Coverage records observed instruction locations/transitions, including labeled modeled boundaries. Batches run up to 16 independent recipes and compare return values, buffers and observed paths. Complete reports save with investigations. Three benign demos provide ready-to-run function, Linux and ARM experiments. See [the experiment reference](docs/EXPERIMENT-LAB.md) for all controls, schemas, modeled syscalls, reproducibility limits and examples.
 
 An **optional experimental Linux/GDB companion** serves its own authenticated loopback browser UI. It provides real native process debugging on the analyst's machine, with explicit pairing and launch. It is not a sandbox; use an isolated lab. Public SPECTRA never connects to it. Windows/.NET, remote attach and hardware adapters are not included. See [companion instructions](companion/README.md).
 
@@ -59,7 +63,7 @@ python3 scripts/package-source.py
 python3 scripts/serve.py --port 4173
 ```
 
-Open `http://127.0.0.1:4173/`. Keep the **whole dist directory**, including `engines/v08`; a saved HTML file alone does not contain the decompilers or hardware engines. All runtime assets are included locally; no CDN or API is needed. The localhost server applies the production CSP. The source ZIP includes all browser runtime assets. To publish the large DiE runtime source archive too, collect the pinned inputs documented in docs/DETECTION.md and run `python3 scripts/package-detection-source.py /path/to/source-inputs` after package-source.py. Training ground also offers a complete offline ZIP download, assembled from verified static parts to fit the host asset limit. A complete offline ZIP can be made with `python3 scripts/package-offline.py`. Engine rebuilds need the documented upstream toolchains, not for ordinary app builds.
+Open `http://127.0.0.1:4173/`. Keep the **whole dist directory**, including `engines/v09`; a saved HTML file alone does not contain the decompilers or hardware engines. All runtime assets are included locally; no CDN or API is needed. The localhost server applies the production CSP. The source ZIP includes all browser runtime assets. To publish the large DiE runtime source archive too, collect the pinned inputs documented in docs/DETECTION.md and run `python3 scripts/package-detection-source.py /path/to/source-inputs` after package-source.py. Training ground also offers a complete offline ZIP download, assembled from verified static parts to fit the host asset limit. A complete offline ZIP can be made with `python3 scripts/package-offline.py`. Engine rebuilds need the documented upstream toolchains, not for ordinary app builds.
 
 ```bash
 python3 scripts/test.py

@@ -10,10 +10,16 @@ onmessage=async event=>{
    const [uc,cs]=await Promise.all([MUnicorn(),MCapstone({wasmBinary:m.capstoneWasm})]);
    const bytes=new Uint8Array(m.buffer),sha256=await SpectraExperiments.sha(bytes);
    source={uc,cs,bytes,meta:m.meta,options:m.options,sha256,module:SpectraHardware.profiles[m.options.mode]?.module||'x86'};
-   session=new (SpectraHardware.profiles[m.options.mode]?SpectraHardware.Session:SpectraDebug.Session)(uc,cs,bytes,m.meta,m.options);memoryAddress=SpectraDebug.SCRATCH;publish('state',{memoryAddress});return;
+   session=SpectraLab.create(uc,cs,bytes,m.meta,m.options);memoryAddress=SpectraDebug.SCRATCH;publish('state',{memoryAddress});return;
   }
   if(!session)throw Error('Initialize a session first.');
   if(m.watchpoints!==undefined)session.setWatchpoints(m.watchpoints);
+  if(m.action==='batch'){
+   running=true;const token=++runToken,started=performance.now();let lastPost=0;
+   try{const results=await SpectraLab.batch(recipe=>SpectraLab.create(source.uc,source.cs,source.bytes,source.meta,{...source.options,recipe}),m.cases,Number(m.budget),async(index,steps)=>{if(token!==runToken)throw Error('Batch cancelled.');if(performance.now()-started>30000)throw Error('Batch exceeded its 30-second limit. Reduce cases or instruction budget.');if(performance.now()-lastPost>200){publish('progress',{batchProgress:{index,steps,total:m.cases.length}});lastPost=performance.now();}await new Promise(r=>setTimeout(r,0));});
+    if(token===runToken){running=false;const batch={schema:'spectra-batch-v1',sha256:source.sha256,engine:SpectraExperiments.ENGINE,options:source.options,budget:Number(m.budget),results};SpectraLab.validateBatch(batch,source.sha256);publish('batch',{batch});}
+   }catch(error){if(token===runToken)throw error;}finally{if(token===runToken)running=false;}return;
+  }
   if(m.action==='checkpoint'){
    running=true;const token=++runToken;
    try{const checkpoint=await SpectraExperiments.capture(session,source.sha256,source.options);if(token===runToken){running=false;publish('checkpoint',{checkpoint});}}catch(error){if(token===runToken)throw error;}finally{if(token===runToken)running=false;}return;
@@ -21,7 +27,7 @@ onmessage=async event=>{
   if(m.action==='restore'){
    const token=++runToken;running=true;let candidate=null,swapped=false,lastPost=0;
    try{
-    const c=await SpectraExperiments.validateEvidence(m.checkpoint,source.sha256);if(token!==runToken)return;if((SpectraHardware.profiles[c.options.mode]?.module||'x86')!==source.module)throw Error('Initialize the checkpoint CPU family first.');candidate=new (SpectraHardware.profiles[c.options.mode]?SpectraHardware.Session:SpectraDebug.Session)(source.uc,source.cs,source.bytes,source.meta,c.options);
+    const c=await SpectraExperiments.validateEvidence(m.checkpoint,source.sha256);if(token!==runToken)return;if((SpectraHardware.profiles[c.options.mode]?.module||'x86')!==source.module)throw Error('Initialize the checkpoint CPU family first.');candidate=SpectraLab.create(source.uc,source.cs,source.bytes,source.meta,c.options);
     await SpectraExperiments.replay(c,candidate,async count=>{if(token!==runToken)throw Error('Replay cancelled.');if(performance.now()-lastPost>200){publish('progress',{replayCount:count});lastPost=performance.now();}await new Promise(resolve=>setTimeout(resolve,0));});
     if(token!==runToken)throw Error('Replay cancelled.');candidate.setWatchpoints(m.watchpoints||[]);session.close();session=candidate;source.options=c.options;swapped=true;running=false;publish('restored',{options:c.options,digest:c.digest});
    }catch(error){if(token===runToken)throw error;}finally{if(!swapped)candidate?.close();if(token===runToken)running=false;}return;
@@ -49,7 +55,7 @@ onmessage=async event=>{
   if(m.action==='register'){session.editRegister(m.name,m.value);publish();return;}
   if(m.action==='patch'){session.patch(m.address,new Uint8Array(m.bytes));publish();return;}
   if(m.action==='capture'||m.action==='fileCapture'){
-   const file=m.action==='fileCapture'?session.windows?.files.get(m.path):null;if(m.action==='fileCapture'&&!file)throw Error('Virtual file unavailable.');
+   const file=m.action==='fileCapture'?(session.windows?.files.get(m.path)||session.linux?.files.get(m.path)):null;if(m.action==='fileCapture'&&!file)throw Error('Virtual file unavailable.');
    const at=file?0:SpectraDebug.address(m.address),bytes=file?file.bytes.slice():session.read(at,Number(m.size));
    const token=++runToken;running=true;try{const sha=await SpectraExperiments.sha(bytes),result=SpectraCore.extract(bytes,4,2000);if(token===runToken){running=false;publish('capture',{capture:{bytes,address:at,path:file?.path,sha256:sha,strings:result.strings,truncated:result.truncated,entropy:SpectraCore.entropy(bytes)}});}}catch(error){if(token===runToken)throw error;}finally{if(token===runToken)running=false;}
   }

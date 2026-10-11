@@ -6,6 +6,8 @@ const PAGE=4096,MAX_MEMORY=16*1024*1024,MAX_STEPS=100000,STACK=0x70000000,SCRATC
 const hex=n=>'0x'+BigInt(n).toString(16).toUpperCase();
 function address(value){if(typeof value==='string'&&!/^(?:0x[0-9a-f]+|\d+)$/i.test(value.trim()))throw Error('Use a decimal address or hex with 0x.');const n=Number(value);if(!Number.isSafeInteger(n)||n<0)throw Error('Address exceeds the supported exact range.');return n;}
 function prepare(bytes,meta,options={}){
+ if(options.environment==='linux')return root.SpectraLinux.prepare(bytes,meta,options);
+ if(options.environment&&!['routine','windows'].includes(options.environment))throw Error('Unknown execution environment.');
  if(options.environment==='windows'){if(options.raw)throw Error('Windows mode needs a complete PE image, not a raw range.');return root.SpectraWindows.prepare(bytes,options);}
  const mode=options.mode||({'x86':'x86','x86-64':'x64'})[meta.architecture];
  if(!['x86','x64'].includes(mode))throw Error('Debugger lab currently supports x86 and x64. Choose a raw range for other file formats.');
@@ -53,7 +55,7 @@ class Session{
     this.writeEvents++;
     if(this.writeEvents>1024){this.writeLimit=true;this.e.emu_stop();return;}
     const a=Number(at);if(!Number.isSafeInteger(a)||size>256)return;
-    if([...this.plan.mapped,...(this.windows?.extra||[])].some(r=>(r.perms&4)&&a<r.address+r.size&&a+size>r.address)){this.execWrite=true;this.e.emu_stop();}
+    if([...this.plan.mapped,...(this.windows?.extra||[]),...(this.lab?.extra||[])].some(r=>(r.perms&4)&&a<r.address+r.size&&a+size>r.address)){this.execWrite=true;this.e.emu_stop();}
     if(!this.region(a,size,2)){this.badWrite=true;this.e.emu_stop();return;}
     if(this.pending.length<32){let before;try{before=Array.from(this.e.mem_read(a,size));}catch{before=[];}this.pending.push({address:a,size,before});}
    });
