@@ -91,5 +91,51 @@
     "sourceDownloadMinute": "4 archive requests / 60 s / IP"
   },
   "unchangedCompanion": "11 checks passed in v0.7; companion not changed or rerun for v0.8",
-  "workerVersion": "e7884fb3-d86d-4293-9a2a-a48d5f5f35c6"
+  "workerVersion": "e7884fb3-d86d-4293-9a2a-a48d5f5f35c6",
+  "fieldGuideUpdate": {
+    "verifiedAt": "2026-10-11T01:21:36.321108+00:00",
+    "workerVersion": "15b7baa2-d865-4062-93c9-ac1e64ff8a79",
+    "implementationCommit": "3a3d96f",
+    "scope": "Training Ground field guide, community links and Church logo cover; analysis engines unchanged",
+    "chapters": 18,
+    "workbenchSectionsCovered": 15,
+    "chapterWordsApproximate": 11368,
+    "checksRerun": {
+      "edge": 9,
+      "archiveStreaming": 3
+    },
+    "browserQA": [
+      "Desktop monochrome cover with exact supplied Church logo; image decoded successfully",
+      "Read the field guide opens reader and focuses the current article",
+      "Search watchpoint finds three relevant chapters; clear restores all eighteen",
+      "Chapter paging boundaries and deep-link reload checked in preview; Open this section preserves sample",
+      "Live Church Git and MalwareBazaar URLs and new-tab protections checked",
+      "Live standalone book resolves through Cloudflare clean URL /guide with eighteen articles and TOC entries",
+      "Final live offline download completed after verifying all five part hashes"
+    ],
+    "packageQA": "Source and offline ZIP CRC, content equality, per-part hashes and combined hashes verified locally; source contains final edge route fix",
+    "packages": {
+      "/debugger-source.zip": {
+        "bytes": 43822379,
+        "sha256": "db46bc114bb0cda4d26fd7ee8a8a0029058a7d24d00ab42c1f979de35d4b0146",
+        "parts": 3
+      },
+      "/detection-source.zip": {
+        "bytes": 512138304,
+        "sha256": "931cbfe05874fc2875216a25be0a852749e4ce156ca50358ae585c4cac71a21b",
+        "parts": 31
+      },
+      "offline": {
+        "bytes": 77207281,
+        "sha256": "472117f1c305ba74c495d15a116602cb807b2ba52203db633bc5c997b0f06415",
+        "parts": 5
+      },
+      "guide": {
+        "bytes": 91804,
+        "sha256": "f9a797e0a9c12b002094b10351a6116e02219f1ebacf7a0c00ce2d102fddfe64"
+      }
+    },
+    "downloadAssetRoot": "/engines/v08guide3/downloads/",
+    "priorEngineVerification": "The earlier 203-check engine release record above is retained as history; those engine groups were not all rerun for this documentation update."
+  }
 }
