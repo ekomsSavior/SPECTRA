@@ -1,0 +1,1 @@
+{"private":true,"description":"Browser storage fixture dependencies; not shipped to users","devDependencies":{"fake-indexeddb":"6.2.5"}}

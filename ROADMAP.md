@@ -22,3 +22,9 @@ Real DiE 3.21 with its matching database runs locally on demand, with explicit h
 ## v0.9 controlled experiments
 
 All five middle-ground workstreams are implemented: native integer/pointer function inputs; saved environment recipes and address/API hooks; focused x64/AArch64 static Linux ELF startup/syscalls; ARM/Thumb/AArch64 captured-memory/MMIO experiments; observed coverage and isolated input batches. The existing emulation, recovery and project workflows retain their bounds. See docs/EXPERIMENT-LAB.md and release-verification.json for scope and actual verification. Complete Windows/Linux systems, ARM board boot, arbitrary OS APIs, threads and full runtime compatibility remain deferred.
+
+## v0.10 browser access
+
+Implemented: touch tool navigation and recipe forms; named collections/revisions; connected assembly/native C and resolved control-flow graph; gzip/XZ/Zstandard SquashFS; an isolated local Linux System lab with bounded transfers and temporary whole-guest checkpoints. No companion is required. The original routine debugger and its engine fingerprint are unchanged.
+
+Research: full-system ARM/x64/RISC-V engines, reduced memory budgets, cold-boot images, and physical mobile browser verification. Passing one kernel boot is not arbitrary device compatibility. Full Windows and managed process debugging require separate environment work; no Windows image is redistributed.

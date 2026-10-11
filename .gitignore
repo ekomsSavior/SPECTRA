@@ -14,3 +14,5 @@
 /native-source/sleigh-build/
 /native-source/ghidra-source/
 /companion/lab target */
+
+/tests/node_modules/

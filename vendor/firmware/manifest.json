@@ -1,0 +1,11 @@
+{
+  "schema": "spectra-firmware-codec-v1",
+  "xzCommit": "ae63ae3a36ed01724674e8f3d750dc47bf125410",
+  "zstdVersion": "1.5.7",
+  "emscripten": "3.1.56",
+  "memoryBytes": 16777216,
+  "wasm": {
+    "bytes": 86847,
+    "sha256": "f75e67d0731cc54c36553f16def08daae54afda16a891ffb94079643ef7b785c"
+  }
+}

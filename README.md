@@ -1,4 +1,4 @@
-# SPECTRA 0.9 — Church of Malware
+# SPECTRA 0.10 — Church of Malware
 
 A free browser reverse-engineering workbench. Open a binary, follow the evidence, keep the investigation. Optional explanations use the same tools and evidence as the professional workspace.
 
@@ -6,6 +6,18 @@ A free browser reverse-engineering workbench. Open a binary, follow the evidence
 - Source: https://git.churchofmalware.org/ek0mssavi0r/SPECTRA
 - No account, paid tier, sample uploads, paid API, or telemetry in the analysis app. Engines are served by the Church. Cloudflare receives normal delivery metadata; sample analysis stays local.
 - Black, gray and white; Creepster wordmark. Teaching defaults off.
+
+## Browser access release (0.10)
+
+Touch navigation and experiment forms keep the same tools usable on narrow screens without a hardware keyboard. The named Investigation library stores collections and eight revisions per investigation, with export, recoverable Trash and explicit permanent removal. Existing single-workspace saves migrate without being erased.
+
+Disassembly now has local Back/Forward navigation, a resolved control-flow graph with keyboard-accessible block links, and a paired native C pane. It pairs by sample hash and function entry; it does not pretend to map every C line to an instruction. Signature/type editing still uses Ghidra's real assumption controls.
+
+**System lab** starts a real i686 Linux 4.19.172 guest from a clean booted baseline in a dedicated browser worker. It offers a touch serial console, pause/resume/discard, one temporary CPU/RAM/filesystem checkpoint, bounded file transfers and guest-output capture into Recovery lab. Guest networking is disabled. No companion, account or second computer is required. This small guest is not a Windows/x86-64/ARM environment and is not full-process GDB-style debugging. See [the browser lab guide](docs/BROWSER-LAB.md).
+
+Firmware extraction adds SquashFS 4.0 little-endian gzip, XZ and Zstandard, with fragments, sparse files, inert symlinks and per-member hashes in the downloadable inventory. XZ/Zstandard use a pinned 16 MiB WASM decoder; source and licenses are included under vendor/firmware. LZMA/LZO/LZ4 and older/big-endian SquashFS remain unsupported.
+
+Training ground includes a 20-chapter field guide with System lab and Browser access & verification chapters. Chromium desktop and a 390-pixel viewport were exercised; physical iPad/iPhone/Safari testing is still needed. A narrow desktop viewport is not evidence of mobile browser compatibility.
 
 ## Investigate
 
@@ -63,9 +75,10 @@ python3 scripts/package-source.py
 python3 scripts/serve.py --port 4173
 ```
 
-Open `http://127.0.0.1:4173/`. Keep the **whole dist directory**, including `engines/v09`; a saved HTML file alone does not contain the decompilers or hardware engines. All runtime assets are included locally; no CDN or API is needed. The localhost server applies the production CSP. The source ZIP includes all browser runtime assets. To publish the large DiE runtime source archive too, collect the pinned inputs documented in docs/DETECTION.md and run `python3 scripts/package-detection-source.py /path/to/source-inputs` after package-source.py. Training ground also offers a complete offline ZIP download, assembled from verified static parts to fit the host asset limit. A complete offline ZIP can be made with `python3 scripts/package-offline.py`. Engine rebuilds need the documented upstream toolchains, not for ordinary app builds.
+Open `http://127.0.0.1:4173/`. Keep the **whole dist directory**, including `engines/v010`; a saved HTML file alone does not contain the decompilers or hardware engines. All runtime assets are included locally; no CDN or API is needed. The localhost server applies the production CSP. The source ZIP includes all browser runtime assets. To publish the large DiE runtime source archive too, collect the pinned inputs documented in docs/DETECTION.md and run `python3 scripts/package-detection-source.py /path/to/source-inputs` after package-source.py. Training ground also offers a complete offline ZIP download, assembled from verified static parts to fit the host asset limit. A complete offline ZIP can be made with `python3 scripts/package-offline.py`. Engine rebuilds need the documented upstream toolchains, not for ordinary app builds.
 
 ```bash
+npm ci --prefix tests --ignore-scripts
 python3 scripts/test.py
 # Optional generated-harness integration test, with a suitable installed SDK:
 SPECTRA_DOTNET=/path/to/dotnet node tests/harness.test.mjs
@@ -77,4 +90,4 @@ The optional Framework build may restore locked NuGet packages. Browser tests sh
 
 ## Hosting
 
-SPECTRA does not audit or harden the user's network or analysis machine. Static parsing, decompilation and emulation are incomplete models; inspect warnings and preserve uncertainty. Full-process Windows/.NET execution, whole-file unpacking, advanced type recovery, SquashFS extraction and further hardware profiles remain areas for continued research.
+SPECTRA does not audit or harden the user's network or analysis machine. Static parsing, decompilation and emulation are incomplete models; inspect warnings and preserve uncertainty. Full-process Windows/.NET execution, whole-file unpacking, advanced type recovery and further full-system hardware profiles remain areas for continued research.

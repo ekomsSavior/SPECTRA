@@ -1,0 +1,197 @@
+{
+  "version": "0.9",
+  "status": "deployed; source implementation pushed; live browser checks passed",
+  "generatedAt": "2026-10-11T02:52:23.917822+00:00",
+  "site": "https://spectra.churchofmalware.org/",
+  "sourceRepository": "https://git.churchofmalware.org/ek0mssavi0r/SPECTRA",
+  "baselineWorkerVersion": "15b7baa2-d865-4062-93c9-ac1e64ff8a79",
+  "testGroups": {
+    "analysis": 18,
+    "recovery": 16,
+    "debugger": 13,
+    "windows": 11,
+    "edge": 9,
+    "native": 2,
+    "hardwareDecompile": 29,
+    "hardwareDebugger": 23,
+    "experiments": 9,
+    "project": 8,
+    "firmware": 9,
+    "comparison": 3,
+    "managed": 7,
+    "dependencies": 8,
+    "harnessIncludingRuntimeAndNet48Compile": 30,
+    "detection": 6,
+    "archiveStreaming": 3,
+    "advancedLab": 33
+  },
+  "checksPassed": 237,
+  "browserQA": [
+    "RISC-V64 compressed addition: A0=2,A1=3, result5 and return; Ghidra C return param_1+param_2",
+    "XOR write watchpoint after6 steps; checkpoint, notes, full IndexedDB save; true document reload and replay digest verified",
+    "gzip USTAR extraction: regular bytes only; child notebook parent/child hashes and offsets",
+    "Native patch diff: exact/candidate labels; side-by-side reconstructed return byte vs byte+1",
+    "Local managed Dependency1.2.3.4 resolved; enum Mode.Fast reconstructed; missing framework references still reported",
+    "Linux GDB companion: same-origin browser pairing, load-without-run, explicit benign launch, real registers, clean End",
+    "Final build: managed dependency, types, selected method, x64 harness target, invocation recipe and reconstructed C# survive true document reload/resume",
+    "Final build: six-step x86 checkpoint survives document reload and verifies replay with current engine fingerprint",
+    "Training ground offline download succeeds; desktop monochrome layout inspected; no captured browser console errors",
+    "Live v0.7: automatic Cloudflare challenge passed; RISC-V 2+3 returned5; real Ghidra C reconstructed addition",
+    "Live v0.7 final engine assets v07r1: ILSpy reconstructed 8281 characters of benign training C#; offline hash-verified download and full source download succeeded; no captured browser console errors",
+    "v0.8 preview: real DiE identified the benign managed sample as MSIL/C# and .NET Core, with 6 findings in 44.9 seconds",
+    "v0.8 preview: real DiE identified UPX on benign packed ELF, 2 findings in 28.1 seconds",
+    "v0.8 preview: saved full investigation, reloaded the document, resumed and retained raw DiE evidence tied to the sample",
+    "Live v0.8: real DiE identified UPX on benign ELF in 29.2 seconds; sample was not executed",
+    "Live v0.8: real DiE identified MSIL/C# and .NET Core on benign ManagedTraining.dll in 43.5 seconds, six findings with heuristic labeling; no captured browser errors",
+    "Live v0.8 final deployment: complete offline download finished with all five part hashes verified in the browser"
+  ],
+  "limitations": [
+    "Framework4.8 generated project compiles; no Windows runtime validation",
+    "Linux companion experimental, not a sandbox; no Windows/CLR or hardware adapters",
+    "Hardware integer profiles support analyst-supplied exact-width ARM/Thumb/AArch64 MMIO; no FP/SIMD, complete peripherals, interrupts, OS or board boot",
+    "SquashFS extraction unsupported",
+    "Low-end laptop hardware matrix not yet performed",
+    "DiE is pinned to engine 3.21 and its matching database, not latest signatures",
+    "DiE sample cap 16 MiB, 180-second timeout, 128 MiB guest RAM plus browser overhead",
+    "ExeInfoPE and dnSpyEx integration excluded from v0.8 per user direction",
+    "Linux model supports only static little-endian ELF64 ET_EXEC x64/AArch64 and selected syscalls; no dynamic linking, threads or guest networking",
+    "Native function harness arguments are single-word integers/pointers; no inferred floating-point, aggregate or variadic ABI handling"
+  ],
+  "publishing": {
+    "worker": "v0.9 deployed to existing custom domain",
+    "repository": "v0.9 source implementation pushed as b2f4d68; live-verification record follows",
+    "implementationCommit": "b2f4d68",
+    "repositoryVerifiedAt": "2026-10-11T02:52:23.917822+00:00",
+    "sourceDownload": "v0.9 source archive packaged, CRC verified locally, production link invoked; downloaded file bytes not inspected",
+    "offlineDownload": "v0.9 live browser download completed; all five parts verified against SHA-256 by the browser before assembly"
+  },
+  "packages": {
+    "/debugger-source.zip": {
+      "bytes": 43859998,
+      "sha256": "0e1c0379eceae122b6bcb9f51cc9ca23213f1b5a1be9faeed063ff3b40bfc4be",
+      "parts": 3
+    },
+    "/detection-source.zip": {
+      "bytes": 512138304,
+      "sha256": "931cbfe05874fc2875216a25be0a852749e4ce156ca50358ae585c4cac71a21b",
+      "parts": 31
+    },
+    "offline": {
+      "bytes": 77268531,
+      "sha256": "233053d6a6341294561ae1d0f7766c6d0d493ee83137cb1eef69dbae9726a0b1",
+      "parts": 5
+    },
+    "guide": {
+      "bytes": 102071,
+      "sha256": "4e8900d059c9464fa4cbc6cb94c7569c0dc09e1711057770b7c13b5daf354d3c"
+    }
+  },
+  "engineAssetRoot": "/engines/v09/",
+  "protections": {
+    "challenge": "Cloudflare security verification appeared and completed automatically in the live v0.9 browser check",
+    "workerFirst": true,
+    "pageBurst": "30 requests / 10 s / IP",
+    "pageMinute": "120 requests / 60 s / IP",
+    "engineBurst": "100 requests / 10 s / IP",
+    "engineMinute": "240 requests / 60 s / IP",
+    "rateBindings": "all five confirmed in v0.9 deployment output",
+    "scope": "SPECTRA static delivery only; not a whole-network audit",
+    "sourceDownloadMinute": "4 archive requests / 60 s / IP"
+  },
+  "unchangedCompanion": "11 checks passed in v0.7; companion unchanged and not rerun for v0.9",
+  "workerVersion": "3ed9b6d9-3a42-4ca6-aab2-ec839cf55559",
+  "fieldGuideUpdate": {
+    "verifiedAt": "2026-10-11T01:21:36.321108+00:00",
+    "workerVersion": "15b7baa2-d865-4062-93c9-ac1e64ff8a79",
+    "implementationCommit": "3a3d96f",
+    "scope": "Training Ground field guide, community links and Church logo cover; analysis engines unchanged",
+    "chapters": 18,
+    "workbenchSectionsCovered": 15,
+    "chapterWordsApproximate": 11368,
+    "checksRerun": {
+      "edge": 9,
+      "archiveStreaming": 3
+    },
+    "browserQA": [
+      "Desktop monochrome cover with exact supplied Church logo; image decoded successfully",
+      "Read the field guide opens reader and focuses the current article",
+      "Search watchpoint finds three relevant chapters; clear restores all eighteen",
+      "Chapter paging boundaries and deep-link reload checked in preview; Open this section preserves sample",
+      "Live Church Git and MalwareBazaar URLs and new-tab protections checked",
+      "Live standalone book resolves through Cloudflare clean URL /guide with eighteen articles and TOC entries",
+      "Final live offline download completed after verifying all five part hashes"
+    ],
+    "packageQA": "Source and offline ZIP CRC, content equality, per-part hashes and combined hashes verified locally; source contains final edge route fix",
+    "packages": {
+      "/debugger-source.zip": {
+        "bytes": 43822379,
+        "sha256": "db46bc114bb0cda4d26fd7ee8a8a0029058a7d24d00ab42c1f979de35d4b0146",
+        "parts": 3
+      },
+      "/detection-source.zip": {
+        "bytes": 512138304,
+        "sha256": "931cbfe05874fc2875216a25be0a852749e4ce156ca50358ae585c4cac71a21b",
+        "parts": 31
+      },
+      "offline": {
+        "bytes": 77207281,
+        "sha256": "472117f1c305ba74c495d15a116602cb807b2ba52203db633bc5c997b0f06415",
+        "parts": 5
+      },
+      "guide": {
+        "bytes": 91804,
+        "sha256": "f9a797e0a9c12b002094b10351a6116e02219f1ebacf7a0c00ce2d102fddfe64"
+      }
+    },
+    "downloadAssetRoot": "/engines/v08guide3/downloads/",
+    "priorEngineVerification": "The earlier 203-check engine release record above is retained as history; those engine groups were not all rerun for this documentation update."
+  },
+  "advancedLabUpdate": {
+    "features": [
+      "Native integer/pointer function harnesses for seven ABI/CPU combinations",
+      "Saved environment recipes, explicit hooks, memory mappings and virtual input files",
+      "Static ELF64 ET_EXEC Linux profile on x64/AArch64 with bounded syscall models",
+      "ARM/Thumb/AArch64 exact-width MMIO sequences and captured writes",
+      "Observed coverage and up to sixteen independent batch cases"
+    ],
+    "tests": {
+      "fullSuiteExitCode": 0,
+      "fullSuiteChecks": 235,
+      "finalAdvancedLabChecks": 33,
+      "finalHardwareRegressionChecks": 23,
+      "distinctChecks": 237
+    },
+    "browserQA": [
+      "Function batch returns 3/5/10 with differing observed paths; interactive session remains at zero steps",
+      "ARM MMIO read41 and write42 recorded as analyst model",
+      "x64 and AArch64 Linux demos echo virtual input and exit0; ARM stack shows argc/argv/auxv",
+      "Linux cases hello/science produce independent output",
+      "Linux recipe, two cases and current state survive document reload; explicit replay verifies saved CPU/model state",
+      "Windows Sleep override skips body and returns supplied zero; seeded and program-written virtual files remain local",
+      "Final engine 34fd5c2ec226: native batch and current function state survive full reload and verified replay"
+    ],
+    "scope": "No full OS or board boot, dynamic Linux linking, threads, CLR or live guest networking. Single-word native argument ABIs only. Model responses and partial operations remain labeled.",
+    "archives": {
+      "spectra-v0.9-source.zip": {
+        "bytes": 43859998,
+        "sha256": "0e1c0379eceae122b6bcb9f51cc9ca23213f1b5a1be9faeed063ff3b40bfc4be"
+      },
+      "spectra-v0.9-offline.zip": {
+        "bytes": 77268531,
+        "sha256": "233053d6a6341294561ae1d0f7766c6d0d493ee83137cb1eef69dbae9726a0b1"
+      }
+    },
+    "verifiedAt": "2026-10-11T02:52:23.917822+00:00",
+    "workerVersion": "3ed9b6d9-3a42-4ca6-aab2-ec839cf55559",
+    "liveBrowserQA": [
+      "Automatic Cloudflare challenge completed; page identifies v0.9",
+      "Native function batches returned 3, 5 and 10; alternate paths showed two added/two missing locations; interactive session remained at zero steps",
+      "ARM register demo recorded analyst MMIO read41 and captured write42",
+      "AArch64 Linux demo loaded without executing, then echoed virtual stdin and exited0",
+      "No captured browser console errors during the live experiment checks",
+      "Training Ground identifies guide0.9; public /guide reload includes all five workflows",
+      "Offline archive browser download completed with all five part hashes verified",
+      "Public app source archive link invoked; final downloaded source bytes not inspected"
+    ]
+  }
+}

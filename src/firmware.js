@@ -31,14 +31,14 @@ function cpio(bytes){let at=0,entries=[],total=0;const align=n=>Math.ceil(n/4)*4
  throw Error('CPIO is truncated or missing its trailer.');
 }
 async function gzip(bytes){const reader=new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip')).getReader(),chunks=[];let n=0;try{while(true){const {done,value}=await reader.read();if(done)break;n+=value.length;if(n>MAX)throw Error('Expanded container exceeds 64 MiB.');chunks.push(value);}}catch(e){await reader.cancel().catch(()=>{});throw e;}const out=new Uint8Array(n);let at=0;for(const b of chunks){out.set(b,at);at+=b.length;}return out;}
-async function inspect(bytes,offset=0){bounded(bytes.length);bounded(offset,bytes.length);bytes=bytes.subarray(offset);let wrapper=null;if(bytes[0]===0x1f&&bytes[1]===0x8b){bytes=await gzip(bytes);wrapper='gzip';}
+async function inspect(bytes,offset=0,decode){bounded(bytes.length);bounded(offset,bytes.length);bytes=bytes.subarray(offset);let wrapper=null;if(bytes[0]===0x1f&&bytes[1]===0x8b){bytes=await gzip(bytes);wrapper='gzip';}
  let format,entries;const magic=string(bytes.subarray(0,6));
  if(bytes[0]===0x50&&bytes[1]===0x4b){format='ZIP';entries=(await root.SpectraArchive.unzip(bytes,{maxBytes:MAX,maxEntry:ENTRY,maxEntries:COUNT})).map(e=>({name:e.name,size:e.bytes.length,offset:e.offset,kind:e.name.endsWith('/')?'directory':'file',bytes:e.name.endsWith('/')?null:e.bytes,compression:e.method===8?'deflate':'stored'}));}
  else if(magic==='070701'||magic==='070702'){format='CPIO '+magic;entries=cpio(bytes);}
  else if(string(bytes.subarray(257,263)).startsWith('ustar')){format='USTAR/PAX';entries=tar(bytes);}
- else if(['hsqs','sqsh'].includes(string(bytes.subarray(0,4))))throw Error('SquashFS signature found. This release does not yet extract SquashFS metadata/fragments/codecs.');
- else throw Error('No supported container at this offset. Supported: ZIP, USTAR/PAX, newc/crc CPIO, and gzip wrappers.');
- return {format,wrapper,containerOffset:offset,expandedSize:bytes.length,entries,note:'Only regular files can be opened. Links and device entries stay metadata. Nested extraction is manual and uses the same byte/time limits.'};
+ else if(['hsqs','sqsh'].includes(string(bytes.subarray(0,4)))){const r=await root.SpectraSquashFS.inspect(bytes,decode);format='SquashFS 4.0 · '+r.codec;entries=r.entries.map(e=>({...e,offsetKind:'inode metadata block'}));}
+ else throw Error('No supported container at this offset. Supported: ZIP, USTAR/PAX, newc/crc CPIO, SquashFS 4.0 (gzip / XZ / Zstandard), and gzip wrappers.');
+ return {format,wrapper,containerOffset:offset,expandedSize:bytes.length,regularBytes:entries.reduce((n,e)=>n+(e.bytes?.length||0),0),entries,note:'Only regular files can be opened. Links and device entries stay metadata. Nested extraction is manual and uses the same byte/time limits.'};
 }
 root.SpectraFirmware={inspect,tar,cpio};if(typeof module!=='undefined')module.exports=root.SpectraFirmware;
 })(globalThis);

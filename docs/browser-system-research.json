@@ -1,0 +1,93 @@
+{
+  "date": "2026-10-11",
+  "browser": "desktop Chromium through Codex in-app browser; physical mobile devices not tested",
+  "upstream": "https://github.com/ktock/qemu-wasm",
+  "assetOrigin": "https://ktock.github.io/qemu-wasm-demo/",
+  "distributedInSpectra": false,
+  "network": "-nic none; no proxy, socket netdev, or host file bridge configured",
+  "assets": {
+    "qemu-system-aarch64.wasm": {
+      "bytes": 57471585,
+      "sha256": "b37148882e0b7e6d3ca93072439f5680069c303cbb0ee5b6901b9beb395cde42"
+    },
+    "qemu-system-aarch64.data": {
+      "bytes": 26700273,
+      "sha256": "05d911da1501810b8a55813e04e8464534113a533a88209343cb6a6d99f9a52e"
+    },
+    "qemu-arm-out.js": {
+      "bytes": 222823,
+      "sha256": "88997f526b8ddd53a8c5da9b3ecab052851175e532f89ecb5425aa00e494d7a6"
+    },
+    "qemu-arm-load.js": {
+      "bytes": 7192,
+      "sha256": "640331eab4a3ed289ffd9cb08e37e4be9f803b4f9e83a5f5911c327bb4dbb278"
+    },
+    "qemu-x64-prototype/qemu-system-x86_64.wasm": {
+      "bytes": 40799480,
+      "sha256": "f53107a35029d676aa551cd00d042f4f65af39a89bf72464494321fafdf54191"
+    },
+    "qemu-x64-prototype/load-rootfs.data": {
+      "bytes": 82611515,
+      "sha256": "e2facfffb787471a8784863fd8bf77dd87f098809a9b5cd54d9f082929596b3a"
+    },
+    "qemu-x64-prototype/load-kernel.data": {
+      "bytes": 11666432,
+      "sha256": "dd239e40daf62dfb34e1bedb281ee66a98ae9664935d0471c026726629a52c25"
+    },
+    "qemu-x64-prototype/load-initramfs.data": {
+      "bytes": 9699151,
+      "sha256": "84fd4d99c66dc78302428ea381c14252aad2c604fc16021d19c7dd12679fc09c"
+    }
+  },
+  "experiments": [
+    {
+      "target": "AArch64 Raspberry Pi3A+",
+      "wasmMemoryMiB": 2300,
+      "guestMemoryMiB": 512,
+      "translationCacheMiB": 64,
+      "cpus": 4,
+      "result": "PASS benign shell commands",
+      "observed": [
+        "Linux6.1.21-v8; uname -m returned aarch64",
+        "Shell visible by elapsed178.8s; precise first-prompt time not recorded",
+        "Mounted proc; MemTotal429220kB; network devices only lo",
+        "Mounted tmpfs; wrote and read browser-only RE in /tmp/probe"
+      ],
+      "caveats": [
+        "Board emitted GPIO, mailbox and MMC errors; not every device is modeled",
+        "init=/bin/sh has no job control; root initially read-only",
+        "2.3GiB Wasm reservation plus browser overhead is unsuitable as a universal mobile default",
+        "No snapshots/evidence bridge/reproducible distribution integration tested"
+      ]
+    },
+    {
+      "target": "AArch64 same board research memory patch",
+      "wasmMemoryMiB": 1024,
+      "translationCacheMiB": 128,
+      "result": "FAIL out of memory near userspace"
+    },
+    {
+      "target": "AArch64 single-thread translation attempt",
+      "wasmMemoryMiB": 1024,
+      "translationCacheMiB": 64,
+      "result": "FAIL worker TypeError tb_ptr_ptr"
+    },
+    {
+      "target": "AArch64 reduced translation cache multithread",
+      "wasmMemoryMiB": 1024,
+      "translationCacheMiB": 64,
+      "result": "kernel startup verified; shell not yet verified"
+    },
+    {
+      "target": "x86_64 Alpine Linux6.12.43",
+      "wasmMemoryMiB": 2300,
+      "guestMemoryMiB": 512,
+      "translationCacheMiB": 64,
+      "result": "default IO-APIC timer panic; noapic retry reached mounted EXT4 root and OpenRC startup; shell not yet verified"
+    },
+    {
+      "target": "RISC-V64 full system",
+      "result": "not executed; upstream build instructions reviewed; no release support claimed"
+    }
+  ]
+}

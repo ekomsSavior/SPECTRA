@@ -3,7 +3,7 @@
   const $=id=>document.getElementById(id), core=SpectraCore;
   const state={result:null,bytes:new Uint8Array(),name:'',hash:'',demo:false,selected:null,tag:'all',page:0,sort:1,filtered:[],view:'strings',hexStart:0,bookmarks:new Set(),notes:{},caseNotes:'',job:0,busy:false};
   const PAGE=100, HEX_PAGE=256, MAX_FILE=64*1024*1024;
-  const titles={detect:['Check the fingerprints.','Toolchains, packers and protectors. Keep the evidence behind the label.','Detect'],lessons:['Get your hands dirty.','Small binaries. Real evidence. No experience required.','Training ground'],compare:["Follow the changes.","Put two versions beside each other. Check what actually changed.","Binary diff"],firmware:["Look inside.","Extract regular files and keep their container provenance.","Firmware files"],decompile:['See the bigger picture.','Reconstruct the logic. Check it against the bytes.','Decompile'],debugger:['Watch it happen.','Step through a routine. Keep track of what changes.','Debugger lab'],recovery:['Peel back a layer.','Decode bytes, trace stack writes, and keep the evidence.','Recovery lab'],code:['Read the code.','Follow calls, inspect branches, and check the bytes.','Disassembly'],functions:['Find the functions.','Entry points, symbols, direct calls, and inferred boundaries.','Functions'],references:['Follow the references.','Trace code to strings, imports, and other code.','Cross-references'],strings:['SPECTRA.','','Strings'],hex:['Under the surface.','Follow the evidence to the exact bytes that produced it.','Hex explorer'],structure:['Read the blueprint.','File identity, memory sections, and the libraries behind the behavior.','File structure'],decoder:['Make it readable.','Peel back a layer. Turn encoded text into something you can investigate.','Decoder lab'],notebook:['Connect the dots.','Keep the evidence, capture your thinking, and take the investigation with you.','Notebook']};
+  const titles={system:["Boot a little world.","A Linux shell, shared files, and checkpoints. All inside this browser.","System lab"],detect:['Check the fingerprints.','Toolchains, packers and protectors. Keep the evidence behind the label.','Detect'],lessons:['Get your hands dirty.','Small binaries. Real evidence. No experience required.','Training ground'],compare:["Follow the changes.","Put two versions beside each other. Check what actually changed.","Binary diff"],firmware:["Look inside.","Extract regular files and keep their container provenance.","Firmware files"],decompile:['See the bigger picture.','Reconstruct the logic. Check it against the bytes.','Decompile'],debugger:['Watch it happen.','Step through a routine. Keep track of what changes.','Debugger lab'],recovery:['Peel back a layer.','Decode bytes, trace stack writes, and keep the evidence.','Recovery lab'],code:['Read the code.','Follow calls, inspect branches, and check the bytes.','Disassembly'],functions:['Find the functions.','Entry points, symbols, direct calls, and inferred boundaries.','Functions'],references:['Follow the references.','Trace code to strings, imports, and other code.','Cross-references'],strings:['SPECTRA.','','Strings'],hex:['Under the surface.','Follow the evidence to the exact bytes that produced it.','Hex explorer'],structure:['Read the blueprint.','File identity, memory sections, and the libraries behind the behavior.','File structure'],decoder:['Make it readable.','Peel back a layer. Turn encoded text into something you can investigate.','Decoder lab'],notebook:['Connect the dots.','Keep the evidence, capture your thinking, and take the investigation with you.','Notebook']};
   const tagLabel={url:'URL',ip:'IP address',domain:'Domain',email:'Email',path:'File path',registry:'Registry',command:'Command',api:'API',base64:'Base64?'};
   const explanations={url:'Looks like a URL. Check its code references before calling it a callback address.',ip:'Looks like an IPv4 address. It could be a destination, a default, or leftover test data.',domain:'Looks like a domain. We have not looked it up or contacted it.',email:'Looks like an email address. Check the surrounding data for context.',path:'A file path or environment variable. Follow its references to see what might read or write there.',registry:'A registry path. The nearby code can tell you whether it gets read, changed, or just printed.',command:'Names a shell or system tool. That does not mean the sample runs it—follow the reference.',api:'An API name worth a look. Check the call and its arguments; normal software uses these too.',base64:'Could be Base64. Send it to the decoder and see what comes back.'};
   let worker=null, workerURL=null, toastTimer=null, searchTimer=null, noteTimer=null, pendingReject=null;
@@ -23,7 +23,7 @@
   async function analyzeFile(file,isDemo=false) {
     if(file.size>MAX_FILE){toast('This release supports files up to 64 MiB.');return;}
     if(!file.size){toast('That file is empty. Open a file containing at least one byte.');return;}
-    persist(); const job=++state.job; resetWorker(); resetComparison(); resetFirmware(); freshInvestigation(); resetCode(); resetRecovery(); resetDetection(); resetDebugger(); resetDecompiler(); state.busy=true;
+    persist(); const job=++state.job; resetWorker(); resetComparison(); resetFirmware(); freshInvestigation(); resetSystemForSample(); resetCode(); resetRecovery(); resetDetection(); resetDebugger(); resetDecompiler(); state.busy=true;
     $('analysis-status').textContent='Analyzing…';$('analysis-status').style.display='';
     $('file-name').textContent=file.name;$('file-size').textContent=human(file.size);$('file-format').textContent='Reading';$('file-arch').textContent='—';$('file-hash').textContent='Computing…';$('demo-label').hidden=!isDemo;
     notice('Analyzing locally. You can open another file to replace this job.');
@@ -37,7 +37,7 @@
       const timeout=setTimeout(()=>pendingReject?.(Error('Analysis exceeded the 30-second limit. Try a smaller file.')),30000);
       let data;try{data=await finish;}finally{clearTimeout(timeout);}
       if(job!==state.job)return;
-      resetWorker();state.result=data.result;state.bytes=new Uint8Array(buffer);state.name=file.name;state.hash=data.hash;state.demo=isDemo;state.selected=null;state.tag='all';state.page=0;state.hexStart=0;state.busy=false;
+      resetWorker();state.result=data.result;state.bytes=new Uint8Array(buffer);state.name=file.name;state.hash=data.hash;state.demo=isDemo;state.selected=null;state.tag='all';state.page=0;state.hexStart=0;state.busy=false;codeHistory.clear();
       $('search').value='';$('encoding').value='default';$('min-length').value='4';$('unique').checked=false;
       restoreLocal();renderOverview();setRecoveryRange();setDebuggerDefaults();setDecompilerDefaults();applyFilter();
       const first=state.filtered.find(s=>s.tags.includes('url'))||state.filtered[0];if(first)selectString(first.id);else renderInspector();
@@ -86,13 +86,13 @@
     $('inspect-refs').onclick=()=>showStringRefs(s);$('copy-selected').onclick=()=>copy(fullText(s));$('inspect-hex').onclick=()=>goHex(s.offset);$('inspect-decode').onclick=()=>sendToDecoder(s);$('inspect-bookmark').onclick=()=>toggleBookmark(s.id);
     $('string-note').oninput=e=>{state.notes[key(s)]=e.target.value.slice(0,20000);schedulePersist();};
   }
-  function toggleBookmark(id) {const s=state.result.strings[id],k=key(s);if(state.bookmarks.has(k))state.bookmarks.delete(k);else state.bookmarks.add(k);persist();applyFilter(false);renderInspector();if(state.view==='notebook')renderNotebook();}
+  function toggleBookmark(id) {const s=state.result.strings[id],k=key(s);if(state.bookmarks.has(k))state.bookmarks.delete(k);else state.bookmarks.add(k);persist();applyFilter(false);renderInspector();if(state.view==='notebook')renderNotebook();trackNavigation();}
   function updateBookmarkCount() {$('bookmark-count').textContent=state.bookmarks.size;$('evidence-count').textContent=state.bookmarks.size;}
   function changeView(view) {
     if(!titles[view])view='strings';state.view=view;document.querySelectorAll('.view').forEach(v=>v.hidden=v.id!=='view-'+view);document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===view));
-    const [title,subtitle,label]=titles[view];$('page-title').innerHTML=esc(title.slice(0,-1))+'<span>.</span>';$('page-title').classList.toggle('spectral-title',view==='strings');$('page-subtitle').textContent=subtitle;$('page-subtitle').hidden=!subtitle;$('breadcrumb-view').textContent=label;history.replaceState(null,'','#'+view);renderView();
+    const [title,subtitle,label]=titles[view];$('page-title').innerHTML=esc(title.slice(0,-1))+'<span>.</span>';$('page-title').classList.toggle('spectral-title',view==='strings');$('page-subtitle').textContent=subtitle;$('page-subtitle').hidden=!subtitle;$('breadcrumb-view').textContent=label;history.replaceState(null,'','#'+view);renderView();document.dispatchEvent(new Event('spectra-view'));if(view==='notebook')renderLibrary();trackNavigation();
   }
-  function renderView(){if(state.view==='detect')renderDetection();if(state.view==='decompile')renderDecompiler();if(state.view==='debugger')renderDebugger();if(state.view==='recovery')renderRecovery();if(state.view==='code')renderCode();if(state.view==='functions')renderFunctions();if(state.view==='references')renderReferences();renderLearning();if(state.view==='hex')renderHex();if(state.view==='structure')renderStructure();if(state.view==='notebook')renderNotebook();}
+  function renderView(){if(state.view==='system')renderSystem();if(state.view==='detect')renderDetection();if(state.view==='decompile')renderDecompiler();if(state.view==='debugger')renderDebugger();if(state.view==='recovery')renderRecovery();if(state.view==='code')renderCode();if(state.view==='functions')renderFunctions();if(state.view==='references')renderReferences();renderLearning();if(state.view==='hex')renderHex();if(state.view==='structure')renderStructure();if(state.view==='notebook')renderNotebook();}
   function goHex(offset){state.hexStart=Math.max(0,Math.floor(offset/16)*16);changeView('hex');}
   function renderHex() {
     const bytes=state.bytes,s=selected();state.hexStart=Math.max(0,Math.min(state.hexStart,Math.max(0,Math.floor((bytes.length-1)/16)*16)));const end=Math.min(bytes.length,state.hexStart+HEX_PAGE);
@@ -125,7 +125,7 @@
     if(!state.result||state.busy){toast('Wait for analysis to finish.');return;}
     if(kind==='project'){saveProject();$('export-dialog').close();return;}
     const rows=state.filtered;
-    if(kind==='json'){const {strings,blocks,...metadata}=state.result;download(baseName()+'.report.json',JSON.stringify({tool:'SPECTRA v0.9',createdAt:new Date().toISOString(),name:state.name,sha256:state.hash,syntheticDemo:state.demo,metadata,filters:{query:$('search').value,encoding:$('encoding').value,tag:state.tag,minLength:$('min-length').value,unique:$('unique').checked},strings:rows.map(s=>({...s,text:fullText(s),clipped:false})),investigation:project(),caveat:'Static text heuristics are not malware verdicts.'},null,2));}
+    if(kind==='json'){const {strings,blocks,...metadata}=state.result;download(baseName()+'.report.json',JSON.stringify({tool:'SPECTRA v0.10',createdAt:new Date().toISOString(),name:state.name,sha256:state.hash,syntheticDemo:state.demo,metadata,filters:{query:$('search').value,encoding:$('encoding').value,tag:state.tag,minLength:$('min-length').value,unique:$('unique').checked},strings:rows.map(s=>({...s,text:fullText(s),clipped:false})),investigation:project(),caveat:'Static text heuristics are not malware verdicts.'},null,2));}
     if(kind==='csv'){const cell=v=>'"'+String(v).replace(/^[=+@-]/,"'$&").replace(/"/g,'""')+'"';const lines=[['offset_hex','offset_decimal','encoding','length','byte_length','tags','text','note'],...rows.map(s=>[hex(s.offset),s.offset,s.encoding,s.length,s.byteLength,s.tags.join(';'),fullText(s),state.notes[key(s)]||''])];download(baseName()+'.strings.csv',lines.map(r=>r.map(cell).join(',')).join('\r\n'),'text/csv;charset=utf-8');}
     if(kind==='txt')download(baseName()+'.strings.txt',rows.map(s=>fullText(s)).join('\n'),'text/plain;charset=utf-8');
     $('export-dialog').close();toast('Exported '+fmt(rows.length)+' filtered strings.');
@@ -135,14 +135,19 @@
   /*__RECOVERY_UI__*/
   /*__DEBUGGER_UI__*/
 /*__LAB_UI__*/
+/*__LAB_FORMS_UI__*/
   /*__DECOMPILER_UI__*/
 /*__DETECTION_UI__*/
   /*__HARNESS_UI__*/
   /*__PROJECT_UI__*/
+/*__LIBRARY_UI__*/
+/*__SYSTEM_UI__*/
   /*__COMPARE_UI__*/
   /*__FIRMWARE_UI__*/
 /*__LESSONS_UI__*/
 /*__GUIDE_UI__*/
+/*__ACCESS_UI__*/
+/*__NAVIGATION_UI__*/
   document.querySelector('.brand').onclick=e=>{e.preventDefault();changeView('strings');};
   document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>changeView(b.dataset.view));
   $('open-top').onclick=()=>$('file-input').click();$('file-input').onchange=e=>{if(e.target.files[0])analyzeFile(e.target.files[0]);e.target.value='';};$('demo-button').onclick=loadDemo;
