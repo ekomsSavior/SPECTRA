@@ -1,42 +1,54 @@
 {
-  "version": "0.13",
-  "status": "Deployed; public ARM PIE demo, local reported ELF and full regression verified",
-  "generatedAt": "2026-10-12T00:26:21.390512+00:00",
+  "version": "0.14",
+  "status": "Deployed; reported ARM64 PE static continuation and full regression verified",
+  "generatedAt": "2026-10-12T02:13:03.889685+00:00",
   "site": "https://spectra.churchofmalware.org/",
   "sourceRepository": "https://git.churchofmalware.org/ek0mssavi0r/SPECTRA",
-  "baselineWorkerVersion": "ffee683a-47c8-43b8-a431-853c2ff247aa",
-  "baselineGitCommit": "53ed9036b66035dad5685155ff4464db9c505ee1",
-  "workerVersion": "f4b758c4-2ff2-496f-8b61-befe7d17cd87",
-  "engineAssetRoot": "/engines/v013/",
-  "checksPassed": 312,
+  "baselineWorkerVersion": "f4b758c4-2ff2-496f-8b61-befe7d17cd87",
+  "baselineGitCommit": "c84ec701bf2a8d6531c290b245b94059ad4a61bd",
+  "workerVersion": "4e47c0df-cb31-4616-bc15-1b9bcef94376",
+  "engineAssetRoot": "/engines/v014/",
+  "checksPassed": 325,
   "testGroups": {
-    "nodeTests": 267,
+    "nodeTests": 280,
     "managedWasm": 7,
     "managedDependencies": 8,
     "generatedHarness": 30,
-    "armPieIncludedInNodeTests": 16
+    "continuationIncludedInNodeTests": 13
   },
   "changes": [
-    "ARM/Thumb EABI5 static PIE loader with strict relative-relocation validation and deterministic load bias",
-    "Default startup-owned relocation; explicit loader-owned alternate-entry mode prevents double application at original entry",
-    "Single-thread TLS access, brk guard pages, image mprotect, ARM O_LARGEFILE and ARM ADDLS control-flow correction",
-    "Named unsupported syscall evidence, integrated setup controls, guide and benign fixtures"
+    "Retained static traversal with explicit 60,000-instruction continuation passes, bounded to 1,000,000 instructions / 16 MiB decoded",
+    "Cancel/timeout preserve completed evidence; stale workers cannot overwrite a later session",
+    "Selections, corrected names and saved investigation depth survive continuation; depth recomputes locally on import",
+    "Decoded-byte coverage and architecture-specific limitations are separate; updated field guide, source and offline releases"
   ],
   "browserQA": [
-    "ARM PIE default setup initializes at zero steps; relocation watchpoint records exact before/after bytes",
-    "Save, run to exit 0 with pie output, restore by verified replay",
-    "Custom load bias immediately updates entry and preflight; loader-owned mode blocks original entry, succeeds at alternate entry",
-    "Thumb PIE demo exits 0 with pie output",
-    "Reported ELF validates 522 relocation records, initializes at 0x10003400 and advances 1000 browser instructions within run budget",
-    "Public v0.13 lazy-loads ARM fixture and engine, initializes at zero steps and exits 0 with pie output"
+    "Reported sample reaches 60,000 instructions and offers Continue analysis",
+    "Cancel retains prior evidence and function selection; retry rebuilds and extends to 74,210 instructions",
+    "Retained-worker continuation finishes at 74,210 instructions with Blocks view and selected function preserved",
+    "No console errors observed in local browser QA",
+    "Published v0.14 passes the existing automatic challenge, analyzes the reported sample locally and continues from 60,000 to 74,210 instructions; no console errors observed."
   ],
   "sampleCheck": {
-    "sha256": "97b2e9c27879eb5aa3e89358a97aa88249b27bee91923bd81350111ba91c5802",
-    "method": "Local WASM CPU emulation, deterministic data-only Linux model; no native launch, host files or network",
-    "attempts": 35084,
-    "stop": "clock_gettime64 (ARM syscall 403) is not modeled",
-    "firstRelocatedPointer": "0x1000371c",
-    "limits": "This proves bounded startup progress, not complete execution."
+    "sha256": "b6b2c5caa7c4dbb6931671d605d2e297b7e067fefe11b180ac4a113588adbcf3",
+    "method": "Static local parsing and Capstone disassembly only; no sample instruction execution or upload",
+    "initial": {
+      "instructions": 60000,
+      "functions": 654,
+      "references": 13829,
+      "decodedBytes": 240000
+    },
+    "continued": {
+      "equalEvidence": true,
+      "instructions": 74210,
+      "functions": 752,
+      "references": 17177,
+      "decodedBytes": 296840,
+      "unresolved": 73,
+      "queued": 0
+    },
+    "executableBytes": 3912704,
+    "limits": "Exhausted traversal queue is not proof of whole-file coverage or complete indirect-target recovery."
   },
   "protections": {
     "challenge": "Existing Cloudflare challenge policy retained; live page loaded successfully without a manual CAPTCHA action.",
@@ -45,14 +57,14 @@
     "pageMinute": "120 requests / 60 s / IP",
     "engineBurst": "100 requests / 10 s / IP",
     "engineMinute": "240 requests / 60 s / IP",
-    "rateBindings": "All five existing per-IP bindings confirmed in v0.13 deployment",
+    "rateBindings": "All five existing per-IP bindings confirmed in v0.14 deployment",
     "scope": "SPECTRA static delivery only; not a whole-network audit",
     "sourceDownloadMinute": "4 archive requests / 60 s / IP"
   },
   "packages": {
     "/debugger-source.zip": {
-      "bytes": 44345952,
-      "sha256": "f2c8bb5fb799690ceb4c80abe8bc9729b16d369ab74213b92ade39b5ca415f0b",
+      "bytes": 44352131,
+      "sha256": "619c89d578c5a1ece99f51e92a702e51c508ee727190eff0cd4fdc8c1b0c026d",
       "parts": 3
     },
     "/detection-source.zip": {
@@ -61,15 +73,15 @@
       "parts": 31
     },
     "offline": {
-      "bytes": 78180639,
-      "sha256": "e7d4ff027d9a83aeda2c07c6911255de406807eb45bc9a50debc8238eb6e0674",
+      "bytes": 78189293,
+      "sha256": "5924f897513e49ee886a9b9d2641c0a1f6421ff8e5389a47b3fbf77236c17d42",
       "parts": 5
     }
   },
-  "packageQA": "Source/offline ZIP CRCs verified; source/DiE/offline part sizes, hashes and assembled hashes verified. Only benign new fixtures distributed.",
-  "scope": "Little-endian ARM/Thumb EABI5 static PIE with relative REL records. No native dependency linker, PT_TLS image layout, threads, signals, full kernel or live network. No real malware sample or derived sample code distributed.",
+  "packageQA": "Source/offline ZIP CRCs, source/DiE/offline part sizes, hashes and assembled hashes verified. No reported malware sample or recovered code distributed.",
+  "scope": "Bounded static disassembly continuation. Binary comparison retains its default pass. Does not add runtime indirect-target resolution or full executable coverage. Larger passes require more memory; mobile performance is not guaranteed.",
   "publishing": {
-    "worker": "Deployed to existing custom domain with all five rate bindings retained",
+    "worker": "Deployed to existing custom domain; five rate bindings retained",
     "repository": "Signed-in Church Git Apply Patch; final commit recorded in local work plan"
   }
 }

@@ -1,4 +1,4 @@
-# SPECTRA 0.13 — Church of Malware
+# SPECTRA 0.14 — Church of Malware
 
 A free browser reverse-engineering workbench. Open a binary, follow the evidence, keep the investigation. Optional explanations use the same tools and evidence as the professional workspace.
 
@@ -6,6 +6,10 @@ A free browser reverse-engineering workbench. Open a binary, follow the evidence
 - Source: https://git.churchofmalware.org/ek0mssavi0r/SPECTRA
 - No account, paid tier, sample uploads, paid API, or telemetry in the analysis app. Engines are served by the Church. Cloudflare receives normal delivery metadata; sample analysis stays local.
 - Black, gray and white; Creepster wordmark. Teaching defaults off.
+
+## Resumable disassembly (0.14)
+
+**Continue analysis** extends a bounded static pass without discarding its decoded instructions or queued targets. Each click adds up to 60,000 instructions; the cumulative ceiling is 1,000,000 instructions / 16 MiB decoded bytes. Cancel keeps the last completed result. Investigation projects retain the requested depth, selections and annotations; restored code is recomputed locally. Coverage and unresolved indirect-flow limits remain explicit. [Scope and verification](docs/releases/v0.14.md).
 
 ## ARM static PIE debugger release (0.13)
 
@@ -89,7 +93,7 @@ python3 scripts/package-source.py
 python3 scripts/serve.py --port 4173
 ```
 
-Open `http://127.0.0.1:4173/`. Keep the **whole dist directory**, including `engines/v013`; a saved HTML file alone does not contain the decompilers or hardware engines. All runtime assets are included locally; no CDN or API is needed. The localhost server applies the production CSP. The source ZIP includes all browser runtime assets. To publish the large DiE runtime source archive too, collect the pinned inputs documented in docs/DETECTION.md and run `python3 scripts/package-detection-source.py /path/to/source-inputs` after package-source.py. Training ground also offers a complete offline ZIP download, assembled from verified static parts to fit the host asset limit. A complete offline ZIP can be made with `python3 scripts/package-offline.py`. Engine rebuilds need the documented upstream toolchains, not for ordinary app builds.
+Open `http://127.0.0.1:4173/`. Keep the **whole dist directory**, including `engines/v014`; a saved HTML file alone does not contain the decompilers or hardware engines. All runtime assets are included locally; no CDN or API is needed. The localhost server applies the production CSP. The source ZIP includes all browser runtime assets. To publish the large DiE runtime source archive too, collect the pinned inputs documented in docs/DETECTION.md and run `python3 scripts/package-detection-source.py /path/to/source-inputs` after package-source.py. Training ground also offers a complete offline ZIP download, assembled from verified static parts to fit the host asset limit. A complete offline ZIP can be made with `python3 scripts/package-offline.py`. Engine rebuilds need the documented upstream toolchains, not for ordinary app builds.
 
 ```bash
 npm ci --prefix tests --ignore-scripts

@@ -2,29 +2,61 @@
 const codeState={data:null,worker:null,url:null,timer:null,busy:false,error:'',address:null,functionAddress:null,page:0,tab:'assembly',refQuery:'',refPage:0,pendingString:null};
 let explainEnabled=false;try{explainEnabled=localStorage.getItem('spectra-explain')==='on';}catch{}
 function stopCode(message=''){if(codeState.worker)codeState.worker.terminate();if(codeState.url)URL.revokeObjectURL(codeState.url);clearTimeout(codeState.timer);Object.assign(codeState,{worker:null,url:null,timer:null,busy:false,error:message});}
-function resetCode(){stopCode();Object.assign(codeState,{data:null,byAddress:null,address:null,functionAddress:null,page:0,refQuery:'',refPage:0,refString:null,refFunction:null,pendingString:null});if($('code-summary'))renderCode();}
-function startCode(manual=null){
+function resetCode(){stopCode();Object.assign(codeState,{data:null,byAddress:null,restoreSelection:null,address:null,functionAddress:null,page:0,refQuery:'',refPage:0,refString:null,refFunction:null,pendingString:null});if($('code-summary'))renderCode();}
+function startCode(manual=null,budget=null,continuing=false){
  if(state.busy||!state.result)return toast('Open a file and let strings finish first.');
- stopCode();codeState.busy=true;codeState.error='';const job=state.job;
+ if(continuing&&codeState.busy)return;
+ const retained=continuing&&codeState.worker;
+ if(!retained)stopCode();
+ codeState.busy=true;codeState.error='';codeState.targetBudget=budget||{instructions:60000,decodedBytes:4*1024*1024};codeState.keepSelection=continuing;codeState.rebuilding=continuing&&!retained;
+ const job=state.job;
  try{
- const source=$('engine-source').textContent+'\n'+$('capstone-source').textContent+'\n'+$('code-source').textContent+`\nonmessage=async e=>{try{const cs=await MCapstone({wasmBinary:e.data.wasm});const result=SpectraCode.analyze(cs,new Uint8Array(e.data.buffer),e.data.meta,e.data.options);postMessage({result});}catch(e){postMessage({error:String(e.message||e)});}};`;
- codeState.url=URL.createObjectURL(new Blob([source],{type:'text/javascript'}));codeState.worker=new Worker(codeState.url);
- codeState.worker.onmessage=e=>{if(job!==state.job)return;stopCode(e.data.error||'');if(e.data.result){codeState.data=e.data.result;for(const f of codeState.data.functions){f.originalName??=f.name;f.name=annotationName(f.address,f.name);}codeState.byAddress=new Map(codeState.data.instructions.map(i=>[i.address,i]));codeState.functionAddress=codeState.data.functions[0]?.address??null;codeState.address=codeState.functionAddress;codeState.page=0;if(codeState.restoreSelection){Object.assign(codeState,codeState.restoreSelection);codeState.restoreSelection=null;}toast('Code is ready. Follow a call or pick a function.');if(codeState.pendingString!==null){const s=state.result.strings[codeState.pendingString];codeState.pendingString=null;if(s)showStringRefs(s);}}finishPendingStack();renderView();renderInspector();renderLearning();};
- codeState.worker.onerror=e=>{stopCode(e.message||'Code worker failed.');finishPendingStack();renderView();};
- codeState.timer=setTimeout(()=>{stopCode('Code analysis hit the 45-second limit. Try a smaller raw range.');finishPendingStack();renderView();},45000);
- const wasm=Uint8Array.from(atob($('capstone-wasm').textContent.trim()),c=>c.charCodeAt(0));
- const {blocks,...meta}=state.result;codeState.worker.postMessage({buffer:state.bytes.buffer,meta,wasm,options:{manual,hints:investigation.analysisHints,signatures:investigation.signatures}},[wasm.buffer]);
+ if(!retained){
+ const source=$('engine-source').textContent+'\n'+$('capstone-source').textContent+'\n'+$('code-source').textContent+'\n'+$('code-worker-source').textContent;
+ codeState.url=URL.createObjectURL(new Blob([source],{type:'text/javascript'}));const worker=codeState.worker=new Worker(codeState.url);
+ worker.onmessage=e=>{
+  if(job!==state.job||worker!==codeState.worker)return;
+  clearTimeout(codeState.timer);codeState.timer=null;codeState.busy=false;
+  if(e.data.error)stopCode(e.data.error+' Previous results kept.');
+  if(e.data.result){
+   const keep=codeState.keepSelection;codeState.data=e.data.result;
+   for(const f of codeState.data.functions){f.originalName??=f.name;f.name=annotationName(f.address,f.name);}
+   codeState.byAddress=new Map(codeState.data.instructions.map(i=>[i.address,i]));
+   if(!keep){codeState.functionAddress=codeState.data.functions[0]?.address??null;codeState.address=codeState.functionAddress;codeState.page=0;}
+   if(codeState.restoreSelection){Object.assign(codeState,codeState.restoreSelection);codeState.restoreSelection=null;}
+   if(!codeState.data.continuation?.canContinue)stopCode();
+   toast(codeState.data.truncated?'Code pass ready. Review the coverage warning before continuing.':'Code traversal finished. Indirect targets can still need your input.');
+   if(codeState.pendingString!==null){const s=state.result.strings[codeState.pendingString];codeState.pendingString=null;if(s)showStringRefs(s);}
+   scheduleWorkspace();
+  }
+  finishPendingStack();renderView();renderInspector();renderLearning();
+ };
+ worker.onerror=e=>{if(job!==state.job||worker!==codeState.worker)return;stopCode(e.message||'Code worker failed. Previous results kept.');finishPendingStack();renderView();};
+ }
+ const worker=codeState.worker;
+ codeState.timer=setTimeout(()=>{if(worker!==codeState.worker)return;stopCode('This pass hit the 45-second limit. Previous results kept. Retry Continue analysis, or inspect a smaller raw range.');finishPendingStack();renderView();},45000);
+ if(retained)worker.postMessage({action:'continue',budget:codeState.targetBudget});
+ else{
+  const wasm=Uint8Array.from(atob($('capstone-wasm').textContent.trim()),c=>c.charCodeAt(0));
+  const {blocks,...meta}=state.result;worker.postMessage({action:'start',buffer:state.bytes.buffer,meta,wasm,budget:codeState.targetBudget,options:{manual,hints:investigation.analysisHints,signatures:investigation.signatures}},[wasm.buffer]);
+ }
  }catch(e){stopCode(e.message);}
  renderView();
 }
+function continueCode(){
+ const d=codeState.data;if(!d?.continuation?.canContinue||codeState.busy)return;
+ const ceiling=d.continuation.ceiling,budget={instructions:Math.min(ceiling.instructions,d.limits.instructions+60000),decodedBytes:Math.min(ceiling.decodedBytes,d.limits.decodedBytes+4*1024*1024)};
+ startCode(d.raw,budget,true);
+}
 function selectedFunction(){return codeState.data?.functions.find(f=>f.address===codeState.functionAddress);}
 function visibleCode(){const data=codeState.data;if(!data)return [];const f=selectedFunction();let rows=f?f.instructionAddresses.map(va=>codeState.byAddress.get(va)).filter(Boolean):data.instructions;const q=$('code-search').value.trim().toLowerCase();if(q)rows=rows.filter(i=>(hex(i.address)+' '+i.mnemonic+' '+i.operands).toLowerCase().includes(q));return rows;}
-function goCode(address,keepFunction=false){if(!codeState.data)return;trackNavigation();const i=codeState.byAddress.get(address);if(!i){toast('That address was not decoded. Check its file bytes or use a raw range.');return;}codeState.address=address;if(!keepFunction)codeState.functionAddress=i.functionAddress;$('code-search').value='';codeState.page=Math.max(0,Math.floor(visibleCode().findIndex(v=>v.address===address)/120));codeState.tab='assembly';changeView('code');}
+function goCode(address,keepFunction=false){if(!codeState.data)return;trackNavigation();const i=codeState.byAddress.get(address);if(!i){toast(codeState.data.continuation?.canContinue?'That address is not decoded yet. Try Continue analysis, or inspect its bytes.':'That address was not decoded. Check its file bytes or use a raw range.');return;}codeState.address=address;if(!keepFunction)codeState.functionAddress=i.functionAddress;$('code-search').value='';codeState.page=Math.max(0,Math.floor(visibleCode().findIndex(v=>v.address===address)/120));codeState.tab='assembly';changeView('code');}
 function codeButton(address,label){if(!Number.isSafeInteger(address)||address<0)return '<span class="muted">Invalid code address</span>';return `<button class="text-button mono" data-code-address="${address}">${esc(investigation.annotations.get(address)?.name||label||hex(address))} ↗</button>`;}
 function bindCodeLinks(container){container.querySelectorAll('[data-code-address]').forEach(b=>{b.onclick=()=>goCode(+b.dataset.codeAddress);if(b.tagName.toLowerCase()==='g')b.onkeydown=e=>{if(['Enter',' '].includes(e.key)){e.preventDefault();goCode(+b.dataset.codeAddress);}};});container.querySelectorAll('[data-target-offset]').forEach(b=>b.onclick=()=>goHex(+b.dataset.targetOffset));container.querySelectorAll('[data-string-id]').forEach(b=>b.onclick=()=>{changeView('strings');selectString(+b.dataset.stringId);});}
 function renderCode(){
- const d=codeState.data;$('code-run').disabled=codeState.busy||state.busy;$('code-cancel').hidden=!codeState.busy;$('code-export').disabled=!d;
- $('code-summary').textContent=codeState.busy?'Decoding locally… the sample stays inert.':codeState.error||(!d?'Ready when you are. Decode the mapped executable bytes.':`${fmt(d.instructions.length)} instructions · ${fmt(d.functions.length)} function starts · ${fmt(d.references.length)} references · ${d.unresolved} indirect transfers needing confirmation`);
+ const d=codeState.data;$('code-run').disabled=codeState.busy||state.busy;$('code-cancel').hidden=!codeState.busy;$('code-export').disabled=!d;$('code-continue').hidden=!d?.continuation?.canContinue;$('code-continue').disabled=codeState.busy||state.busy;
+ $('code-summary').textContent=codeState.busy?`Decoding locally, up to ${fmt(codeState.targetBudget.instructions)} instructions… ${codeState.rebuilding?'Rebuilding the saved pass. ':''}Cancel keeps your previous results.`:codeState.error||(!d?'Ready when you are. Decode the mapped executable bytes.':`${fmt(d.instructions.length)} instructions · ${fmt(d.functions.length)} function starts · ${fmt(d.references.length)} references · ${d.unresolved} indirect transfers needing confirmation`);
+ $('code-coverage').textContent=d?`${fmt(d.decodedBytes)} bytes decoded across ${fmt(d.coverage?.executableBytes||0)} file-backed executable bytes. ${d.truncated?'Partial traversal.':'Queued traversal finished; this is not proof that every function or runtime path was found.'} Deeper passes use more memory; save your investigation before continuing on a small device.`:'';
  $('code-warnings').textContent=d?d.warnings.join(' '):'';
  $('code-method').textContent=d?`${d.mode} · ${d.method}. Function boundaries are inferred unless metadata supplies a size. Indirect and switch edges retain their evidence; runtime targets can differ.`:'PE and ELF: x86, x64, ARM, Thumb, AArch64, MIPS32/64. Other formats: choose a raw range.';
  const options='<option value="all">All decoded instructions</option>'+(d?.functions||[]).filter((f,i)=>i<2000||f.address===codeState.functionAddress).map(f=>`<option value="${f.address}">${esc(f.name)} · ${hex(f.address)}</option>`).join('');$('code-function').innerHTML=options;$('code-function').value=codeState.functionAddress===null?'all':String(codeState.functionAddress);
@@ -82,11 +114,11 @@ function renderLearning(){
  $('learning-content').innerHTML=`<h3>${esc(title)}</h3><p>${esc(body)}</p><p class="muted">${esc(next)}</p>`;
 }
 $('learn-toggle').onclick=()=>{explainEnabled=!explainEnabled;try{localStorage.setItem('spectra-explain',explainEnabled?'on':'off');}catch{}renderLearning();renderInspector();};$('learn-close').onclick=()=>{explainEnabled=false;try{localStorage.setItem('spectra-explain','off');}catch{}renderLearning();renderInspector();};
-$('code-run').onclick=()=>startCode();$('functions-run').onclick=()=>{changeView('code');startCode();};$('refs-run').onclick=()=>startCode();$('code-cancel').onclick=()=>{stopCode('Stopped. You can run analysis again.');renderCode();};
+$('code-run').onclick=()=>startCode();$('code-continue').onclick=continueCode;$('functions-run').onclick=()=>{changeView('code');startCode();};$('refs-run').onclick=()=>startCode();$('code-cancel').onclick=()=>{stopCode(codeState.data?'Stopped. Previous results kept. Continue analysis will rebuild the retained depth before extending it.':'Stopped. Run Analyze code when ready.');finishPendingStack();renderCode();};
 $('code-function').onchange=e=>{codeState.functionAddress=e.target.value==='all'?null:Number(e.target.value);codeState.page=0;codeState.address=codeState.functionAddress;renderCode();};$('code-search').oninput=()=>{codeState.page=0;renderCode();};
 $('assembly-body').onclick=e=>{const row=e.target.closest('[data-instruction]');if(row){codeState.address=Number(row.dataset.instruction);renderCode();}};$('assembly-body').onkeydown=e=>{if(e.key==='Enter')e.target.closest('[data-instruction]')?.click();};
 $('code-prev').onclick=()=>{codeState.page--;renderCode();};$('code-next').onclick=()=>{codeState.page++;renderCode();};$('assembly-tab').onclick=()=>{codeState.tab='assembly';renderCode();};$('flow-tab').onclick=()=>{codeState.tab='flow';renderCode();};
 $('code-jump').onclick=()=>{const raw=$('code-address').value.trim(),n=Number(raw);if(!/^(?:0x[0-9a-f]+|\d+)$/i.test(raw)||!Number.isSafeInteger(n))return toast('Use a decimal VA or hex with 0x.');goCode(n);};$('code-address').onkeydown=e=>{if(e.key==='Enter')$('code-jump').click();};
 $('raw-run').onclick=()=>{const read=id=>{const s=$(id).value.trim();return /^(?:0x[0-9a-f]+|\d+)$/i.test(s)?Number(s):NaN;};startCode({offset:read('raw-offset'),size:read('raw-size'),address:read('raw-address'),architecture:$('raw-architecture').value,endian:$('raw-endian').value});};
 $('function-search').oninput=renderFunctions;$('refs-search').oninput=()=>{codeState.refPage=0;renderReferences();};$('refs-kind').onchange=()=>{codeState.refPage=0;renderReferences();};$('refs-clear').onclick=()=>{codeState.refString=null;codeState.refFunction=null;codeState.refPage=0;$('refs-search').value='';$('refs-kind').value='all';renderReferences();};$('refs-prev').onclick=()=>{codeState.refPage--;renderReferences();};$('refs-next').onclick=()=>{codeState.refPage++;renderReferences();};
-$('code-export').onclick=()=>{if(codeState.data)download(baseName()+'.code.json',JSON.stringify({tool:'SPECTRA 0.13',sha256:state.hash,sample:state.name,createdAt:new Date().toISOString(),...codeState.data},null,2));};
+$('code-export').onclick=()=>{if(codeState.data)download(baseName()+'.code.json',JSON.stringify({tool:'SPECTRA 0.14',sha256:state.hash,sample:state.name,createdAt:new Date().toISOString(),...codeState.data},null,2));};
