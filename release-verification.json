@@ -1,33 +1,43 @@
 {
-  "version": "0.12.1",
-  "status": "Deployed; ILSpy startup recovery and static decompilation verified",
-  "generatedAt": "2026-10-11T23:36:42.513447+00:00",
+  "version": "0.13",
+  "status": "Deployed; public ARM PIE demo, local reported ELF and full regression verified",
+  "generatedAt": "2026-10-12T00:26:21.390512+00:00",
   "site": "https://spectra.churchofmalware.org/",
   "sourceRepository": "https://git.churchofmalware.org/ek0mssavi0r/SPECTRA",
-  "baselineWorkerVersion": "7313c4e2-7137-44b2-8810-014409964443",
-  "baselineGitCommit": "30029a936bb4b589fc205d7aa42a7f07b5f712da",
-  "engineAssetRoot": "/engines/v0121/",
-  "checksPassed": 38,
+  "baselineWorkerVersion": "ffee683a-47c8-43b8-a431-853c2ff247aa",
+  "baselineGitCommit": "53ed9036b66035dad5685155ff4464db9c505ee1",
+  "workerVersion": "f4b758c4-2ff2-496f-8b61-befe7d17cd87",
+  "engineAssetRoot": "/engines/v013/",
+  "checksPassed": 312,
   "testGroups": {
-    "managedWorker": 8,
-    "managed": 7,
-    "dependencies": 8,
-    "native": 3,
-    "edge": 9,
-    "archiveStreaming": 3
+    "nodeTests": 267,
+    "managedWasm": 7,
+    "managedDependencies": 8,
+    "generatedHarness": 30,
+    "armPieIncludedInNodeTests": 16
   },
-  "originalFailure": "Not reproduced. Exact reported file succeeded on live v0.12 before edits. Root cause remains unconfirmed.",
   "changes": [
-    "Catch ILSpy runtime import and asynchronous startup failures",
-    "Retry without reopening sample or dependencies",
-    "Separate startup from analysis errors and timeouts",
-    "Ignore stale-worker responses and reject non-managed inputs before engine loading"
+    "ARM/Thumb EABI5 static PIE loader with strict relative-relocation validation and deterministic load bias",
+    "Default startup-owned relocation; explicit loader-owned alternate-entry mode prevents double application at original entry",
+    "Single-thread TLS access, brk guard pages, image mprotect, ARM O_LARGEFILE and ARM ADDLS control-flow correction",
+    "Named unsupported syscall evidence, integrated setup controls, guide and benign fixtures"
   ],
   "browserQA": [
-    "Intentional module HTTP503 under production CSP reports startup detail; Retry succeeds, retaining original metadata request",
-    "Managed fixture C# reconstruction and Ghidra native loop after engine switching",
-    "Reported managed executable metadata and whole-assembly C# on live v0.12 and final local build; eight missing framework references remain"
+    "ARM PIE default setup initializes at zero steps; relocation watchpoint records exact before/after bytes",
+    "Save, run to exit 0 with pie output, restore by verified replay",
+    "Custom load bias immediately updates entry and preflight; loader-owned mode blocks original entry, succeeds at alternate entry",
+    "Thumb PIE demo exits 0 with pie output",
+    "Reported ELF validates 522 relocation records, initializes at 0x10003400 and advances 1000 browser instructions within run budget",
+    "Public v0.13 lazy-loads ARM fixture and engine, initializes at zero steps and exits 0 with pie output"
   ],
+  "sampleCheck": {
+    "sha256": "97b2e9c27879eb5aa3e89358a97aa88249b27bee91923bd81350111ba91c5802",
+    "method": "Local WASM CPU emulation, deterministic data-only Linux model; no native launch, host files or network",
+    "attempts": 35084,
+    "stop": "clock_gettime64 (ARM syscall 403) is not modeled",
+    "firstRelocatedPointer": "0x1000371c",
+    "limits": "This proves bounded startup progress, not complete execution."
+  },
   "protections": {
     "challenge": "Existing Cloudflare challenge policy retained; live page loaded successfully without a manual CAPTCHA action.",
     "workerFirst": true,
@@ -35,14 +45,14 @@
     "pageMinute": "120 requests / 60 s / IP",
     "engineBurst": "100 requests / 10 s / IP",
     "engineMinute": "240 requests / 60 s / IP",
-    "rateBindings": "All five existing per-IP bindings confirmed in v0.12.1 deployment",
+    "rateBindings": "All five existing per-IP bindings confirmed in v0.13 deployment",
     "scope": "SPECTRA static delivery only; not a whole-network audit",
     "sourceDownloadMinute": "4 archive requests / 60 s / IP"
   },
   "packages": {
     "/debugger-source.zip": {
-      "bytes": 44330921,
-      "sha256": "17e7664cbc18d1e7e44bf2d456fbfc53143ebbc767b0dad9bd3d811f95c6c03e",
+      "bytes": 44345952,
+      "sha256": "f2c8bb5fb799690ceb4c80abe8bc9729b16d369ab74213b92ade39b5ca415f0b",
       "parts": 3
     },
     "/detection-source.zip": {
@@ -51,15 +61,15 @@
       "parts": 31
     },
     "offline": {
-      "bytes": 78160405,
-      "sha256": "fe027b0f4271a610cc190f260a5860a67ea06fae1a3631e29b7750c09c4df1c3"
+      "bytes": 78180639,
+      "sha256": "e7d4ff027d9a83aeda2c07c6911255de406807eb45bc9a50debc8238eb6e0674",
+      "parts": 5
     }
   },
-  "packageQA": "Source/offline ZIP CRCs and source/DiE part/combined hashes verified.",
-  "scope": "Static inspection only. No malware execution or upload; no samples or reconstructed malware source shipped.",
+  "packageQA": "Source/offline ZIP CRCs verified; source/DiE/offline part sizes, hashes and assembled hashes verified. Only benign new fixtures distributed.",
+  "scope": "Little-endian ARM/Thumb EABI5 static PIE with relative REL records. No native dependency linker, PT_TLS image layout, threads, signals, full kernel or live network. No real malware sample or derived sample code distributed.",
   "publishing": {
-    "worker": "Deployed to the existing custom domain",
-    "repository": "Prepared for signed-in Church Git Apply Patch; final commit recorded in local work plan"
-  },
-  "workerVersion": "ffee683a-47c8-43b8-a431-853c2ff247aa"
+    "worker": "Deployed to existing custom domain with all five rate bindings retained",
+    "repository": "Signed-in Church Git Apply Patch; final commit recorded in local work plan"
+  }
 }

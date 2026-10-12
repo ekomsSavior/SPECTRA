@@ -84,7 +84,7 @@ class Lab{
  step(original){const s=this.s;if(s.stopped)return false;const at=s.pc(),steps=s.steps;let result;
   try{const api=s.windows?.api.get(at),h=this.recipe.hooks.find(h=>h.address===at)||this.recipe.hooks.find(h=>api&&h.api?.toLowerCase()===(api.library+'!'+api.name).toLowerCase());
    if(h)result=this.modeled({address:at,size:0,bytes:[],mnemonic:'HOOK',operands:h.api||h.label},()=>this.invoke(h));
-   else{const i=s.decode(at);if(s.linux&&i&&(s.mode==='x64'&&i.mnemonic==='syscall'||['arm','thumb','aarch64'].includes(s.mode)&&i.mnemonic==='svc'||s.mode==='x86'&&i.mnemonic==='int'&&i.operands==='0x80'))result=this.modeled(i,()=>s.linux.syscall(i));else result=original();}
+   else{const i=s.decode(at);if(s.linux?.handlesTls(i))result=this.modeled(i,()=>s.linux.readTls(i));else if(s.linux&&i&&(s.mode==='x64'&&i.mnemonic==='syscall'||['arm','thumb','aarch64'].includes(s.mode)&&i.mnemonic==='svc'||s.mode==='x86'&&i.mnemonic==='int'&&i.operands==='0x80'))result=this.modeled(i,()=>s.linux.syscall(i));else result=original();}
    if(this.lastError){s.halt('unsupported',this.lastError+' The last CPU operation may be partial.');if(s.trace.at(-1))s.trace.at(-1).partial=true;result=false;this.lastError=null;}
    this.record(at,steps);return result;
   }catch(e){return s.halt('fault','Experiment stopped: '+e.message);}

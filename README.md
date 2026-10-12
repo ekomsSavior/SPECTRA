@@ -1,4 +1,4 @@
-# SPECTRA 0.12.1 — Church of Malware
+# SPECTRA 0.13 — Church of Malware
 
 A free browser reverse-engineering workbench. Open a binary, follow the evidence, keep the investigation. Optional explanations use the same tools and evidence as the professional workspace.
 
@@ -6,6 +6,10 @@ A free browser reverse-engineering workbench. Open a binary, follow the evidence
 - Source: https://git.churchofmalware.org/ek0mssavi0r/SPECTRA
 - No account, paid tier, sample uploads, paid API, or telemetry in the analysis app. Engines are served by the Church. Cloudflare receives normal delivery metadata; sample analysis stays local.
 - Black, gray and white; Creepster wordmark. Teaching defaults off.
+
+## ARM static PIE debugger release (0.13)
+
+Debugger lab now loads ARM/Thumb EABI5 static PIE, rebases its entry and process stack, and validates local relative relocations. Startup owns relocation by default; an explicit alternate-entry mode lets the debugger apply it. Single-thread TLS access, guarded brk mappings, image mprotect, and unsupported-call evidence extend the bounded Linux model. Benign ARM/Thumb demos and replay regressions are included. [Scope and verification](docs/releases/v0.13.md).
 
 ## ILSpy startup hotfix (0.12.1)
 
@@ -51,7 +55,7 @@ x86/x64 can run bare routines or a bounded Windows PE model with rebasing, impor
 
 ARM/Thumb/AArch64, RV32/RV64+C and MIPS32/64 integer routines have separate lazy-loaded engines. CPU defaults are documented in [hardware notes](docs/HARDWARE.md). System instructions, FP/SIMD and unmodeled operations stop before execution. ARM/Thumb transitions use live CPU mode. MIPS branch/delay pairs step atomically; slot breakpoints pause before the pair, and conditions see pre-pair registers. A synthetic mapped return boundary is explicit. Analyst-defined ARM MMIO responses are available; no full board, peripherals, RTOS or firmware boot is emulated.
 
-SPECTRA 0.9 adds native integer/pointer function harnesses for System V/Windows x64, x86 cdecl/stdcall, ARM/Thumb AAPCS32 and AArch64 AAPCS64; before/after input buffers; saved data-only environment recipes; explicit address/API hooks; mapped captured memory; and virtual file fixtures. ARM register sequences and captured MMIO writes expose supplied hardware behavior. A focused Linux model supports little-endian static ELF32/64 ET_EXEC on x86, x64, ARM/Thumb EABI5 and AArch64, argc/argv/env/auxv, BSS and a small explicit syscall set. It does not supply a Linux kernel or general libc/runtime compatibility.
+SPECTRA 0.9 adds native integer/pointer function harnesses for System V/Windows x64, x86 cdecl/stdcall, ARM/Thumb AAPCS32 and AArch64 AAPCS64; before/after input buffers; saved data-only environment recipes; explicit address/API hooks; mapped captured memory; and virtual file fixtures. ARM register sequences and captured MMIO writes expose supplied hardware behavior. A focused Linux model supports little-endian static ELF32/64 ET_EXEC on x86, x64, ARM/Thumb EABI5 and AArch64, plus bounded ARM/Thumb static PIE with relative relocations, argc/argv/env/auxv, BSS and a small explicit syscall set. It does not supply a Linux kernel or general libc/runtime compatibility.
 
 Coverage records observed instruction locations/transitions, including labeled modeled boundaries. Batches run up to 16 independent recipes and compare return values, buffers and observed paths. Complete reports save with investigations. Three benign demos provide ready-to-run function, Linux and ARM experiments. See [the experiment reference](docs/EXPERIMENT-LAB.md) for all controls, schemas, modeled syscalls, reproducibility limits and examples.
 
@@ -69,7 +73,7 @@ For thick clients, select methods/classes and generate a downloadable .NET harne
 
 ## Learn and contribute
 
-Training ground includes a 19-chapter searchable field guide covering every section and its controls, workflows, FAQs, and a glossary. Download the standalone HTML book or print it to PDF; the guide ships in the offline release too. Its Links area points to Church Git and MalwareBazaar. The guide content lives in `src/guide-content.mjs` and is rendered from that single source into both the reader and `guide.html`.
+Training ground includes an 18-chapter searchable field guide covering every section and its controls, workflows, FAQs, and a glossary. Download the standalone HTML book or print it to PDF; the guide ships in the offline release too. Its Links area points to Church Git and MalwareBazaar. The guide content lives in `src/guide-content.mjs` and is rendered from that single source into both the reader and `guide.html`.
 
 Training ground has a compiled benign C/ELF exercise, an XOR-loop memory experiment and hardware addition/delay-slot exercises. Source, exact fixtures, hints, walkthroughs and evidence checks are included. Optional contextual explanations follow the selected finding or instruction. Nothing forces experienced users through a tutorial.
 
@@ -85,7 +89,7 @@ python3 scripts/package-source.py
 python3 scripts/serve.py --port 4173
 ```
 
-Open `http://127.0.0.1:4173/`. Keep the **whole dist directory**, including `engines/v012`; a saved HTML file alone does not contain the decompilers or hardware engines. All runtime assets are included locally; no CDN or API is needed. The localhost server applies the production CSP. The source ZIP includes all browser runtime assets. To publish the large DiE runtime source archive too, collect the pinned inputs documented in docs/DETECTION.md and run `python3 scripts/package-detection-source.py /path/to/source-inputs` after package-source.py. Training ground also offers a complete offline ZIP download, assembled from verified static parts to fit the host asset limit. A complete offline ZIP can be made with `python3 scripts/package-offline.py`. Engine rebuilds need the documented upstream toolchains, not for ordinary app builds.
+Open `http://127.0.0.1:4173/`. Keep the **whole dist directory**, including `engines/v013`; a saved HTML file alone does not contain the decompilers or hardware engines. All runtime assets are included locally; no CDN or API is needed. The localhost server applies the production CSP. The source ZIP includes all browser runtime assets. To publish the large DiE runtime source archive too, collect the pinned inputs documented in docs/DETECTION.md and run `python3 scripts/package-detection-source.py /path/to/source-inputs` after package-source.py. Training ground also offers a complete offline ZIP download, assembled from verified static parts to fit the host asset limit. A complete offline ZIP can be made with `python3 scripts/package-offline.py`. Engine rebuilds need the documented upstream toolchains, not for ordinary app builds.
 
 ```bash
 npm ci --prefix tests --ignore-scripts

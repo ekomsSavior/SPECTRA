@@ -37,6 +37,7 @@ class Session{
   try{
    for(const m of this.plan.mapped){this.e.mem_map(m.address,m.size,m.perms);this.e.mem_write(m.address,new Uint8Array(m.size));}
    for(const r of this.plan.regions)this.e.mem_write(r.address,bytes.subarray(r.offset,r.offset+(r.fileSize??r.size)));
+   if(this.plan.linux)root.SpectraLinux.relocate(this);
    this.e.mem_map(STACK,AREA,3);this.e.mem_map(SCRATCH,AREA,3);this.e.mem_write(STACK,new Uint8Array(AREA));this.e.mem_write(SCRATCH,new Uint8Array(AREA));this.e.mem_map(RETURN,4096,5);this.e.mem_write(RETURN,new Uint8Array(4096));
    for(const n of this.names)if(!['CPSR','NZCV'].includes(n))this.writeReg(n,0n);
    this.writeReg(this.sp,BigInt(STACK+AREA-0x100));this.writeReg(p.link,BigInt(RETURN));this.writeReg('PC',BigInt(this.plan.start));
@@ -59,7 +60,8 @@ class Session{
   if(!i||i.privileged||!this.allowed.has(i.id))return true;
   const p=this.profile.prefix,b=i.bytes,m=i.mnemonic,o=i.operands;
   if(p==='RISCV'&&(b.length===4&&[0x73,0x0f].includes(b[0]&127)||b.length===2&&b[0]===2&&b[1]===0x90))return true;
-  if(p==='ARM'&&(/\^/.test(o)||/^\w+s(?:eq|ne|cs|cc|mi|pl|vs|vc|hi|ls|ge|lt|gt|le)?$/.test(m)&&/^pc\b/.test(o)))return true;
+  // Match an actual S suffix, not the final s in the LS condition (e.g. addls pc).
+  if(p==='ARM'&&(/\^/.test(o)||/^(?:adc|add|and|asr|bic|eor|lsl|lsr|mla|mov|mul|mvn|orr|ror|rrx|rsb|rsc|sbc|sub)s(?:eq|ne|cs|cc|hs|lo|mi|pl|vs|vc|hi|ls|ge|lt|gt|le|al)?$/.test(m)&&/^pc\b/.test(o)))return true;
   if(p==='ARM64'&&/\b(?:[bhsdqv]\d+|fpcr|fpsr)\b/i.test(o))return true;
   return false;
  }
