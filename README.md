@@ -1,4 +1,4 @@
-# SPECTRA 0.14 — Church of Malware
+# SPECTRA 0.15 — Church of Malware
 
 A free browser reverse-engineering workbench. Open a binary, follow the evidence, keep the investigation. Optional explanations use the same tools and evidence as the professional workspace.
 
@@ -6,6 +6,12 @@ A free browser reverse-engineering workbench. Open a binary, follow the evidence
 - Source: https://git.churchofmalware.org/ek0mssavi0r/SPECTRA
 - No account, paid tier, sample uploads, paid API, or telemetry in the analysis app. Engines are served by the Church. Cloudflare receives normal delivery metadata; sample analysis stays local.
 - Black, gray and white; Creepster wordmark. Teaching defaults off.
+
+## Portable evidence and resumable lessons (0.15)
+
+Debugger lab can capture, export, reopen, search and compare two **bounded trace observations** without running the sample on import. Notebook offers **selective evidence bundles** with separate inclusion controls and a checksum inventory. File structure now resolves **file offsets, PE RVAs and VAs** using exact 64-bit arithmetic and declared, raw or captured loader mappings. Training ground retains **versioned evidence checklists** for native references, decoding, hardware, Windows and Linux exercises across saved investigations.
+
+These are foundations for future bounded time travel, not reverse stepping. Trace files retain the latest 200 instruction records, bounded model events and final mappings; imports are unverified observations. Exports are memory-bounded, not constant-memory streaming. [Workflow and format reference](docs/EVIDENCE-WORKFLOWS.md) · [Release notes](docs/releases/v0.15.md).
 
 ## Resumable disassembly (0.14)
 
@@ -93,7 +99,7 @@ python3 scripts/package-source.py
 python3 scripts/serve.py --port 4173
 ```
 
-Open `http://127.0.0.1:4173/`. Keep the **whole dist directory**, including `engines/v014`; a saved HTML file alone does not contain the decompilers or hardware engines. All runtime assets are included locally; no CDN or API is needed. The localhost server applies the production CSP. The source ZIP includes all browser runtime assets. To publish the large DiE runtime source archive too, collect the pinned inputs documented in docs/DETECTION.md and run `python3 scripts/package-detection-source.py /path/to/source-inputs` after package-source.py. Training ground also offers a complete offline ZIP download, assembled from verified static parts to fit the host asset limit. A complete offline ZIP can be made with `python3 scripts/package-offline.py`. Engine rebuilds need the documented upstream toolchains, not for ordinary app builds.
+Open `http://127.0.0.1:4173/`. Keep the **whole dist directory**, including `engines/v015`; a saved HTML file alone does not contain the decompilers or hardware engines. All runtime assets are included locally; no CDN or API is needed. The localhost server applies the production CSP. The source ZIP includes all browser runtime assets. To publish the large DiE runtime source archive too, collect the pinned inputs documented in docs/DETECTION.md and run `python3 scripts/package-detection-source.py /path/to/source-inputs` after package-source.py. Training ground also offers a complete offline ZIP download, assembled from verified static parts to fit the host asset limit. A complete offline ZIP can be made with `python3 scripts/package-offline.py`. Engine rebuilds need the documented upstream toolchains, not for ordinary app builds.
 
 ```bash
 npm ci --prefix tests --ignore-scripts

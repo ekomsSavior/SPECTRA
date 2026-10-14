@@ -1,70 +1,42 @@
 {
-  "version": "0.14",
-  "status": "Deployed; reported ARM64 PE static continuation and full regression verified",
-  "generatedAt": "2026-10-12T02:13:03.889685+00:00",
+  "version": "0.15",
+  "status": "Deployed; portable evidence and lesson browser workflows verified",
+  "generatedAt": "2026-10-14T22:38:17.091169+00:00",
   "site": "https://spectra.churchofmalware.org/",
   "sourceRepository": "https://git.churchofmalware.org/ek0mssavi0r/SPECTRA",
-  "baselineWorkerVersion": "f4b758c4-2ff2-496f-8b61-befe7d17cd87",
-  "baselineGitCommit": "c84ec701bf2a8d6531c290b245b94059ad4a61bd",
-  "workerVersion": "4e47c0df-cb31-4616-bc15-1b9bcef94376",
-  "engineAssetRoot": "/engines/v014/",
-  "checksPassed": 325,
+  "baselineWorkerVersion": "4e47c0df-cb31-4616-bc15-1b9bcef94376",
+  "baselineGitCommit": "4b62313eb7d3a056b561363c58d43adb93607fe9",
+  "workerVersion": "075d61fe-d5f4-4b65-9580-0072d36f7cc0",
+  "engineAssetRoot": "/engines/v015/",
+  "checksPassed": 344,
   "testGroups": {
-    "nodeTests": 280,
+    "nodeTests": 299,
     "managedWasm": 7,
     "managedDependencies": 8,
     "generatedHarness": 30,
-    "continuationIncludedInNodeTests": 13
+    "newEvidenceTestsIncludedInNodeTests": 19
   },
   "changes": [
-    "Retained static traversal with explicit 60,000-instruction continuation passes, bounded to 1,000,000 instructions / 16 MiB decoded",
-    "Cancel/timeout preserve completed evidence; stale workers cannot overwrite a later session",
-    "Selections, corrected names and saved investigation depth survive continuation; depth recomputes locally on import",
-    "Decoded-byte coverage and architecture-specific limitations are separate; updated field guide, source and offline releases"
+    "Portable bounded trace envelopes, inert import, search, two-slot comparison, same-sample byte/assembly navigation",
+    "Selective project evidence ZIP with explicit groups, reviewed checksummed manifest and deliberate restore",
+    "Exact unsigned 64-bit file-offset/VA/PE-RVA mapping ledger with declared/raw/runtime sources and child provenance",
+    "Five fixture-hash/version-bound lesson checklists; current-session capture validation and full workspace resume"
   ],
   "browserQA": [
-    "Reported sample reaches 60,000 instructions and offers Continue analysis",
-    "Cancel retains prior evidence and function selection; retry rebuilds and extends to 74,210 instructions",
-    "Retained-worker continuation finishes at 74,210 instructions with Blocks view and selected function preserved",
-    "No console errors observed in local browser QA",
-    "Published v0.14 passes the existing automatic challenge, analyzes the reported sample locally and continues from 60,000 to 74,210 instructions; no console errors observed."
+    "Local Windows output capture, Linux echo/exit, decoder recovery, native reference/decompilation and ARM register-edit/return each reach three evidence milestones",
+    "Full reload restores lesson progress and trace as historical/imported evidence; no sample instructions run on restore",
+    "Mismatched trace disables sample navigation; two-trace comparison reports sample and engine differences; instruction search excludes schema-key noise",
+    "File offset 0x100 maps to Linux VA 0x400100 and opens matching Hex explorer bytes",
+    "Findings-only export contains one metadata file; explicit selections add sample and trace/lesson state; selection change invalidates prepared snapshot",
+    "Bundle import reviews inventory before explicit workspace replacement; sample, trace and historical lesson checks restore without execution",
+    "390-pixel viewport: lesson checklist, selective inventory and portable trace controls remain usable with no page-wide horizontal overflow; viewport override reset",
+    "No console errors observed in local and live verification",
+    "Published page passes automatic Cloudflare verification; v0.15 Linux lesson, trace capture, mapping and selective bundle inventory work"
   ],
-  "sampleCheck": {
-    "sha256": "b6b2c5caa7c4dbb6931671d605d2e297b7e067fefe11b180ac4a113588adbcf3",
-    "method": "Static local parsing and Capstone disassembly only; no sample instruction execution or upload",
-    "initial": {
-      "instructions": 60000,
-      "functions": 654,
-      "references": 13829,
-      "decodedBytes": 240000
-    },
-    "continued": {
-      "equalEvidence": true,
-      "instructions": 74210,
-      "functions": 752,
-      "references": 17177,
-      "decodedBytes": 296840,
-      "unresolved": 73,
-      "queued": 0
-    },
-    "executableBytes": 3912704,
-    "limits": "Exhausted traversal queue is not proof of whole-file coverage or complete indirect-target recovery."
-  },
-  "protections": {
-    "challenge": "Existing Cloudflare challenge policy retained; live page loaded successfully without a manual CAPTCHA action.",
-    "workerFirst": true,
-    "pageBurst": "30 requests / 10 s / IP",
-    "pageMinute": "120 requests / 60 s / IP",
-    "engineBurst": "100 requests / 10 s / IP",
-    "engineMinute": "240 requests / 60 s / IP",
-    "rateBindings": "All five existing per-IP bindings confirmed in v0.14 deployment",
-    "scope": "SPECTRA static delivery only; not a whole-network audit",
-    "sourceDownloadMinute": "4 archive requests / 60 s / IP"
-  },
   "packages": {
     "/debugger-source.zip": {
-      "bytes": 44352131,
-      "sha256": "619c89d578c5a1ece99f51e92a702e51c508ee727190eff0cd4fdc8c1b0c026d",
+      "bytes": 44381617,
+      "sha256": "adb84e13e13a40d252d9b80d7f4c62776fbb43214896df955124bded583c20ff",
       "parts": 3
     },
     "/detection-source.zip": {
@@ -73,15 +45,32 @@
       "parts": 31
     },
     "offline": {
-      "bytes": 78189293,
-      "sha256": "5924f897513e49ee886a9b9d2641c0a1f6421ff8e5389a47b3fbf77236c17d42",
+      "bytes": 78233647,
+      "sha256": "b8741e5038c4bdd7b0d4ae89b15102e05035490905dceaef07db76863e70f763",
       "parts": 5
     }
   },
-  "packageQA": "Source/offline ZIP CRCs, source/DiE/offline part sizes, hashes and assembled hashes verified. No reported malware sample or recovered code distributed.",
-  "scope": "Bounded static disassembly continuation. Binary comparison retains its default pass. Does not add runtime indirect-target resolution or full executable coverage. Larger passes require more memory; mobile performance is not guaranteed.",
+  "packageQA": "Source/offline CRCs, source/DiE/offline part sizes and hashes and assembled hashes verified. New manuals/practice pack and reported malware samples excluded.",
+  "protections": {
+    "challenge": "Existing Cloudflare challenge policy retained; live page loaded successfully without a manual CAPTCHA action.",
+    "workerFirst": true,
+    "pageBurst": "30 requests / 10 s / IP",
+    "pageMinute": "120 requests / 60 s / IP",
+    "engineBurst": "100 requests / 10 s / IP",
+    "engineMinute": "240 requests / 60 s / IP",
+    "rateBindings": "All five existing per-IP bindings confirmed in v0.15 deployment",
+    "scope": "SPECTRA static delivery only; not a whole-network audit",
+    "sourceDownloadMinute": "4 archive requests / 60 s / IP"
+  },
+  "limits": [
+    "Trace retains latest 200 instruction records, bounded model channels and final mappings only; no reverse stepping, full history, external adapter or authenticity claim",
+    "ZIP assembly is bounded in memory, not constant-memory streaming; maximum-sized exports are not guaranteed on phones",
+    "Mapping conversion does not extend debugger architecture/address support; compressed children have no invented linear offset",
+    "Physical iPad/iPhone/Android performance and accessibility remain unverified",
+    "Beginner/intermediate manuals remain unpublished"
+  ],
   "publishing": {
-    "worker": "Deployed to existing custom domain; five rate bindings retained",
-    "repository": "Signed-in Church Git Apply Patch; final commit recorded in local work plan"
+    "worker": "Deployed to existing custom domain; all five rate bindings retained",
+    "repository": "Signed-in Church Git Apply Patch; final commit recorded in local release work plan"
   }
 }

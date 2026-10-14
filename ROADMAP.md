@@ -37,3 +37,15 @@ Research: full-system ARM/x64/RISC-V engines, reduced memory budgets, cold-boot 
 ## v0.12 — integrated debugger priority
 
 The standalone System lab described in the historical v0.10 entry is no longer shipped. CPU/format selection, loader and dependency checks, Windows import support, ELF32 ARM/Thumb/x86 process loading, process inputs, live memory maps and modeled-write traces now belong in Debugger lab. Full OS/device boot stays unshipped research until it contributes to this workflow. Dynamic ELF linking, TLS, PIE, native dependency execution and broader OS compatibility are still future work.
+
+## v0.15 — portable evidence foundations
+
+Implemented and tested: portable bounded trace observations; selective evidence bundles with exact inventory; 64-bit mapping help; five versioned lesson checklists with save/resume. See docs/EVIDENCE-WORKFLOWS.md for limits, schemas and the distinction between observations and replayable checkpoints. New beginner/intermediate manuals remain unpublished.
+
+Next priorities:
+1. Specify and implement a bounded deterministic history recorder for one bare-routine profile, then reverse-step using verified reconstruction. Include edits, hook results, partial writes, mapping lifecycle, virtual files and MMIO positions before extending process profiles. Current traces cannot reconstruct arbitrary past state.
+2. Grow trace recording deliberately: budget/eviction controls, mapping-change events, incremental storage/export and documented external trace adapters. Maintain inert import and separate authenticity from checksum integrity.
+3. Test the complete lesson/evidence path on physical iPad/iPhone/Android and modest laptops. A narrow desktop viewport is layout coverage, not physical-device performance proof.
+4. Improve engine-backed source/instruction relationships, nested/packed structures and correction propagation, indirect-flow recovery and curated library identification with false-positive fixtures.
+5. Extend dependency-aware process models and experimental browser-managed routines from concrete failing research cases. Complete OS/device boot remains deferred; the debugger stays the integrated workspace.
+6. Add range/field/reconstruction comparisons and reusable recovery recipes with deliberate parameter export. Broaden lessons once the current manuals are approved.

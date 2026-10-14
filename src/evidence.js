@@ -1,0 +1,68 @@
+/* Inert, bounded evidence transport. Import never constructs an emulator. */
+(function(root){
+'use strict';
+const TRACE='spectra-trace-v1',BUNDLE='spectra-evidence-v1',MAX_TRACE=4*1024*1024,HASH=/^[a-f0-9]{64}$/,enc=new TextEncoder();
+const check=(ok,message)=>{if(!ok)throw Error(message);};
+function bounded(value,max=MAX_TRACE){
+ const stack=[[value,0]];let count=0;
+ while(stack.length){const [v,d]=stack.pop();check(++count<=250000&&d<=24,'Evidence nesting/item limit exceeded.');if(v&&typeof v==='object'){check(!ArrayBuffer.isView(v),'Expected JSON evidence.');for(const [k,x]of Object.entries(v)){check(!['__proto__','constructor','prototype'].includes(k),'Unsafe evidence key.');stack.push([x,d+1]);}}else check(v===null||['string','number','boolean'].includes(typeof v),'Invalid evidence value.');if(typeof v==='number')check(Number.isFinite(v),'Invalid evidence number.');}
+ const bytes=enc.encode(JSON.stringify(value));check(bytes.length<=max,'Evidence byte limit exceeded.');return bytes;
+}
+const num=n=>Number.isSafeInteger(n)&&n>=0;
+const str=(v,n=4096)=>typeof v==='string'&&v.length<=n;
+function registers(r){check(r&&typeof r==='object'&&!Array.isArray(r)&&Object.keys(r).length<=128,'Invalid trace registers.');for(const [k,v]of Object.entries(r))check(/^[A-Z][A-Z0-9_]{0,15}$/.test(k)&&str(v,128),'Invalid trace register.');}
+function validateTrace(t){
+ bounded(t);check(t&&t.schema===TRACE,'Unsupported trace version.');check(HASH.test(t.sample?.sha256)&&HASH.test(t.engine?.sha256),'Trace needs sample and engine hashes.');
+ check(typeof t.sample.name==='string'&&t.sample.name.length<=240&&num(t.sample.bytes),'Invalid trace sample.');check(typeof t.createdAt==='string'&&t.createdAt.length<=40,'Invalid trace date.');
+ check(['x86','x64','arm','thumb','aarch64','riscv32','riscv64','mips32','mips64'].includes(t.cpu)&&str(t.environment,80)&&(t.abi===null||str(t.abi,80)),'Invalid trace CPU/environment.');registers(t.registers);
+ if(t.origins!==undefined){check(Array.isArray(t.origins)&&t.origins.length<=4096,'Invalid trace origins.');const u=v=>{check(str(v,24)&&/^(?:0x[0-9a-f]{1,16}|[0-9]{1,20})$/i.test(v),'Invalid origin coordinate.');const n=BigInt(v);check(n<=0xffffffffffffffffn,'Origin exceeds 64 bits.');return n;};for(const r of t.origins){check(r&&str(r.name,240)&&str(r.source,240),'Invalid origin label.');const a=u(r.address),f=u(r.fileSize),m=u(r.memorySize);check(f<=m&&a+m<=0x10000000000000000n,'Invalid origin extent.');if(r.offset===null)check(f===0n,'Allocated origin cannot have file bytes.');else check(u(r.offset)+f<=BigInt(t.sample.bytes),'Origin outside sample.');}}
+ check(t.scope==='bounded-observation'&&t.replayable===false,'Trace files are observations, not replay checkpoints.');
+ check(t.end&&num(t.end.steps)&&num(t.end.attempts)&&str(t.end.status,80)&&str(t.end.reason)&&num(t.end.pc),'Invalid trace stop.');
+ check(Array.isArray(t.instructions)&&t.instructions.length<=200,'Trace instruction cap: 200.');let previous=-1;
+ for(const i of t.instructions){check(num(i.step)&&i.step>previous&&i.step<=t.end.steps&&num(i.address)&&str(i.mnemonic,80)&&str(i.operands),'Invalid trace instruction/order.');previous=i.step;check(i.changes&&typeof i.changes==='object'&&!Array.isArray(i.changes)&&Object.keys(i.changes).length<=128,'Invalid register changes.');for(const [n,c]of Object.entries(i.changes))check(/^[A-Z][A-Z0-9_]{0,15}$/.test(n)&&c&&str(c.before,128)&&str(c.after,128),'Invalid register change.');check(Array.isArray(i.writes)&&i.writes.length<=32,'Trace write cap: 32 per instruction.');for(const w of i.writes){check(num(w.address)&&num(w.size)&&w.size<=256,'Invalid trace write range.');for(const b of [w.before,w.after])check(Array.isArray(b)&&b.length<=256&&b.every(n=>Number.isInteger(n)&&n>=0&&n<=255),'Invalid trace write bytes.');}}
+ check(Array.isArray(t.channels)&&t.channels.length<=2,'Invalid trace event channels.');const seen=new Set();for(const c of t.channels){check(['windows','lab'].includes(c.name)&&!seen.has(c.name)&&num(c.total)&&Array.isArray(c.events)&&c.events.length<=(c.name==='windows'?500:256),'Invalid event channel.');seen.add(c.name);let id=0;for(const e of c.events){check(num(e.id)&&e.id>id&&e.id<=c.total&&num(e.step)&&e.step<=t.end.steps,'Invalid event order.');id=e.id;}check(c.omitted===c.total-c.events.length&&c.omitted>=0,'Invalid event truncation.');}
+ check(Array.isArray(t.mappings)&&t.mappings.length<=4096,'Invalid trace mappings.');for(const m of t.mappings)check(num(m.address)&&num(m.size)&&num(m.address+m.size),'Invalid trace mapping.');
+ check(t.retention&&t.retention.omittedInstructions===Math.max(0,(t.instructions[0]?.step||t.end.steps+1)-1)&&t.retention.completeHistory===false,'Invalid trace retention.');
+ return t;
+}
+function trace(snapshot,{name,sha256,size,options,engine},includeInputs=false){
+ check(snapshot,'Pause a debugger session first.');
+ const s=snapshot,channels=[];for(const [name,v]of [['windows',s.windows],['lab',s.lab]])if(v)channels.push({name,total:v.eventCount,omitted:v.eventCount-v.events.length,events:v.events});
+ const t={schema:TRACE,createdAt:new Date().toISOString(),scope:'bounded-observation',replayable:false,sample:{name,sha256,bytes:size},engine:{name:'SPECTRA browser debugger',sha256:engine},cpu:s.mode,abi:options?.recipe?.harness?.abi||null,environment:options?.environment||'routine',end:{steps:s.steps,attempts:s.attempts??s.steps,status:s.status,reason:s.reason,pc:s.pc},registers:s.registers,instructions:s.trace,channels,mappings:s.mappings,retention:{instructionLimit:200,omittedInstructions:Math.max(0,(s.trace[0]?.step||s.steps+1)-1),completeHistory:false,mappingHistory:false,note:'End-state mappings only. Model event step denotes the pre-operation count; instructions denote completed/partial attempts. Channel order is preserved; cross-channel ties have no asserted order. Faults and clipped writes may be partial.'},inputs:includeInputs?{options,edits:s.edits}:null};
+ return validateTrace(JSON.parse(JSON.stringify(t)));
+}
+async function encodeTrace(t){validateTrace(t);const payload=JSON.stringify(t),sha256=await root.SpectraExperiments.sha(enc.encode(payload));return new Blob(['{"format":"spectra-trace-envelope-v1","sha256":',JSON.stringify(sha256),',"payload":',payload,'}'],{type:'application/json'});}
+async function decodeTrace(bytes){check(bytes instanceof Uint8Array&&bytes.length<=MAX_TRACE+256,'Trace file cap: 4 MiB.');const e=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes));check(e.format==='spectra-trace-envelope-v1'&&HASH.test(e.sha256),'Unsupported trace envelope.');const body=bounded(e.payload);check(await root.SpectraExperiments.sha(body)===e.sha256,'Trace checksum mismatch.');return validateTrace(e.payload);}
+function compare(a,b){validateTrace(a);validateTrace(b);const left=a.instructions,right=b.instructions;let first=-1;for(let i=0;i<Math.max(left.length,right.length);i++)if(JSON.stringify(left[i]||null)!==JSON.stringify(right[i]||null)){first=i;break;}return {sameSample:a.sample.sha256===b.sample.sha256,sameEngine:a.engine.sha256===b.engine.sha256,firstRetainedDifference:first,comparedBy:'retained ordinal, not control-flow alignment',leftStart:left[0]?.step??null,rightStart:right[0]?.step??null,registers:[...new Set([...Object.keys(a.registers||{}),...Object.keys(b.registers||{})])].filter(k=>a.registers?.[k]!==b.registers?.[k]).map(name=>({name,left:a.registers?.[name]??null,right:b.registers?.[name]??null})),stopChanged:JSON.stringify(a.end)!==JSON.stringify(b.end),eventsChanged:JSON.stringify(a.channels)!==JSON.stringify(b.channels),mappingsChanged:JSON.stringify(a.mappings)!==JSON.stringify(b.mappings)};}
+const CHOICES=['findings','sample','recovered','dependencies','comparison','analysis','experiments','traces','lessons'];
+function selectProject(m,choice){
+ const c=Object.fromEntries(CHOICES.map(k=>[k,choice[k]===true]));
+ const out={schema:root.SpectraProject.SCHEMA,name:m.name,sha256:m.sha256,sampleSize:m.sampleSize,createdAt:m.createdAt,view:'notebook',caseNotes:'',bookmarks:[],notes:{},annotations:[],nativeAssumptions:[],analysisKnowledge:{hints:{edges:[],tables:[]},signatures:[],structures:[],revision:0},settings:{},layers:[],rows:[],hints:[],checkpoints:[],debugCurrent:null,labBatch:null,debugControls:{breakpoints:[],conditions:[],watchpoints:[]},harnessSelected:[],decompilation:null,detection:null,traceFiles:[],lessonProgress:null,provenance:null};
+ const copy=keys=>keys.forEach(k=>{if(m[k]!==undefined)out[k]=structuredClone(m[k]);});
+ if(c.findings)copy(['caseNotes','bookmarks','notes','annotations','provenance']);
+ if(c.recovered)copy(['rows','hints']);
+ if(c.analysis)copy(['nativeAssumptions','analysisKnowledge','decompilation','detection','codeSetup','harnessSelected','mappingRecord']);
+ if(c.experiments)copy(['checkpoints','debugCurrent','labBatch','debugControls']);
+ if(c.traces)copy(['traceFiles']);if(c.lessons)copy(['lessonProgress']);
+ for(const [k,v]of Object.entries(m.settings||{}))if(c.experiments&&/^(lab-|debug-)/.test(k)||c.analysis&&/^(code-|raw-|decompile-)/.test(k))out.settings[k]=v;
+ return out;
+}
+async function encodeBundle(projectBytes,choice,sample){
+ const entries=await root.SpectraArchive.unzip(projectBytes,{storedOnly:true}),items=[];
+ for(const e of entries)items.push({path:'project/'+e.name,bytes:e.bytes.length,sha256:await root.SpectraExperiments.sha(e.bytes)});
+ const m={schema:BUNDLE,createdAt:new Date().toISOString(),sample,selection:Object.fromEntries(CHOICES.map(k=>[k,choice[k]===true])),files:items,note:'Inspect first. Restoring this project does not execute the sample; replay is a separate action. Selected notes, recovery reports and experiments can contain secrets.'};
+ return root.SpectraArchive.zip([{name:'evidence-manifest.json',bytes:JSON.stringify(m,null,2)},...entries.map(e=>({name:'project/'+e.name,bytes:e.bytes}))]);
+}
+async function decodeBundle(bytes){
+ const entries=await root.SpectraArchive.unzip(bytes,{storedOnly:true}),byName=new Map(entries.map(e=>[e.name,e.bytes])),body=byName.get('evidence-manifest.json');check(body&&body.length<512*1024,'Evidence manifest missing/oversized.');const m=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(body));bounded(m,512*1024);
+ if(m.schema!==BUNDLE)return {manifest:m,unsupported:true,project:null};
+ check(Array.isArray(m.files)&&m.files.length<=100&&HASH.test(m.sample?.sha256)&&str(m.sample.name,240)&&m.selection&&CHOICES.every(k=>typeof m.selection[k]==='boolean')&&Object.keys(m.selection).length===CHOICES.length,'Invalid evidence manifest.');const used=new Set(['evidence-manifest.json']),project=[];
+ for(const f of m.files){check(typeof f.path==='string'&&f.path.startsWith('project/')&&!used.has(f.path)&&num(f.bytes)&&HASH.test(f.sha256),'Invalid evidence member.');const b=byName.get(f.path);check(b&&b.length===f.bytes&&await root.SpectraExperiments.sha(b)===f.sha256,'Evidence member hash/size mismatch.');used.add(f.path);project.push({name:f.path.slice(8),bytes:b});}
+ check(used.size===entries.length&&project.some(e=>e.name==='manifest.json'),'Unlisted or missing evidence members.');
+ const inner=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(project.find(e=>e.name==='manifest.json').bytes));
+ check(inner.sha256===m.sample.sha256&&inner.name===m.sample.name,'Evidence sample identity mismatch.');
+ const selected=m.selection;check(selected.sample||!project.some(e=>e.name==='sample.bin'),'Unselected sample bytes.');check(selected.recovered||!(inner.layers?.length||inner.rows?.length||inner.hints?.length),'Unselected recovery evidence.');check(selected.dependencies||!inner.dependencies?.length,'Unselected dependencies.');check(selected.comparison||!inner.comparison,'Unselected comparison.');check(selected.traces||!inner.traceFiles?.length,'Unselected traces.');check(selected.lessons||!inner.lessonProgress,'Unselected lesson.');check(selected.experiments||!(inner.debugCurrent||inner.checkpoints?.length||inner.labBatch||Object.keys(inner.settings||{}).some(k=>/^(lab-|debug-)/.test(k))),'Unselected experiments.');
+ return {manifest:m,unsupported:false,project:root.SpectraArchive.zip(project)};
+}
+root.SpectraEvidence={TRACE,BUNDLE,MAX_TRACE,CHOICES,bounded,validateTrace,trace,encodeTrace,decodeTrace,compare,selectProject,encodeBundle,decodeBundle};if(typeof module!=='undefined')module.exports=root.SpectraEvidence;
+})(globalThis);

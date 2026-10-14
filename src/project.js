@@ -1,6 +1,7 @@
 (function(root){
 'use strict';
 const Depth=root.SpectraAnalysis||(typeof require==='function'?require('./analysis.js'):null),Knowledge=root.SpectraKnowledge||(typeof require==='function'?require('./knowledge.js'):null);
+const Evidence=root.SpectraEvidence||(typeof require==='function'?require('./evidence.js'):null),Lessons=root.SpectraLessons||(typeof require==='function'?require('./lessons.js'):null);
 const SCHEMA='spectra-project-v2',HASH=/^[0-9a-f]{64}$/;
 function object(o){return o&&typeof o==='object'&&!Array.isArray(o);}
 function text(s,max){if(typeof s!=='string'||s.length>max)throw Error('Project text field exceeds its limit.');return s;}
@@ -15,6 +16,9 @@ function metadata(m){
  if(m.codeSetup){const c=m.codeSetup;if(!object(c)||typeof c.mode!=='string')throw Error('Invalid saved decoder.');for(const key of ['address','functionAddress'])if(c[key]!==null&&c[key]!==undefined&&(!Number.isSafeInteger(c[key])||c[key]<0))throw Error('Invalid saved code address.');if(c.budget){const b=c.budget;if(!object(b)||!Number.isSafeInteger(b.instructions)||b.instructions<1||b.instructions>1000000||!Number.isSafeInteger(b.decodedBytes)||b.decodedBytes<16||b.decodedBytes>16*1024*1024)throw Error('Invalid saved code budget.');}if(c.raw){if(!object(c.raw)||!['x86','x64','arm','thumb','arm64','mips32','mips64','riscv32','riscv64'].includes(c.raw.architecture)||!['little','big'].includes(c.raw.endian))throw Error('Invalid raw decoder.');for(const k of ['offset','size','address'])if(!Number.isSafeInteger(c.raw[k])||c.raw[k]<0)throw Error('Invalid raw range.');}}
  
  if(!Array.isArray(m.bookmarks)||m.bookmarks.length>50000||m.bookmarks.some(x=>typeof x!=='string'||x.length>50)||!object(m.notes)||Object.keys(m.notes).length>50000)throw Error('Invalid string evidence.');for(const [k,v]of Object.entries(m.notes)){text(k,50);text(v,20000);}
+ if(m.traceFiles!==undefined){if(!Array.isArray(m.traceFiles)||m.traceFiles.length>2)throw Error('Trace slot cap: two.');m.traceFiles.forEach(Evidence.validateTrace);}
+ if(m.lessonProgress)Lessons.validate(m.lessonProgress,m.sha256);
+ for(const k of ['provenance','mappingRecord'])if(m[k])Evidence.bounded(m[k],512*1024);
  m.annotations=annotations(m.annotations||[]);
  const knowledge=m.analysisKnowledge||{};if(!object(knowledge)||!Number.isSafeInteger(knowledge.revision??0)||(knowledge.revision??0)<0)throw Error('Invalid analysis knowledge.');m.analysisKnowledge={hints:Depth.validateHints(knowledge.hints),signatures:Knowledge.signatures(knowledge.signatures||[]),structures:Knowledge.structures(knowledge.structures||[]),revision:knowledge.revision||0};
  if(m.nativeAssumptions){if(!Array.isArray(m.nativeAssumptions)||m.nativeAssumptions.length>10000)throw Error('Invalid native type assumptions.');for(const pair of m.nativeAssumptions){if(!Array.isArray(pair)||pair.length!==2||!object(pair[1]))throw Error('Invalid native type assumption.');text(pair[0],200);text(pair[1].declaration,4096);text(pair[1].type,16384);}}

@@ -106,7 +106,7 @@ function createSession(cs,bytes,meta,options={}){
  const recognitionMap=new Map();for(const e of evidence){const list=recognitionMap.get(e.address)||[];list.push(e);recognitionMap.set(e.address,list);}for(const f of functions)f.recognition=recognitionMap.get(f.address)||[];if(evidence.length>=4096)warnings.push('Library evidence limited to 4096 findings.');
  const resolved=new Set(deep.references.filter(r=>!r.candidate&&r.kind!=='import').map(r=>r.from));
  const unresolved=rows.filter(i=>!i.ret&&(i.call||i.jump)&&i.target===null&&!resolved.has(i.address)).length;
- return {engine:'Capstone 5 / SPECTRA 0.14',mode:mode.name,manual:!!manual,raw:manual?{...manual}:null,instructions:rows,functions,references,tables:deep.tables,recognition:evidence,warnings,decodedBytes,unresolved,truncated,limits:{...limits},continuation:{canContinue,pending,ceiling:{instructions:MAX_INSTRUCTIONS,decodedBytes:MAX_BYTES}},coverage:{decodedBytes,executableBytes:codeMaps.reduce((n,m)=>n+m.size,0)},method:manual?'linear sweep of user-selected bytes':'recursive traversal from entry, symbols, unwind records, and direct calls'};
+ return {engine:'Capstone 5 / SPECTRA 0.15',mode:mode.name,manual:!!manual,raw:manual?{...manual}:null,instructions:rows,functions,references,tables:deep.tables,recognition:evidence,warnings,decodedBytes,unresolved,truncated,limits:{...limits},continuation:{canContinue,pending,ceiling:{instructions:MAX_INSTRUCTIONS,decodedBytes:MAX_BYTES}},coverage:{decodedBytes,executableBytes:codeMaps.reduce((n,m)=>n+m.size,0)},method:manual?'linear sweep of user-selected bytes':'recursive traversal from entry, symbols, unwind records, and direct calls'};
 }
  return {advance,close(){if(!closed){closed=true;d.close();}}};
 }
