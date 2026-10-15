@@ -126,7 +126,7 @@
     if(!state.result||state.busy){toast('Wait for analysis to finish.');return;}
     if(kind==='project'){saveProject();$('export-dialog').close();return;}
     const rows=state.filtered;
-    if(kind==='json'){const {strings,blocks,...metadata}=state.result;download(baseName()+'.report.json',JSON.stringify({tool:'SPECTRA v0.15',createdAt:new Date().toISOString(),name:state.name,sha256:state.hash,syntheticDemo:state.demo,metadata,filters:{query:$('search').value,encoding:$('encoding').value,tag:state.tag,minLength:$('min-length').value,unique:$('unique').checked},strings:rows.map(s=>({...s,text:fullText(s),clipped:false})),investigation:project(),caveat:'Static text heuristics are not malware verdicts.'},null,2));}
+    if(kind==='json'){const {strings,blocks,...metadata}=state.result;download(baseName()+'.report.json',JSON.stringify({tool:'SPECTRA v0.16',createdAt:new Date().toISOString(),name:state.name,sha256:state.hash,syntheticDemo:state.demo,metadata,filters:{query:$('search').value,encoding:$('encoding').value,tag:state.tag,minLength:$('min-length').value,unique:$('unique').checked},strings:rows.map(s=>({...s,text:fullText(s),clipped:false})),investigation:project(),caveat:'Static text heuristics are not malware verdicts.'},null,2));}
     if(kind==='csv'){const cell=v=>'"'+String(v).replace(/^[=+@-]/,"'$&").replace(/"/g,'""')+'"';const lines=[['offset_hex','offset_decimal','encoding','length','byte_length','tags','text','note'],...rows.map(s=>[hex(s.offset),s.offset,s.encoding,s.length,s.byteLength,s.tags.join(';'),fullText(s),state.notes[key(s)]||''])];download(baseName()+'.strings.csv',lines.map(r=>r.map(cell).join(',')).join('\r\n'),'text/csv;charset=utf-8');}
     if(kind==='txt')download(baseName()+'.strings.txt',rows.map(s=>fullText(s)).join('\n'),'text/plain;charset=utf-8');
     $('export-dialog').close();toast('Exported '+fmt(rows.length)+' filtered strings.');
@@ -150,7 +150,9 @@
 /*__GUIDE_UI__*/
 /*__ACCESS_UI__*/
 /*__NAVIGATION_UI__*/
+/*__FILE_IO_UI__*/
 /*__EVIDENCE_UI__*/
+/*__RECORDING_UI__*/
   document.querySelector('.brand').onclick=e=>{e.preventDefault();changeView('strings');};
   document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>changeView(b.dataset.view));
   $('open-top').onclick=()=>$('file-input').click();$('file-input').onchange=e=>{if(e.target.files[0])analyzeFile(e.target.files[0]);e.target.value='';};$('demo-button').onclick=loadDemo;
@@ -163,7 +165,7 @@
   $('copy-hash').onclick=()=>state.hash?copy(state.hash):toast('No hash is available yet.');$('entropy-chart').onclick=e=>{const b=e.target.closest('[data-block]');if(b)goHex(state.result.blocks[+b.dataset.block].offset);};
   $('hex-go').onclick=()=>{const raw=$('hex-offset').value.trim();if(!/^(?:0x[0-9a-f]+|\d+)$/i.test(raw))return toast('Use a decimal offset or hexadecimal prefixed with 0x.');const n=Number(raw);if(!Number.isSafeInteger(n)||n<0||n>=state.bytes.length)return toast('Offset is outside this file.');state.hexStart=Math.floor(n/16)*16;renderHex();};$('hex-offset').onkeydown=e=>{if(e.key==='Enter')$('hex-go').click();};$('hex-prev').onclick=()=>{state.hexStart=Math.max(0,state.hexStart-HEX_PAGE);renderHex();};$('hex-next').onclick=()=>{state.hexStart+=HEX_PAGE;renderHex();};
   $('decode-mode').onchange=()=>$('xor-key-wrap').hidden=$('decode-mode').value!=='xor';$('decode-run').onclick=runDecode;$('copy-decoded').onclick=()=>copy($('decode-output').value);
-  $('case-notes').oninput=e=>{state.caseNotes=e.target.value.slice(0,100000);schedulePersist();};$('save-project').onclick=saveProject;$('load-project').onclick=()=>$('project-input').click();
+  $('case-notes').oninput=e=>{evidenceState.notesObserved=true;state.caseNotes=e.target.value.slice(0,100000);schedulePersist();};$('save-project').onclick=saveProject;$('load-project').onclick=()=>$('project-input').click();
   $('project-input').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;try{await restoreInvestigation(f);}catch(err){toast(err.message);}};
   $('export-button').onclick=()=>state.result&&!state.busy?$('export-dialog').showModal():toast('Wait for analysis to finish.');for(const kind of ['json','csv','txt','project'])$('export-'+kind).onclick=()=>exportReport(kind);
   $('help-button').onclick=()=>$('help-dialog').showModal();

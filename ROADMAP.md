@@ -1,5 +1,7 @@
 ## Shipped in 0.11
 
+Current follow-up: v0.16 implements persistent observations, mapping lifecycle, streaming selective archives, external trace adapters and six-stage lesson diagnostics. Desktop verification is documented in docs/releases/v0.16.md. Actual iPad/iPhone Safari, assistive-technology and modest-device acceptance remain open; complete these before starting the remaining feature proposals. Time travel has not been implemented. The beginner/intermediate books remain private.
+
 Bounded indirect targets and guarded switch tables; exact library reference/signature packs and import-thunk evidence; saved structure layouts; same-language callee signature propagation; stale reconstruction protection. See docs/ANALYSIS-DEPTH.md for tested scope. General interprocedural dataflow, automatic C++ class recovery and comprehensive vendor signature catalogs remain future work.
 
 # SPECTRA community RE roadmap

@@ -2,6 +2,7 @@
 'use strict';
 const Depth=root.SpectraAnalysis||(typeof require==='function'?require('./analysis.js'):null),Knowledge=root.SpectraKnowledge||(typeof require==='function'?require('./knowledge.js'):null);
 const Evidence=root.SpectraEvidence||(typeof require==='function'?require('./evidence.js'):null),Lessons=root.SpectraLessons||(typeof require==='function'?require('./lessons.js'):null);
+const Stream=root.SpectraStream||(typeof require==='function'?require('./stream.js'):null);
 const SCHEMA='spectra-project-v2',HASH=/^[0-9a-f]{64}$/;
 function object(o){return o&&typeof o==='object'&&!Array.isArray(o);}
 function text(s,max){if(typeof s!=='string'||s.length>max)throw Error('Project text field exceeds its limit.');return s;}
@@ -17,6 +18,7 @@ function metadata(m){
  
  if(!Array.isArray(m.bookmarks)||m.bookmarks.length>50000||m.bookmarks.some(x=>typeof x!=='string'||x.length>50)||!object(m.notes)||Object.keys(m.notes).length>50000)throw Error('Invalid string evidence.');for(const [k,v]of Object.entries(m.notes)){text(k,50);text(v,20000);}
  if(m.traceFiles!==undefined){if(!Array.isArray(m.traceFiles)||m.traceFiles.length>2)throw Error('Trace slot cap: two.');m.traceFiles.forEach(Evidence.validateTrace);}
+ if(m.recordingFiles!==undefined){if(!Array.isArray(m.recordingFiles)||m.recordingFiles.length>2)throw Error('Recording slot cap: two.');for(const r of m.recordingFiles)if(!r||!/^recordings\/[01]\.ndjson$/.test(r.path)||!HASH.test(r.sha256)||typeof r.name!=='string'||r.name.length>240)throw Error('Invalid recording metadata.');}
  if(m.lessonProgress)Lessons.validate(m.lessonProgress,m.sha256);
  for(const k of ['provenance','mappingRecord'])if(m[k])Evidence.bounded(m[k],512*1024);
  m.annotations=annotations(m.annotations||[]);
@@ -34,23 +36,28 @@ function metadata(m){
  if(m.debugCurrent){root.SpectraExperiments.validate(m.debugCurrent,m.sha256,m.debugCurrent.engine);}
  return m;
 }
-async function encode(manifest,sample,layers,dependencies=[],comparison=null){
- const m=metadata(structuredClone(manifest)),entries=[];
- if(sample){if(sample.length>64*1024*1024||await root.SpectraExperiments.sha(sample)!==m.sha256)throw Error('Sample does not match the project hash.');m.samplePath='sample.bin';entries.push({name:m.samplePath,bytes:sample});}else m.samplePath=null;
- let total=0;m.layers=[];for(let i=0;i<layers.length;i++){const {bytes,...layer}=layers[i];total+=bytes.length;if(i>=8||bytes.length>8*1024*1024||total>16*1024*1024)throw Error('Recovery byte budget exceeded.');const sha256=await root.SpectraExperiments.sha(bytes),path='layers/'+i+'.bin';m.layers.push({...layer,path,sha256});entries.push({name:path,bytes});}
- m.dependencies=[];let dependencyTotal=sample?.length||m.sampleSize||0;if(dependencies.length>32)throw Error('Dependency count limit exceeded.');for(let i=0;i<dependencies.length;i++){const d=dependencies[i];dependencyTotal+=d.bytes.length;if(d.bytes.length>16*1024*1024||dependencyTotal>64*1024*1024)throw Error('Dependency byte budget exceeded.');const path='dependencies/'+i+'.bin',sha256=await root.SpectraExperiments.sha(d.bytes);m.dependencies.push({name:text(d.name,240),path,sha256});entries.push({name:path,bytes:d.bytes});}
- if(comparison){if(comparison.bytes.length>32*1024*1024)throw Error('Comparison file cap: 32 MiB.');m.comparison={...comparison,bytes:undefined,path:'comparison.bin',sha256:await root.SpectraExperiments.sha(comparison.bytes)};text(m.comparison.name,240);entries.push({name:'comparison.bin',bytes:comparison.bytes});}else m.comparison=null;
- const body=JSON.stringify(m);if(new TextEncoder().encode(body).length>16*1024*1024)throw Error('Project metadata cap: 16 MiB.');entries.unshift({name:'manifest.json',bytes:body});return root.SpectraArchive.zip(entries);
+async function prepare(manifest,sample,layers,dependencies=[],comparison=null,recordings=[],options={}){
+ const m=metadata(structuredClone(manifest)),entries=[],hash=async bytes=>(await Stream.digest(bytes,{signal:options.signal})).sha256;
+ if(sample){if(sample.length>64*1024*1024||await hash(sample)!==m.sha256)throw Error('Sample does not match the project hash.');m.samplePath='sample.bin';entries.push({name:m.samplePath,bytes:sample});}else m.samplePath=null;
+ let total=0;m.layers=[];for(let i=0;i<layers.length;i++){const {bytes,...layer}=layers[i];total+=bytes.length;if(i>=8||bytes.length>8*1024*1024||total>16*1024*1024)throw Error('Recovery byte budget exceeded.');const sha256=await hash(bytes),path='layers/'+i+'.bin';m.layers.push({...layer,path,sha256});entries.push({name:path,bytes});}
+ m.dependencies=[];let dependencyTotal=sample?.length||m.sampleSize||0;if(dependencies.length>32)throw Error('Dependency count limit exceeded.');for(let i=0;i<dependencies.length;i++){const d=dependencies[i];dependencyTotal+=d.bytes.length;if(d.bytes.length>16*1024*1024||dependencyTotal>64*1024*1024)throw Error('Dependency byte budget exceeded.');const path='dependencies/'+i+'.bin',sha256=await hash(d.bytes);m.dependencies.push({name:text(d.name,240),path,sha256});entries.push({name:path,bytes:d.bytes});}
+ if(comparison){if(comparison.bytes.length>32*1024*1024)throw Error('Comparison file cap: 32 MiB.');m.comparison={...comparison,bytes:undefined,path:'comparison.bin',sha256:await hash(comparison.bytes)};text(m.comparison.name,240);entries.push({name:'comparison.bin',bytes:comparison.bytes});}else m.comparison=null;
+ m.recordingFiles=[];for(let i=0;i<recordings.length;i++){if(i>=2)throw Error('Recording slot cap: two.');const r=recordings[i],path='recordings/'+i+'.ndjson',hash=await Stream.digest(r.source,{signal:options.signal,maxBytes:64*1024*1024+128*1024});m.recordingFiles.push({name:text(r.name,240),path,sha256:hash.sha256});entries.push({name:path,source:r.source});}
+ const body=JSON.stringify(m);if(new TextEncoder().encode(body).length>16*1024*1024)throw Error('Project metadata cap: 16 MiB.');entries.unshift({name:'manifest.json',bytes:body});return entries;
 }
-async function decode(bytes,currentHash){
- const entries=await root.SpectraArchive.unzip(bytes,{storedOnly:true}),byName=new Map(entries.map(e=>[e.name,e.bytes])),body=byName.get('manifest.json');
+async function encode(...args){const entries=await prepare(...args);for(const e of entries)if(e.source)e.bytes=new Uint8Array(await e.source.arrayBuffer());return root.SpectraArchive.zip(entries);}
+async function decode(bytes,currentHash){return decodeEntries(await root.SpectraArchive.unzip(bytes,{storedOnly:true}),currentHash);}
+async function decodeEntries(input,currentHash){
+ const entries=[];for(const e of input){entries.push(e.name.startsWith('recordings/')?e:{name:e.name,bytes:e.bytes instanceof Uint8Array?e.bytes:new Uint8Array(await e.source.arrayBuffer())});}
+ const byName=new Map(entries.map(e=>[e.name,e.bytes])),body=byName.get('manifest.json');
  if(!body||body.length>16*1024*1024)throw Error('Project manifest missing or too large.');const m=metadata(JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(body))),used=new Set(['manifest.json']);
  for(const c of [...m.checkpoints,...(m.debugCurrent?[m.debugCurrent]:[])])await root.SpectraExperiments.validateEvidence(c,m.sha256,c.engine);
  let sample=null;if(m.samplePath){if(m.samplePath!=='sample.bin'||!byName.has(m.samplePath))throw Error('Project sample missing.');sample=byName.get(m.samplePath);used.add(m.samplePath);if(!sample.length||sample.length>64*1024*1024||await root.SpectraExperiments.sha(sample)!==m.sha256)throw Error('Project sample hash mismatch.');}else if(m.sha256!==currentHash)throw Error('Open the matching sample first; this project omits the original bytes.');
  let total=0;const ids=new Set(),layers=[];for(const layer of m.layers){if(!/^layers\/[0-7]\.bin$/.test(layer.path)||used.has(layer.path)||!/^layer-[1-9]\d{0,5}$/.test(layer.id)||ids.has(layer.id)||!HASH.test(layer.sha256))throw Error('Invalid recovery layer.');const b=byName.get(layer.path);if(!b||b.length>8*1024*1024||(total+=b.length)>16*1024*1024||await root.SpectraExperiments.sha(b)!==layer.sha256)throw Error('Recovery layer is missing, oversized, or has a different hash.');text(layer.name,240);text(layer.method,100);if(layer.sourceId!==undefined)text(layer.sourceId,1000);if(!Number.isSafeInteger(layer.sourceOffset)||layer.sourceOffset<0||layer.sourceLength!==undefined&&layer.sourceLength!==null&&(!Number.isSafeInteger(layer.sourceLength)||layer.sourceLength<0||layer.sourceLength>64*1024*1024)||!Array.isArray(layer.chain)||layer.chain.length>50)throw Error('Invalid recovery provenance.');ids.add(layer.id);used.add(layer.path);layers.push({...layer,bytes:b});}
  const dependencies=[];let depTotal=sample?.length||m.sampleSize||0;if(m.dependencies&&(!Array.isArray(m.dependencies)||m.dependencies.length>32))throw Error('Invalid dependency collection.');for(const d of m.dependencies||[]){if(!/^dependencies\/(?:[0-9]|[12][0-9]|3[01])\.bin$/.test(d.path)||used.has(d.path)||!HASH.test(d.sha256))throw Error('Invalid dependency path.');text(d.name,240);const b=byName.get(d.path);if(!b||b.length>16*1024*1024||(depTotal+=b.length)>64*1024*1024||await root.SpectraExperiments.sha(b)!==d.sha256)throw Error('Dependency bytes or hash mismatch.');used.add(d.path);dependencies.push({...d,bytes:b});}
  let comparison=null;if(m.comparison){const c=m.comparison;if(!object(c)||c.path!=='comparison.bin'||!HASH.test(c.sha256))throw Error('Invalid saved comparison.');text(c.name,240);const b=byName.get(c.path);if(!b||b.length>32*1024*1024||await root.SpectraExperiments.sha(b)!==c.sha256)throw Error('Comparison bytes or hash mismatch.');used.add(c.path);comparison={name:c.name,bytes:b,hadResult:c.hadResult===true};}
- if(used.size!==entries.length)throw Error('Unexpected files in project bundle.');return {manifest:m,sample,layers,dependencies,comparison};
+ const recordings=[];for(const r of m.recordingFiles||[]){if(used.has(r.path))throw Error('Duplicate recording path.');const entry=entries.find(e=>e.name===r.path),source=entry?.source||new Blob(entry?.bytes?[entry.bytes]:[]);if(!entry||source.size>64*1024*1024+128*1024||(await Stream.digest(source)).sha256!==r.sha256)throw Error('Recording missing or checksum mismatch.');used.add(r.path);recordings.push({...r,source});}
+ if(used.size!==entries.length)throw Error('Unexpected files in project bundle.');return {manifest:m,sample,layers,dependencies,comparison,recordings};
 }
-root.SpectraProject={SCHEMA,annotations,metadata,encode,decode};if(typeof module!=='undefined')module.exports=root.SpectraProject;
+root.SpectraProject={SCHEMA,annotations,metadata,prepare,encode,decode,decodeEntries};if(typeof module!=='undefined')module.exports=root.SpectraProject;
 })(globalThis);

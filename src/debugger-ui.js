@@ -3,7 +3,7 @@ const debugNumber=id=>SpectraDebug.address($(id).value.trim());
 const byteText=bytes=>Array.from(bytes,n=>n.toString(16).padStart(2,'0')).join(' ');
 function endDebugger(message='Session ended. The last snapshot is still available.'){
  if(debugState.projectCheckpoint){debugState.projectCheckpoint.reject(Error(message));debugState.projectCheckpoint=null;}
- debugState.worker?.terminate();if(debugState.url)URL.revokeObjectURL(debugState.url);clearTimeout(debugState.timer);Object.assign(debugState,{worker:null,url:null,timer:null,busy:false,active:false,id:debugState.id+1,message});
+ debugState.recording=null;debugState.worker?.terminate();if(debugState.url)URL.revokeObjectURL(debugState.url);clearTimeout(debugState.timer);Object.assign(debugState,{worker:null,url:null,timer:null,busy:false,active:false,id:debugState.id+1,message});
 }
 function resetDebugger(){endDebugger('Initialize a session, or try the decoding demo.');debugState.snapshot=null;debugState.options=null;debugState.breakpoints.clear();debugState.conditions=[];debugState.watchpoints=[];debugState.checkpoints=[];debugState.resumable=null;debugState.pendingRestore=null;resetLab();renderDebugger();}
 let debugPreflightCache=null;
@@ -29,11 +29,11 @@ async function initializeDebugger(options=null){
  endDebugger();debugState.resumable=null;debugState.snapshot=null;debugState.options=o;debugState.busy=true;debugState.message='Starting the local CPU emulator…';const id=debugState.id,job=state.job;
  try{
   const family=SpectraHardware.profiles[o.mode]?.module;let unicorn=$('unicorn-source').textContent;if(family){const r=await fetch(ENGINE_ROOT+'hardware/unicorn_'+family+'.js');if(!r.ok)throw Error('Hardware engine download failed.');unicorn=await r.text();if(id!==debugState.id||job!==state.job)return;}
-  const source=['engine-source','capstone-source','windows-source','linux-source','debugger-source','native-plan-source','code-source','hardware-debugger-source','lab-source','experiments-source','debugger-worker-source'].map(n=>$(n).textContent).join('\n');
+  const source=['engine-source','capstone-source','windows-source','linux-source','debugger-source','native-plan-source','code-source','hardware-debugger-source','lab-source','experiments-source','stream-source','recording-engine-source','recording-observer-source','debugger-worker-source'].map(n=>$(n).textContent).join('\n');
   debugState.url=URL.createObjectURL(new Blob([unicorn,source],{type:'text/javascript'}));debugState.worker=new Worker(debugState.url);
   debugState.worker.onmessage=e=>{
    if(id!==debugState.id||job!==state.job)return;
-   const msg=e.data;if(msg.type==='restored')for(const c of debugState.checkpoints)if(c.digest===msg.digest)c.imported=false;if(msg.options)debugState.options=msg.options;if(msg.memoryAddress!==undefined)$('debug-memory-address').value=hex(msg.memoryAddress);if(msg.snapshot)debugState.snapshot=msg.snapshot;debugState.busy=!!msg.running;debugState.active=!!msg.snapshot;
+   const msg=e.data;debugState.recording=msg.recording||null;if(msg.recorded)onRecordingStopped(msg.recorded);if(msg.type==='restored')for(const c of debugState.checkpoints)if(c.digest===msg.digest)c.imported=false;if(msg.options)debugState.options=msg.options;if(msg.memoryAddress!==undefined)$('debug-memory-address').value=hex(msg.memoryAddress);if(msg.snapshot)debugState.snapshot=msg.snapshot;debugState.busy=!!msg.running;debugState.active=!!msg.snapshot;
    if(!debugState.busy)clearTimeout(debugState.timer);
    debugState.message=msg.error||msg.snapshot?.reason||'Session ready.';
    if(msg.error&&!msg.snapshot)endDebugger('Could not initialize: '+msg.error);
@@ -48,7 +48,7 @@ async function initializeDebugger(options=null){
    if(debugState.pendingRestore&&msg.type==='state'&&!msg.error){const c=debugState.pendingRestore;debugState.pendingRestore=null;sendDebug('restore',{checkpoint:c});return;}
    renderDebugger();renderLearning();
   };
-  debugState.worker.onerror=e=>{if(id!==debugState.id)return;endDebugger('Emulator stopped: '+(e.message||'worker error'));renderDebugger();};
+  debugState.worker.onerror=e=>{if(id!==debugState.id)return;endDebugger('Emulator stopped: '+(e.message||'worker error')+(e.lineno?' (worker line '+e.lineno+', column '+e.colno+')':''));renderDebugger();};
   const capstoneWasm=Uint8Array.from(atob($('capstone-wasm').textContent.trim()),c=>c.charCodeAt(0));
   const {strings,blocks,...meta}=state.result,buffer=state.bytes.slice().buffer;
   debugState.worker.postMessage({action:'init',buffer,meta,options:o,capstoneWasm},[buffer,capstoneWasm.buffer]);armDebuggerTimeout(20000);
@@ -63,7 +63,7 @@ function useCodeInDebugger(at){
 }
 function renderDebugger(){
  if(!$('debug-status'))return;
- const setupReady=renderDebugPreflight();
+ const setupReady=renderDebugPreflight();renderRecordingControls();
  const s=debugState.snapshot,ready=debugState.active&&!debugState.busy,canStep=ready&&!s?.stopped;
  renderWindowsSession(s,ready);renderExperiments(s,ready);renderLab(s,ready);
  $('debug-status').textContent=debugState.message+(s?.plan.scope?' '+s.plan.scope+(s.plan.cpu?' CPU: '+s.plan.cpu+'.':''):'');$('debug-count').textContent=(s?fmt(s.steps):'0')+' steps';
@@ -98,7 +98,7 @@ function acceptDebugCapture(capture){
  recoveryState.message='Captured '+human(capture.bytes.length)+' from '+(capture.path||hex(capture.address))+'. '+capture.strings.length+' strings found.';
  $('recovery-filter').value='all';$('recovery-search').value='';recoveryState.page=Math.floor(firstNew/100);renderRecovery();$('recovery-input').value=id;setRecoveryRange();changeView('recovery');toast('Emulated bytes are now a Recovery lab input.');
 }
-function exportDebug(){const s=debugState.snapshot;if(!s)return;download(baseName()+'.debugger.json',JSON.stringify({tool:'SPECTRA 0.15',sample:state.name,sha256:state.hash,createdAt:new Date().toISOString(),configuration:debugState.options,breakpoints:[...debugState.breakpoints],...s,note:'Emulated CPU with explicit supplied/model state, not a full operating system or board. Last 200 attempts only. Faults may leave partial state. Memory edits and register arguments are analyst-supplied.'},null,2));}
+function exportDebug(){const s=debugState.snapshot;if(!s)return;download(baseName()+'.debugger.json',JSON.stringify({tool:'SPECTRA 0.16',sample:state.name,sha256:state.hash,createdAt:new Date().toISOString(),configuration:debugState.options,breakpoints:[...debugState.breakpoints],...s,note:'Emulated CPU with explicit supplied/model state, not a full operating system or board. Last 200 attempts only. Faults may leave partial state. Memory edits and register arguments are analyst-supplied.'},null,2));}
 $('debug-init').onclick=()=>initializeDebugger();$('debug-reset').onclick=()=>initializeDebugger(debugState.options);$('debug-end').onclick=async()=>{if(debugState.active&&!debugState.busy){try{debugState.resumable=await checkpointForProject();endDebugger('Session ended. Its verified checkpoint is retained for workspace saving.');}catch(e){endDebugger('Session ended without a new checkpoint: '+e.message);}}else{debugState.resumable=null;endDebugger('Session ended immediately. Save a checkpoint before ending if you need to resume.');}renderDebugger();scheduleWorkspace();};
 $('debug-step').onclick=()=>sendDebug('step');for(const action of ['run','over','out'])$('debug-'+action).onclick=()=>{try{sendDebug(action,{budget:debugNumber('debug-budget'),breakpoints:[...[...debugState.breakpoints].map(address=>({address})),...debugState.conditions]});}catch(e){toast(e.message);}};$('debug-pause').onclick=()=>sendDebug('pause');
 $('debug-selected').onclick=()=>{const f=selectedFunction();if(f)useCodeInDebugger(f.address);};

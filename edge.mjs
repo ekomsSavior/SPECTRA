@@ -11,7 +11,7 @@ const HEADERS = {
   'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=()',
   'Strict-Transport-Security': 'max-age=2592000',
   'X-Frame-Options': 'DENY',
-  'X-Spectra-Edge': '0.15',
+  'X-Spectra-Edge': '0.16',
 };
 function reply(request, text, status, extra={}) {
   return new Response(request.method === 'HEAD' ? null : text, {status, headers:{...HEADERS, 'Content-Type':'text/plain; charset=utf-8', 'Cache-Control':'no-store', ...extra}});

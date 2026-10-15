@@ -1,76 +1,48 @@
 {
-  "version": "0.15",
-  "status": "Deployed; portable evidence and lesson browser workflows verified",
-  "generatedAt": "2026-10-14T22:38:17.091169+00:00",
+  "version": "0.16",
+  "status": "Deployed; desktop checks passed; actual Safari/accessibility acceptance pending",
+  "generatedAt": "2026-10-15T15:29:48.131623+00:00",
   "site": "https://spectra.churchofmalware.org/",
   "sourceRepository": "https://git.churchofmalware.org/ek0mssavi0r/SPECTRA",
-  "baselineWorkerVersion": "4e47c0df-cb31-4616-bc15-1b9bcef94376",
-  "baselineGitCommit": "4b62313eb7d3a056b561363c58d43adb93607fe9",
-  "workerVersion": "075d61fe-d5f4-4b65-9580-0072d36f7cc0",
-  "engineAssetRoot": "/engines/v015/",
-  "checksPassed": 344,
+  "githubRepository": "https://github.com/ekomsSavior/SPECTRA",
+  "baselineWorkerVersion": "075d61fe-d5f4-4b65-9580-0072d36f7cc0",
+  "baselineGitCommit": "8be4f4af35d677daae96afae673e0372346004e6",
+  "engineAssetRoot": "/engines/v016/",
+  "checksPassed": 385,
   "testGroups": {
-    "nodeTests": 299,
+    "nodeTests": 340,
     "managedWasm": 7,
     "managedDependencies": 8,
     "generatedHarness": 30,
-    "newEvidenceTestsIncludedInNodeTests": 19
+    "newFollowupTestsIncludedInNodeTests": 41
   },
-  "changes": [
-    "Portable bounded trace envelopes, inert import, search, two-slot comparison, same-sample byte/assembly navigation",
-    "Selective project evidence ZIP with explicit groups, reviewed checksummed manifest and deliberate restore",
-    "Exact unsigned 64-bit file-offset/VA/PE-RVA mapping ledger with declared/raw/runtime sources and child provenance",
-    "Five fixture-hash/version-bound lesson checklists; current-session capture validation and full workspace resume"
-  ],
   "browserQA": [
-    "Local Windows output capture, Linux echo/exit, decoder recovery, native reference/decompilation and ARM register-edit/return each reach three evidence milestones",
-    "Full reload restores lesson progress and trace as historical/imported evidence; no sample instructions run on restore",
-    "Mismatched trace disables sample navigation; two-trace comparison reports sample and engine differences; instruction search excludes schema-key noise",
-    "File offset 0x100 maps to Linux VA 0x400100 and opens matching Hex explorer bytes",
-    "Findings-only export contains one metadata file; explicit selections add sample and trace/lesson state; selection change invalidates prepared snapshot",
-    "Bundle import reviews inventory before explicit workspace replacement; sample, trace and historical lesson checks restore without execution",
-    "390-pixel viewport: lesson checklist, selective inventory and portable trace controls remain usable with no page-wide horizontal overflow; viewport override reset",
-    "No console errors observed in local and live verification",
-    "Published page passes automatic Cloudflare verification; v0.15 Linux lesson, trace capture, mapping and selective bundle inventory work"
+    "221-instruction decoder recording retained across segments and reload, with paging and event mapping",
+    "Six-stage decoder route reaches 6/6 and restores all milestones as historical after full reload",
+    "Production-CSP browser verifies and restores a selected bundle with a real 500-instruction benign recording; no sample executed on restore",
+    "Phone-width 390px navigation and completed-file link have no horizontal page overflow",
+    "64 MiB ZIP production and validation with bounded working chunks; aborted output rejected",
+    "4,000-record IndexedDB segment order and concurrent flush checks"
   ],
+  "pendingAcceptance": [
+    "Actual iPad/iPhone Safari downloads to Files, reimport and lesson restoration",
+    "VoiceOver and representative assistive technology",
+    "Total peak memory on modest physical devices and tab eviction"
+  ],
+  "downloadHandoff": "Desktop in-app browser did not deliver app downloads or a plain static download control to local Downloads. Completed-file links verified; OS-level save remains unverified.",
+  "manualsPublished": false,
+  "timeTravelImplemented": false,
+  "workerVersion": "3eacb18b-28e0-4361-9e90-436c3b8043fa",
   "packages": {
-    "/debugger-source.zip": {
-      "bytes": 44381617,
-      "sha256": "adb84e13e13a40d252d9b80d7f4c62776fbb43214896df955124bded583c20ff",
-      "parts": 3
-    },
-    "/detection-source.zip": {
-      "bytes": 512138304,
-      "sha256": "a473aa2a85ec7edfb1b4d795a4b1dc9ed741afd5945c06c701616aca73c6d8b9",
-      "parts": 31
+    "source": {
+      "bytes": 44428529,
+      "sha256": "ebb71050d5e13bb6d85957db19666e95ff26b0b65142eaa3ee2ae8753982357b",
+      "members": 637
     },
     "offline": {
-      "bytes": 78233647,
-      "sha256": "b8741e5038c4bdd7b0d4ae89b15102e05035490905dceaef07db76863e70f763",
-      "parts": 5
+      "bytes": 78303249,
+      "sha256": "4fbbb063ab3f0202423396b208bf88c574184caa99273a66180eb6fd64d47433",
+      "members": 197
     }
-  },
-  "packageQA": "Source/offline CRCs, source/DiE/offline part sizes and hashes and assembled hashes verified. New manuals/practice pack and reported malware samples excluded.",
-  "protections": {
-    "challenge": "Existing Cloudflare challenge policy retained; live page loaded successfully without a manual CAPTCHA action.",
-    "workerFirst": true,
-    "pageBurst": "30 requests / 10 s / IP",
-    "pageMinute": "120 requests / 60 s / IP",
-    "engineBurst": "100 requests / 10 s / IP",
-    "engineMinute": "240 requests / 60 s / IP",
-    "rateBindings": "All five existing per-IP bindings confirmed in v0.15 deployment",
-    "scope": "SPECTRA static delivery only; not a whole-network audit",
-    "sourceDownloadMinute": "4 archive requests / 60 s / IP"
-  },
-  "limits": [
-    "Trace retains latest 200 instruction records, bounded model channels and final mappings only; no reverse stepping, full history, external adapter or authenticity claim",
-    "ZIP assembly is bounded in memory, not constant-memory streaming; maximum-sized exports are not guaranteed on phones",
-    "Mapping conversion does not extend debugger architecture/address support; compressed children have no invented linear offset",
-    "Physical iPad/iPhone/Android performance and accessibility remain unverified",
-    "Beginner/intermediate manuals remain unpublished"
-  ],
-  "publishing": {
-    "worker": "Deployed to existing custom domain; all five rate bindings retained",
-    "repository": "Signed-in Church Git Apply Patch; final commit recorded in local release work plan"
   }
 }
