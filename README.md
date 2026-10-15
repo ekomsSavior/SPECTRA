@@ -1,99 +1,96 @@
-# SPECTRA 0.16 — Church of Malware
+# SPECTRA
 
-A free browser reverse-engineering workbench. Open a binary, follow the evidence, keep the investigation. Optional explanations use the same tools and evidence as the professional workspace.
+**Reverse engineering in your browser. Free, open source, and built for the community.**
 
-- Live: https://spectra.churchofmalware.org/
-- Source: https://git.churchofmalware.org/ek0mssavi0r/SPECTRA
-- No account, paid tier, sample uploads, paid API, or telemetry in the analysis app. Engines are served by the Church. Cloudflare receives normal delivery metadata; sample analysis stays local.
-- Black, gray and white; Creepster wordmark. Teaching defaults off.
+[Open SPECTRA](https://spectra.churchofmalware.org/) · [Read the field guide](https://spectra.churchofmalware.org/guide.html) · [Church Git](https://git.churchofmalware.org/ek0mssavi0r/SPECTRA) · [GitHub](https://github.com/ekomsSavior/SPECTRA)
 
-## Persistent observations and streamed evidence (0.16)
+SPECTRA is the [Church of Malware](https://churchofmalware.org/)'s reverse-engineering workbench. Inspect a binary, follow its strings into code, reconstruct functions, test a routine, and keep the evidence together in one workspace. Use it for malware analysis, software research, firmware inspection, patch comparison, or your first look inside a compiled program.
 
-Debugger lab now records ordered observations within explicit byte/instruction budgets, persists segments, tracks map/protect/unmap history, and imports/exports checksummed NDJSON. Event alignment keeps uncertain matches visible. Documented x64dbg v1 and Chrome trace-event adapters import inert evidence; neither promises executable identity or replay.
+The tools are for everyone. No account, paid tier, or paid API is required. Beginners get the same workbench as experienced researchers, with optional explanations and hands-on exercises to help them find their way.
 
-Notebook produces selective ZIP evidence with incremental hashing/writing, cancellation, incomplete-file checks, and an explicit completed-file save step. Source snapshots and restoration still consume memory. File structure adds extended ELF numbering and thin Mach-O mappings. Five built-in lesson routes now have six stages, actionable diagnostics and historical-progress migration. The new beginner/intermediate books remain unpublished.
+**Your samples stay in your browser.** Parsing, disassembly, decompilation, detection, and emulation run locally. The analysis app does not upload samples or include telemetry. The Church serves the engine assets; Cloudflare receives normal website delivery metadata. A complete offline release is available too.
 
-[Workflow reference](docs/EVIDENCE-WORKFLOWS.md) · [Recording formats](docs/RECORDINGS.md) · [Release verification](docs/releases/v0.16.md) · [iPad/iPhone Safari acceptance route](docs/SAFARI-ACCEPTANCE.md). Physical mobile, VoiceOver and modest-device peak-memory checks remain open. These additions do not implement time travel.
+## Start with a question. Follow the evidence.
 
-## Resumable disassembly (0.14)
+1. **Open a file**, or head to **Training ground** and choose a benign exercise with source and a walkthrough.
+2. **Get your bearings.** Check the format, architecture, imports, strings, and detection results. Pick something worth investigating.
+3. **Follow it into code.** Move through references, callers, disassembly, and reconstructed source. Name what you understand and annotate what you still need to prove.
+4. **Test a theory.** Prepare a compatible debugger setup, supply the inputs a routine needs, and inspect its registers, memory, and execution trace.
+5. **Keep your work.** Save an investigation, compare another build, or export selected evidence for someone else to examine.
 
-**Continue analysis** extends a bounded static pass without discarding its decoded instructions or queued targets. Each click adds up to 60,000 instructions; the cumulative ceiling is 1,000,000 instructions / 16 MiB decoded bytes. Cancel keeps the last completed result. Investigation projects retain the requested depth, selections and annotations; restored code is recomputed locally. Coverage and unresolved indirect-flow limits remain explicit. [Scope and verification](docs/releases/v0.14.md).
+**Teaching defaults off. Click “Explain as I go” at the top of the workspace to turn it on.** Explanations follow the selected finding or instruction; all tools remain available either way.
 
-## ARM static PIE debugger release (0.13)
+## The workbench
 
-Debugger lab now loads ARM/Thumb EABI5 static PIE, rebases its entry and process stack, and validates local relative relocations. Startup owns relocation by default; an explicit alternate-entry mode lets the debugger apply it. Single-thread TLS access, guarded brk mappings, image mprotect, and unsupported-call evidence extend the bounded Linux model. Benign ARM/Thumb demos and replay regressions are included. [Scope and verification](docs/releases/v0.13.md).
+### Inspect and identify
 
-## ILSpy startup hotfix (0.12.1)
+| Section | What you can do |
+| --- | --- |
+| **Strings** | Extract ASCII and wide-string candidates, filter findings, inspect offsets, and bookmark leads. SHA-256 and entropy give you a starting picture of the file. |
+| **File structure** | Examine PE and ELF headers, sections, imports, exports, symbols, and supported relocation/unwind records. Convert file offsets, RVAs, and virtual addresses with an exact 64-bit mapping ledger, including thin Mach-O mappings and captured debugger regions. |
+| **Hex explorer** | Inspect the bytes behind a finding and check what a parser, decoder, or code view is telling you. |
+| **Detect** | Run the real **Detect It Easy** engine and signature database locally to identify compiler/language, packer, protector, and obfuscation fingerprints. Keep the report and its evidence with the investigation. |
+| **Firmware files** | Inspect and extract supported ZIP, TAR, CPIO, gzip, and SquashFS containers. Follow extracted files into their own investigations with parent hashes and provenance preserved. |
 
-Managed worker startup now reports module/runtime errors and offers Retry ILSpy without reopening the sample or dependencies. Startup timeouts are distinct from analysis timeouts. A live .NET sample previously reported as failing successfully reconstructed on v0.12 before this change; the original intermittent failure was not reproduced, so no specific cause is claimed. See [verification](docs/releases/ilspy-startup-verification.md).
+Mapping results distinguish file-backed bytes, zero-fill, allocated memory, and ambiguous overlaps. Extracting a compressed child does not invent a linear offset back into its parent. Detection results are leads to investigate, not a verdict about a file's behavior.
 
-## Deeper analysis release (0.12)
+### Follow code and reconstruct meaning
 
-Static indirect-target analysis now follows supported x86/x64 and AArch64 constant/import-load sequences, with instruction provenance and explicit file-value uncertainty. Guarded x86 absolute and x64 PIC switch patterns expose cases and extend bounded code discovery; manual target/table hypotheses support other known layouts. Functions shows import thunks, declared names and exact signatures, with 30 source-built reference candidates and local pack import/export. This is not a comprehensive vendor-library database.
+**Disassembly, Functions, and Cross-references** connect strings, addresses, calls, and code. Capstone supports x86/x64, ARM/Thumb, AArch64, RISC-V 32/64 with compressed instructions, and MIPS32/64. Explore control-flow graphs, follow callers, and keep assembly beside reconstructed C.
 
-The structure workspace generates explicit padded layouts and previews integer fields from bytes. Saved declarations and validated function signatures apply across callers using the same Ghidra language/ABI. Corrections mark old native reconstruction stale; code JSON, projects and library revisions preserve the evidence. Try Disassembly's benign analysis demo. See [analysis depth and limits](docs/ANALYSIS-DEPTH.md).
+Analysis can continue in bounded passes without throwing away completed work. Supported indirect-call and switch-table patterns retain their evidence; unresolved targets remain visible. Function recognition combines declared names, import thunks, and a curated exact-signature library, with local signature-pack import/export.
 
-## Browser access release (0.10)
+**Decompile** brings two established engines into the browser:
 
-Touch navigation and experiment forms keep the same tools usable on narrow screens without a hardware keyboard. The named Investigation library stores collections and eight revisions per investigation, with export, recoverable Trash and explicit permanent removal. Existing single-workspace saves migrate without being erased.
+- **Ghidra**, through Pyre's WebAssembly bridge, reconstructs native C. Choose the architecture, ABI, byte order, load address, and raw range when needed. Validated function signatures and type declarations feed back into reconstruction and callers.
+- **ILSpy** reconstructs managed C# and exposes metadata and IL. Add local dependencies resolved by full assembly identity, without loading or executing their code.
 
-Disassembly now has local Back/Forward navigation, a resolved control-flow graph with keyboard-accessible block links, and a paired native C pane. It pairs by sample hash and function entry; it does not pretend to map every C line to an instruction. Signature/type editing still uses Ghidra's real assumption controls.
+Function names, comments, bookmarks, structure layouts, and type hypotheses stay with the investigation. Corrections mark affected native output stale so it can be regenerated. Reconstructed source and analyst-supplied types remain interpretations to check against the bytes.
 
-**Debugger lab** now selects setup from the sample and checks loader compatibility before initialization. Static Linux ELF32/64 adds x86 and ARM/Thumb EABI5 alongside x64/AArch64; missing interpreter/library/TLS support is explicit. Windows import coverage distinguishes built-in models, supplied responses and missing APIs. Every profile shares stepping, breakpoints, registers, live memory maps and replay. The standalone shell experiment is no longer shipped. See [debugger environments](docs/BROWSER-LAB.md).
+**Recovery lab and Decoder lab** help examine hidden data: Base64/hex candidates, bounded XOR hunts, x86 stack strings, supplied-key XOR/RC4/AES transforms, and gzip/DEFLATE expansion. Recovered layers retain their hashes and provenance and can be analyzed again. These are focused recovery tools; encrypted data still needs the appropriate key, and arbitrary packed executables are not automatically unpacked.
 
-Firmware extraction adds SquashFS 4.0 little-endian gzip, XZ and Zstandard, with fragments, sparse files, inert symlinks and per-member hashes in the downloadable inventory. XZ/Zstandard use a pinned 16 MiB WASM decoder; source and licenses are included under vendor/firmware. LZMA/LZO/LZ4 and older/big-endian SquashFS remain unsupported.
+### Experiment in Debugger lab
 
-Training ground includes a 18-chapter field guide with integrated debugger setup and environment checks. Chromium desktop and a 390-pixel viewport were exercised; physical iPad/iPhone/Safari testing is still needed. A narrow desktop viewport is not evidence of mobile browser compatibility.
+The **Unicorn WebAssembly debugger** keeps stepping, breakpoints, registers, memory, and traces in the same workspace as your static analysis. Setup is inferred from the sample and checked before initialization. Initializing a session does not execute sample instructions.
 
-## Investigate
+- Step into, over, or out; use conditional register breakpoints and memory read/write watchpoints.
+- Edit registers, patch emulated memory, capture buffers, and inspect API/syscall events and virtual files.
+- Build native function harnesses with integer/pointer arguments, input buffers, and explicit calling conventions.
+- Supply data-only environment recipes, captured memory, API responses, virtual files, and supported ARM MMIO responses.
+- Compare bounded experiment batches, observed coverage, return values, and before/after buffers.
+- Save checkpoints and verify forward replay in a fresh emulator before restoring an experiment.
 
-ASCII and ASCII-range UTF-16 strings, SHA-256, byte offsets, hex, entropy, filters, local decoders, notes and bookmarks. PE and ELF parsers expose headers, sections, mapped addresses, imports, exports, symbols, relocation slots and supported unwind function starts.
+Supported environments include a bounded **Windows x86/x64 PE model** with relocations, imports, TLS handling, and modeled APIs; **static Linux ELF** setups for x86, x64, ARM/Thumb, and AArch64; and bare integer-routine profiles for supported ARM, RISC-V, and MIPS modes. ARM/Thumb static PIE has a dedicated supported path.
 
-Capstone disassembly supports x86/x64, ARM/Thumb, AArch64, RISC-V 32/64 with compressed instructions, and MIPS32/64. Follow strings into references, calls, functions, assembly, reconstructed code, and a prepared debugger experiment. Function starts and references retain their evidence; candidates are labeled. Rename functions and attach comments, variable/type hypotheses and code bookmarks.
+These environments model selected OS/API behavior. They do not supply a complete Windows/Linux system, a CLR debugger, or every dependency a program expects. Preflight identifies missing support; unsupported operations stop explicitly. Guest networking is not provided. See [debugger environments](docs/BROWSER-LAB.md), [experiment controls](docs/EXPERIMENT-LAB.md), and [hardware support](docs/HARDWARE.md) for the exact profiles.
 
-Native C reconstruction uses the real Ghidra decompiler through Pyre's WASM bridge. Select architecture, instruction/data order, ABI, raw range and load address. Supplied C function prototypes and type declarations are parsed by Ghidra and affect reconstruction. They are analyst assumptions, not recovered truth. Variable notes do not silently rewrite engine types. .NET C# reconstruction and metadata/IL evidence use ILSpy. Local managed dependencies are resolved by exact assembly identity without executing or uploading them.
+For managed-client research, SPECTRA also generates **downloadable .NET harnesses** from selected methods/classes, with explicit constructor/setup recipes and arguments. The generated runner runs in the analyst's own environment, outside the browser, and needs the target's runtime and dependencies. Modern .NET has benign execution tests; the .NET Framework template is compile-tested, with Windows execution validation still outstanding.
 
-Recovery supports Base64/hex candidates, bounded single-byte XOR hunts, x86 stack strings, supplied-key XOR/RC4/AES transforms and bounded gzip/DEFLATE expansion. Recovered byte layers have hashes and provenance and can be analyzed again. Encrypted text still needs its actual key; this is not a general executable unpacker.
+### Preserve, compare, and share evidence
 
-## Detect
+**Notebook and the Investigation library** preserve notes, annotations, settings, recovered layers, decompiled output, and experiments. Keep named investigations and revisions locally, or export portable projects. Autosave is optional; export work you need to keep because browser storage can be cleared or evicted.
 
-The real Detect It Easy 3.21 engine and matching database run in an on-demand browser worker. Compiler/language, packer/protector and obfuscation fingerprints keep their raw evidence; heuristic labels stay visible. No installs or sample uploads. About 20 MiB initially; 16 MiB sample limit and 180-second cancellation boundary. Reports export and survive saved investigations. See [detection and source notes](docs/DETECTION.md).
+**Persistent recordings** retain ordered instruction observations, model events, edits, stops, and mapping changes within an explicit budget. Browse and search saved segments, compare runs with event alignment, and import/export checksummed NDJSON. Documented x64dbg and Chrome trace-event adapters bring external observations into the workbench. Imported evidence remains labeled unverified; trace import does not run a sample or create a replay checkpoint. Recordings are not time-travel debugging.
 
-## Experiment
+**Selective evidence bundles** let you choose findings, samples, recovered files, dependencies, analysis, experiments, traces, and lesson progress separately. Review a prepared inventory with per-file sizes and SHA-256 hashes before exporting. ZIP writing is incremental, with cancellation and incomplete-file checks. Choosing categories is not automatic redaction of their contents.
 
-The browser debugger uses Unicorn WASM. Initialize never executes a sample instruction. Step, step over/out, conditional register breakpoints, memory read/write watchpoints, register edits, patches, memory capture and traces are bounded and inspectable. Save up to eight experiments; restore replays recorded attempts and analyst edits in a fresh emulator, verifies its state, then swaps sessions. Compare registers, mapped-page digests, permissions and Windows-model events/files.
+**Binary diff** compares strings, imports, and decoded functions between builds. Inspect matched functions in paired assembly or decompile either side. Exact byte matches stay distinct from uncertain symbol/shape matches; a match alone does not prove equivalent behavior.
 
-x86/x64 can run bare routines or a bounded Windows PE model with rebasing, imports, TLS initialization, 56 modeled APIs, API traces and virtual files. Unknown APIs and unsupported operations stop; no guest networking is supplied. It is not a complete Windows OS or CLR debugger.
+The [evidence workflow reference](docs/EVIDENCE-WORKFLOWS.md), [recording contracts](docs/RECORDINGS.md), and [project formats](docs/FORMATS.md) document what is retained, how restoration works, and where the limits are.
 
-ARM/Thumb/AArch64, RV32/RV64+C and MIPS32/64 integer routines have separate lazy-loaded engines. CPU defaults are documented in [hardware notes](docs/HARDWARE.md). System instructions, FP/SIMD and unmodeled operations stop before execution. ARM/Thumb transitions use live CPU mode. MIPS branch/delay pairs step atomically; slot breakpoints pause before the pair, and conditions see pre-pair registers. A synthetic mapped return boundary is explicit. Analyst-defined ARM MMIO responses are available; no full board, peripherals, RTOS or firmware boot is emulated.
+## Learn by doing
 
-SPECTRA 0.9 adds native integer/pointer function harnesses for System V/Windows x64, x86 cdecl/stdcall, ARM/Thumb AAPCS32 and AArch64 AAPCS64; before/after input buffers; saved data-only environment recipes; explicit address/API hooks; mapped captured memory; and virtual file fixtures. ARM register sequences and captured MMIO writes expose supplied hardware behavior. A focused Linux model supports little-endian static ELF32/64 ET_EXEC on x86, x64, ARM/Thumb EABI5 and AArch64, plus bounded ARM/Thumb static PIE with relative relocations, argc/argv/env/auxv, BSS and a small explicit syscall set. It does not supply a Linux kernel or general libc/runtime compatibility.
+**Training ground** includes benign native, Windows, Linux, decoder, and hardware exercises with source, fixtures, hints, walkthroughs, and resumable evidence checklists. Each route ties progress to the exact exercise and distinguishes newly observed evidence from imported history.
 
-Coverage records observed instruction locations/transitions, including labeled modeled boundaries. Batches run up to 16 independent recipes and compare return values, buffers and observed paths. Complete reports save with investigations. Three benign demos provide ready-to-run function, Linux and ARM experiments. See [the experiment reference](docs/EXPERIMENT-LAB.md) for all controls, schemas, modeled syscalls, reproducibility limits and examples.
+The built-in **18-chapter field guide** covers the workbench's sections, controls, workflows, FAQs, and terminology. Read it in place, download the standalone book, or print it to PDF. It also ships in the offline release.
 
-An **optional experimental Linux/GDB companion** serves its own authenticated loopback browser UI. It provides real native process debugging on the analyst's machine, with explicit pairing and launch. It is not a sandbox; use an isolated lab. Public SPECTRA never connects to it. Windows/.NET, remote attach and hardware adapters are not included. See [companion instructions](companion/README.md).
+The interface supports narrow layouts, touch navigation, and keyboard controls. Larger engines and recordings still need memory; a small screen does not mean a small workload. Physical iPad/iPhone Safari and assistive-technology validation remain ongoing. See the [device test route](docs/SAFARI-ACCEPTANCE.md) and [performance budgets](docs/PERFORMANCE.md).
 
-## Keep and compare
+## Run locally or offline
 
-Notebook exports a versioned ZIP with notes, annotations, settings, recovery bytes/provenance, selected harness methods, dependencies, reconstructed source and replay checkpoints. Include original bytes or require the matching local sample on import. Full local workspace save/resume uses IndexedDB; autosave is opt-in. Browser storage can be cleared or evicted, so export work you need to keep. Saved comparisons retain the second binary and recompute evidence on resume. Firmware listings are re-derived from the saved offset. Source bytes are hash-checked before the current investigation is replaced. Import does not run sample instructions. See [export formats](docs/FORMATS.md).
+The hosted workbench needs no installation. For offline use, **Training ground → Download complete offline release** includes the app and its browser engines.
 
-Binary diff compares strings, imports and decoded functions. Exact decoded-byte matches are distinguished from symbol/shape candidates. Ambiguous and unmatched functions remain visible. Open matched functions in side-by-side assembly or reconstruct each side on demand. Partial decoding and clipped string previews are reported; these results do not prove behavioral equivalence.
-
-Firmware files inspects ZIP (stored/deflated), USTAR/PAX, newc/crc CPIO and gzip wrappers. Regular files stay byte buffers; links/devices remain metadata. Opening a child records the parent's hash, path and container offset. SquashFS4 little-endian gzip/XZ/Zstandard extraction is also supported. Nested extraction is manual and bounded.
-
-For thick clients, select methods/classes and generate a downloadable .NET harness with pinned sample identity, explicit entry/constructor/setup recipes, argument conversion and optional local proxy hooks. Modern .NET harness execution is tested with benign fixtures. The .NET Framework 4.8 AnyCPU/x86/x64 template is compile-tested; **Windows execution has not been validated**. Local dependencies are analyzable, but the downloaded runner still needs the target's real runtime/native dependencies and environment. Original binaries are not included automatically.
-
-## Learn and contribute
-
-Training ground includes an 18-chapter searchable field guide covering every section and its controls, workflows, FAQs, and a glossary. Download the standalone HTML book or print it to PDF; the guide ships in the offline release too. Its Links area points to Church Git and MalwareBazaar. The guide content lives in `src/guide-content.mjs` and is rendered from that single source into both the reader and `guide.html`.
-
-Training ground has a compiled benign C/ELF exercise, an XOR-loop memory experiment and hardware addition/delay-slot exercises. Source, exact fixtures, hints, walkthroughs and evidence checks are included. Optional contextual explanations follow the selected finding or instruction. Nothing forces experienced users through a tutorial.
-
-See [contributing](CONTRIBUTING.md), [budgets and performance](docs/PERFORMANCE.md), [engine builds](docs/BUILDING-ENGINES.md) and [roadmap](ROADMAP.md). Original Church code is MIT licensed; third-party engines retain their licenses. The combined debugger distribution includes GPL-2.0 Unicorn with matching source. See [license scope](NOTICE.md) and the generated third-party notices.
-
-## Build and run offline
-
-Use Node.js 20+ (verified with 24.19) and Python 3. No npm installation is needed for the app:
+To build from source, use **Node.js 20+** and **Python 3**. No npm installation is needed for the app build:
 
 ```bash
 node build.mjs
@@ -101,19 +98,39 @@ python3 scripts/package-source.py
 python3 scripts/serve.py --port 4173
 ```
 
-Open `http://127.0.0.1:4173/`. Keep the **whole dist directory**, including `engines/v016`; a saved HTML file alone does not contain the decompilers or hardware engines. All runtime assets are included locally; no CDN or API is needed. The localhost server applies the production CSP. The source ZIP includes all browser runtime assets. To publish the large DiE runtime source archive too, collect the pinned inputs documented in docs/DETECTION.md and run `python3 scripts/package-detection-source.py /path/to/source-inputs` after package-source.py. Training ground also offers a complete offline ZIP download, assembled from verified static parts to fit the host asset limit. A complete offline ZIP can be made with `python3 scripts/package-offline.py`. Engine rebuilds need the documented upstream toolchains, not for ordinary app builds.
+Open [localhost:4173](http://127.0.0.1:4173/). Keep the **whole `dist` directory**, including its versioned `engines` directory. A saved HTML file alone does not contain the analysis engines. Runtime assets are served locally without a CDN or analysis API, and the supplied server applies the production content security policy.
+
+To assemble a complete offline ZIP:
+
+```bash
+python3 scripts/package-offline.py
+```
+
+Engine rebuilds use additional upstream toolchains; ordinary app builds use the included runtime assets. See [engine builds](docs/BUILDING-ENGINES.md) and [Detect It Easy source packaging](docs/DETECTION.md) for those workflows.
+
+## Build with us
+
+SPECTRA belongs to the Church of Malware community. Useful bug reports, small reproducible binaries, lessons, architecture tests, accessibility feedback, and code contributions all help make the workbench better.
+
+Start with [CONTRIBUTING.md](CONTRIBUTING.md). Share a benign reproducer and the research question you were trying to answer; keep live malware and private samples out of public issues.
+
+For source changes, install the test dependencies and run the regression suite:
 
 ```bash
 npm ci --prefix tests --ignore-scripts
 python3 scripts/test.py
-# Optional generated-harness integration test, with a suitable installed SDK:
-SPECTRA_DOTNET=/path/to/dotnet node tests/harness.test.mjs
-# Optional real local debugger test; runs only its compiled benign fixture:
-python3 companion/test_companion.py
 ```
 
-The optional Framework build may restore locked NuGet packages. Browser tests should cover both first-use lazy engine loads and a real document reload before claiming save/resume works.
+Optional generated-harness integration checks use an installed .NET SDK:
 
-## Hosting
+```bash
+SPECTRA_DOTNET=/path/to/dotnet node tests/harness.test.mjs
+```
 
-SPECTRA does not audit or harden the user's network or analysis machine. Static parsing, decompilation and emulation are incomplete models; inspect warnings and preserve uncertainty. Full-process Windows/.NET execution, whole-file unpacking, advanced type recovery and further full-system hardware profiles remain areas for continued research.
+[Roadmap](ROADMAP.md) · [Analysis depth](docs/ANALYSIS-DEPTH.md) · [Release notes and verification](docs/releases/) · [Experimental local debugger companion](companion/README.md)
+
+## Open source, with credit where it's due
+
+SPECTRA builds on Ghidra/Pyre, ILSpy, Capstone, Unicorn, Detect It Easy, and the work of their contributors. Original Church code and lessons are **MIT licensed**. Third-party components retain their own licenses; the combined debugger distribution includes GPL-2.0 Unicorn and matching source. See [LICENSE](LICENSE), [NOTICE.md](NOTICE.md), and the distribution's third-party notices for scope and attribution.
+
+**Church of Malware — Hackers helping hackers.**
