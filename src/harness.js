@@ -51,7 +51,7 @@ function manifest({types,assembly,sha256,sample,selected,analysisWarnings=[]}){
  const chosen=new Set(selected);if(!chosen.size||chosen.size>2000)throw Error('Select between 1 and 2,000 methods.');
  const methods=types.flatMap(t=>t.methods.filter(m=>chosen.has(m.token)).map(m=>({...m,type:t.fullName||[t.ns,t.name].filter(Boolean).join('.'),typeToken:t.token,exampleArguments:(m.parameters||[]).map(p=>example(p.type)),readiness:readiness(m)})));
  if(methods.length!==chosen.size)throw Error('Selection belongs to a different assembly. Select methods again.');
- return {schema:'spectra-harness/1',tool:'SPECTRA 0.16',sample,sha256,assembly,createdAt:new Date().toISOString(),analysisWarnings,methods,
+ return {schema:'spectra-harness/1',tool:'SPECTRA 0.17',sample,sha256,assembly,createdAt:new Date().toISOString(),analysisWarnings,methods,
   limitations:['Evidence-based labels are hypotheses, not proof of behavior.','The downloaded driver runs real code only after --execute; it is not a sandbox.','Modern .NET runner; legacy Framework/UI/native dependencies may require another host.','Proxy defaults are optional and are not universal interception.']};
 }
 function projectFiles(input,templates,target='net10.0',platform='AnyCPU',recipe=null){

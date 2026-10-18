@@ -1,6 +1,6 @@
 ## Shipped in 0.11
 
-Current follow-up: v0.16 implements persistent observations, mapping lifecycle, streaming selective archives, external trace adapters and six-stage lesson diagnostics. Desktop verification is documented in docs/releases/v0.16.md. Actual iPad/iPhone Safari, assistive-technology and modest-device acceptance remain open; complete these before starting the remaining feature proposals. Time travel has not been implemented. The beginner/intermediate books remain private.
+Current follow-up: the Church reported successful iPad and phone tests on 18 October 2026 and authorized the remaining backlog. VoiceOver and measured device-memory coverage remain separate follow-ups, not an inferred pass. v0.17 routine history is implemented: verified read-only historical views for bounded x86/x64 bare routines. Process/hardware history, persistent timelines and replay acceleration remain open. The beginner/intermediate books remain private.
 
 Bounded indirect targets and guarded switch tables; exact library reference/signature packs and import-thunk evidence; saved structure layouts; same-language callee signature propagation; stale reconstruction protection. See docs/ANALYSIS-DEPTH.md for tested scope. General interprocedural dataflow, automatic C++ class recovery and comprehensive vendor signature catalogs remain future work.
 
@@ -51,3 +51,9 @@ Next priorities:
 4. Improve engine-backed source/instruction relationships, nested/packed structures and correction propagation, indirect-flow recovery and curated library identification with false-positive fixtures.
 5. Extend dependency-aware process models and experimental browser-managed routines from concrete failing research cases. Complete OS/device boot remains deferred; the debugger stays the integrated workspace.
 6. Add range/field/reconstruction comparisons and reusable recovery recipes with deliberate parameter export. Broaden lessons once the current manuals are approved.
+
+## v0.17 — bounded routine history
+
+Opt-in x86/x64 bare-routine history now supports previous/next boundary, verified seek, reverse address/conditional breakpoint and recorded-access search, and register/memory-page differences in the existing Debugger lab. Earlier states are read-only and the latest live experiment remains intact. Admission stops before the next action at explicit budgets. See docs/TIME-TRAVEL.md for the tested contract.
+
+Still open: persistent/imported timelines, periodic executable checkpoints, branch editing, process/hardware state including syscall/MMIO reversal, and physical-device history measurements. Imported observations remain inert evidence. Next work also includes source/instruction relationships, richer structures, indirect flow and library identification, dependency-aware models, comparisons and recovery recipes. The private manuals are not included.

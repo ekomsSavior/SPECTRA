@@ -3,7 +3,7 @@ const debugNumber=id=>SpectraDebug.address($(id).value.trim());
 const byteText=bytes=>Array.from(bytes,n=>n.toString(16).padStart(2,'0')).join(' ');
 function endDebugger(message='Session ended. The last snapshot is still available.'){
  if(debugState.projectCheckpoint){debugState.projectCheckpoint.reject(Error(message));debugState.projectCheckpoint=null;}
- debugState.recording=null;debugState.worker?.terminate();if(debugState.url)URL.revokeObjectURL(debugState.url);clearTimeout(debugState.timer);Object.assign(debugState,{worker:null,url:null,timer:null,busy:false,active:false,id:debugState.id+1,message});
+ debugState.history=null;debugState.historyEligibility="Initialize a session first.";debugState.recording=null;debugState.worker?.terminate();if(debugState.url)URL.revokeObjectURL(debugState.url);clearTimeout(debugState.timer);Object.assign(debugState,{worker:null,url:null,timer:null,busy:false,active:false,id:debugState.id+1,message});
 }
 function resetDebugger(){endDebugger('Initialize a session, or try the decoding demo.');debugState.snapshot=null;debugState.options=null;debugState.breakpoints.clear();debugState.conditions=[];debugState.watchpoints=[];debugState.checkpoints=[];debugState.resumable=null;debugState.pendingRestore=null;resetLab();renderDebugger();}
 let debugPreflightCache=null;
@@ -20,8 +20,8 @@ function armDebuggerTimeout(ms=8000){clearTimeout(debugState.timer);const id=deb
 function sendDebug(action,extra={}){
  if(action==='pause'&&debugState.projectCheckpoint){debugState.projectCheckpoint.reject(Error('Workspace save cancelled while capturing the checkpoint.'));debugState.projectCheckpoint=null;}
  if(!debugState.worker||debugState.busy&&action!=='pause')return toast('Initialize a session and pause it before making changes.');
- if(['step','run','over','out','register','patch','restore'].includes(action))debugState.resumable=null;
- debugState.busy=true;debugState.message=action==='run'?'Running inside the emulator…':action==='pause'?'Pausing…':'Working on the session…';armDebuggerTimeout(action==='batch'?40000:action==='restore'?60000:action==='checkpoint'?20000:8000);debugState.worker.postMessage({action,watchpoints:debugState.watchpoints,...extra});renderDebugger();
+ if(['step','run','over','out','register','patch','restore','historySeek','historyReverse','historyLive','historyDiscard'].includes(action))debugState.resumable=null;
+ debugState.busy=true;debugState.message=action==='run'?'Running inside the emulator…':action==='pause'?'Pausing…':'Working on the session…';armDebuggerTimeout(action==='batch'?40000:['restore','historySeek','historyReverse','historyStart'].includes(action)?60000:action==='checkpoint'?20000:debugState.history?30000:8000);debugState.worker.postMessage({action,watchpoints:debugState.watchpoints,...extra});renderDebugger();
 }
 async function initializeDebugger(options=null){
  if(state.busy||!state.result)return toast('Let file inspection finish first.');
@@ -29,13 +29,13 @@ async function initializeDebugger(options=null){
  endDebugger();debugState.resumable=null;debugState.snapshot=null;debugState.options=o;debugState.busy=true;debugState.message='Starting the local CPU emulator…';const id=debugState.id,job=state.job;
  try{
   const family=SpectraHardware.profiles[o.mode]?.module;let unicorn=$('unicorn-source').textContent;if(family){const r=await fetch(ENGINE_ROOT+'hardware/unicorn_'+family+'.js');if(!r.ok)throw Error('Hardware engine download failed.');unicorn=await r.text();if(id!==debugState.id||job!==state.job)return;}
-  const source=['engine-source','capstone-source','windows-source','linux-source','debugger-source','native-plan-source','code-source','hardware-debugger-source','lab-source','experiments-source','stream-source','recording-engine-source','recording-observer-source','debugger-worker-source'].map(n=>$(n).textContent).join('\n');
+  const source=['engine-source','capstone-source','windows-source','linux-source','debugger-source','native-plan-source','code-source','hardware-debugger-source','lab-source','experiments-source','history-source','stream-source','recording-engine-source','recording-observer-source','debugger-worker-source'].map(n=>$(n).textContent).join('\n');
   debugState.url=URL.createObjectURL(new Blob([unicorn,source],{type:'text/javascript'}));debugState.worker=new Worker(debugState.url);
   debugState.worker.onmessage=e=>{
    if(id!==debugState.id||job!==state.job)return;
-   const msg=e.data;debugState.recording=msg.recording||null;if(msg.recorded)onRecordingStopped(msg.recorded);if(msg.type==='restored')for(const c of debugState.checkpoints)if(c.digest===msg.digest)c.imported=false;if(msg.options)debugState.options=msg.options;if(msg.memoryAddress!==undefined)$('debug-memory-address').value=hex(msg.memoryAddress);if(msg.snapshot)debugState.snapshot=msg.snapshot;debugState.busy=!!msg.running;debugState.active=!!msg.snapshot;
+   const msg=e.data;debugState.history=msg.history||null;debugState.historyEligibility=msg.historyEligibility;debugState.recording=msg.recording||null;if(msg.recorded)onRecordingStopped(msg.recorded);if(msg.type==='restored')for(const c of debugState.checkpoints)if(c.digest===msg.digest)c.imported=false;if(msg.options)debugState.options=msg.options;if(msg.memoryAddress!==undefined)$('debug-memory-address').value=hex(msg.memoryAddress);if(msg.snapshot)debugState.snapshot=msg.snapshot;debugState.busy=!!msg.running;debugState.active=!!msg.snapshot;
    if(!debugState.busy)clearTimeout(debugState.timer);
-   debugState.message=msg.error||msg.snapshot?.reason||'Session ready.';
+   debugState.message=msg.error||msg.historyNotice||msg.snapshot?.reason||'Session ready.';
    if(msg.error&&!msg.snapshot)endDebugger('Could not initialize: '+msg.error);
    if(msg.capture)acceptDebugCapture(msg.capture);
    if(msg.batch){labState.batch=msg.batch;labState.selected=-1;debugState.message='Batch complete. Each case started from fresh recipe state; the interactive session is unchanged.';}
@@ -44,6 +44,7 @@ async function initializeDebugger(options=null){
    if(msg.error&&debugState.projectCheckpoint){debugState.projectCheckpoint.reject(Error(msg.error));debugState.projectCheckpoint=null;}
    if(msg.checkpoint&&debugState.projectCheckpoint){debugState.projectCheckpoint.resolve(msg.checkpoint);debugState.projectCheckpoint=null;}
    else if(msg.checkpoint){scheduleWorkspace();debugState.checkpoints.push({...msg.checkpoint,label:debugState.checkpointLabel||'Experiment '+(debugState.checkpoints.length+1)});debugState.message='Checkpoint saved. Restore replays your recorded steps and edits inside the emulator.';}
+   if(msg.historyProgress!==undefined)debugState.message='Verifying historical state: '+fmt(msg.historyProgress)+' actions replayed…';
    if(msg.replayCount!==undefined)debugState.message='Restoring experiment: '+fmt(msg.replayCount)+' recorded steps replayed…';
    if(debugState.pendingRestore&&msg.type==='state'&&!msg.error){const c=debugState.pendingRestore;debugState.pendingRestore=null;sendDebug('restore',{checkpoint:c});return;}
    renderDebugger();renderLearning();
@@ -64,11 +65,12 @@ function useCodeInDebugger(at){
 function renderDebugger(){
  if(!$('debug-status'))return;
  const setupReady=renderDebugPreflight();renderRecordingControls();
- const s=debugState.snapshot,ready=debugState.active&&!debugState.busy,canStep=ready&&!s?.stopped;
- renderWindowsSession(s,ready);renderExperiments(s,ready);renderLab(s,ready);
+ const s=debugState.snapshot,ready=debugState.active&&!debugState.busy,canStep=ready&&!s?.stopped&&!debugState.history?.historical&&!debugState.history?.full&&!debugState.history?.failed;
+ renderWindowsSession(s,ready);renderExperiments(s,ready);renderLab(s,ready);renderHistory(ready);
  $('debug-status').textContent=debugState.message+(s?.plan.scope?' '+s.plan.scope+(s.plan.cpu?' CPU: '+s.plan.cpu+'.':''):'');$('debug-count').textContent=(s?fmt(s.steps):'0')+' steps';
  for(const id of ['debug-step','debug-run','debug-over','debug-out'])$(id).disabled=!canStep;
  for(const id of ['debug-register-set','debug-memory-view','debug-scratch','debug-stack','debug-patch','debug-capture'])$(id).disabled=!ready;
+ for(const id of ['debug-register-set','debug-patch'])$(id).disabled=!ready||!!debugState.history?.historical||!!debugState.history?.full||!!debugState.history?.failed;
  $('debug-break-add').disabled=debugState.busy;$('debug-break-address').disabled=debugState.busy;
  $('debug-pause').disabled=!debugState.active||!debugState.busy;$('debug-init').disabled=debugState.busy||state.busy||!setupReady;$('debug-reset').disabled=!debugState.options||state.busy;$('debug-end').disabled=!debugState.worker;$('debug-export').disabled=!s;
  $('debug-selected').disabled=!selectedFunction();$('debug-demo').disabled=state.busy;
@@ -91,14 +93,14 @@ function acceptDebugCapture(capture){
  const s=debugState.snapshot,total=recoveryState.artifacts.reduce((n,a)=>n+a.bytes.length,0);
  if(!s||recoveryState.artifacts.length>=8||total+capture.bytes.length>16*1024*1024)return toast('Recovery layer limit reached. Clear its results first.');
  stopRecovery();recoveryState.pendingStack=false;
- const id='layer-'+recoveryState.nextArtifact++,chain=[{method:'emulation',sourceSha256:state.hash,mode:s.mode,start:s.plan.start,memoryAddress:capture.address,length:capture.bytes.length,virtualPath:capture.path,steps:s.steps,assumptions:s.windows?'Modeled Windows process. Review API events and unsupported behavior.':s.lab?.linux?'Modeled Linux process. Review startup recipe, syscall events and unsupported behavior.':'Bare routine with zeroed registers, stack and scratch. See analyst edits.',windows:s.windows,lab:s.lab,environment:s.plan.environment||'routine',edits:s.edits}];
+ const id='layer-'+recoveryState.nextArtifact++,chain=[{method:'emulation',sourceSha256:state.hash,mode:s.mode,start:s.plan.start,memoryAddress:capture.address,length:capture.bytes.length,virtualPath:capture.path,history:capture.history||null,steps:s.steps,assumptions:s.windows?'Modeled Windows process. Review API events and unsupported behavior.':s.lab?.linux?'Modeled Linux process. Review startup recipe, syscall events and unsupported behavior.':'Bare routine with zeroed registers, stack and scratch. See analyst edits.',windows:s.windows,lab:s.lab,environment:s.plan.environment||'routine',edits:s.edits}];
  const artifact={id,name:id+' · '+(capture.path?'virtual file':'emulated memory'),method:'emulation',bytes:capture.bytes,sha256:capture.sha256,strings:capture.strings,entropy:capture.entropy,sourceId:capture.path||'session memory',sourceOffset:capture.address,sourceLength:capture.bytes.length,chain,emulationTrace:s.trace};
  recoveryState.artifacts.push(artifact);evidenceState.observedCaptures.push(id);const firstNew=recoveryState.rows.length;addRecoveryRows(capture.strings.map(r=>({...r,method:'emulation',sourceOffset:r.offset,sourceLength:r.byteLength,decodedOffset:r.offset,artifactId:id,confidence:'emulated state',evidence:(capture.path?'Captured from virtual file '+capture.path+' at file offset '+hex(r.offset):'Captured from emulated VA '+hex(capture.address+r.offset))+' after '+s.steps+' attempted steps. Depends on the supplied state; not proof of real-world execution.',tags:core.tagsFor(r.text)})),id);
  if(recoveryState.rows.length>firstNew)recoveryState.selected=firstNew;
  recoveryState.message='Captured '+human(capture.bytes.length)+' from '+(capture.path||hex(capture.address))+'. '+capture.strings.length+' strings found.';
  $('recovery-filter').value='all';$('recovery-search').value='';recoveryState.page=Math.floor(firstNew/100);renderRecovery();$('recovery-input').value=id;setRecoveryRange();changeView('recovery');toast('Emulated bytes are now a Recovery lab input.');
 }
-function exportDebug(){const s=debugState.snapshot;if(!s)return;download(baseName()+'.debugger.json',JSON.stringify({tool:'SPECTRA 0.16',sample:state.name,sha256:state.hash,createdAt:new Date().toISOString(),configuration:debugState.options,breakpoints:[...debugState.breakpoints],...s,note:'Emulated CPU with explicit supplied/model state, not a full operating system or board. Last 200 attempts only. Faults may leave partial state. Memory edits and register arguments are analyst-supplied.'},null,2));}
+function exportDebug(){const s=debugState.snapshot;if(!s)return;download(baseName()+'.debugger.json',JSON.stringify({tool:'SPECTRA 0.17',sample:state.name,sha256:state.hash,createdAt:new Date().toISOString(),configuration:debugState.options,breakpoints:[...debugState.breakpoints],...s,note:'Emulated CPU with explicit supplied/model state, not a full operating system or board. Last 200 attempts only. Faults may leave partial state. Memory edits and register arguments are analyst-supplied.'},null,2));}
 $('debug-init').onclick=()=>initializeDebugger();$('debug-reset').onclick=()=>initializeDebugger(debugState.options);$('debug-end').onclick=async()=>{if(debugState.active&&!debugState.busy){try{debugState.resumable=await checkpointForProject();endDebugger('Session ended. Its verified checkpoint is retained for workspace saving.');}catch(e){endDebugger('Session ended without a new checkpoint: '+e.message);}}else{debugState.resumable=null;endDebugger('Session ended immediately. Save a checkpoint before ending if you need to resume.');}renderDebugger();scheduleWorkspace();};
 $('debug-step').onclick=()=>sendDebug('step');for(const action of ['run','over','out'])$('debug-'+action).onclick=()=>{try{sendDebug(action,{budget:debugNumber('debug-budget'),breakpoints:[...[...debugState.breakpoints].map(address=>({address})),...debugState.conditions]});}catch(e){toast(e.message);}};$('debug-pause').onclick=()=>sendDebug('pause');
 $('debug-selected').onclick=()=>{const f=selectedFunction();if(f)useCodeInDebugger(f.address);};
@@ -155,3 +157,22 @@ function selectLinuxStart(){try{if($('debug-environment').value!=='linux'||$('de
 $('debug-load-base').addEventListener('change',selectLinuxStart);$('debug-linux-relocations').addEventListener('change',selectLinuxStart);
 
 $('debug-load-base').addEventListener('input',selectLinuxStart);$('debug-start').addEventListener('input',renderDebugger);
+
+function renderHistory(ready){
+ const h=debugState.history;$('history-mode').textContent=h?(h.historical?'HISTORICAL · READ ONLY':'LATEST STATE'):'Not capturing';
+ $('history-start').disabled=!ready||!!h||!!debugState.recording||!!debugState.historyEligibility;
+ for(const id of ['history-back','history-reverse'])$(id).disabled=!ready||!h||h.cursor===0||!!h.failed;
+ $('history-forward').disabled=!ready||!h||!h.historical||!!h.failed;
+ for(const id of ['history-seek','history-index'])$(id).disabled=!ready||!h||!!h.failed;
+ $('history-live').disabled=!ready||!h?.historical;$('history-discard').disabled=!ready||!h;$('history-budget').disabled=!ready||!!h;
+ $('history-index').max=h?.total||0;if(document.activeElement!==$('history-index'))$('history-index').value=h?.cursor||0;
+ $('history-status').textContent=h?(h.historical?'Historical boundary ':'Live boundary ')+h.cursor+' / '+h.total+' · '+human(h.bytes)+' metadata. '+(h.failed|| (h.full?'Budget reached. Inspect retained history or discard it to continue.':h.historical?'Running and editing are locked. Return to latest to continue.':'New steps and edits are captured.')):debugState.historyEligibility||'Ready: start history before the first instruction or edit.';
+ const d=h?.diff;$('history-diff').textContent=d?'Changes from previous viewed/captured state: '+d.fromSteps+' → '+d.toSteps+' instructions\n'+d.registers.map(r=>r.name+': '+JSON.stringify(r.before)+' → '+JSON.stringify(r.after)).join('\n')+'\n'+d.pages.length+' changed mapped pages'+(d.pages.length?'\n'+d.pages.slice(0,32).map(p=>hex(p.address)).join(', '):'')+'\nRecipe/model state changed: '+d.modelChanged:'';
+}
+$('history-start').onclick=()=>sendDebug('historyStart',{budget:Number($('history-budget').value)});
+$('history-back').onclick=()=>sendDebug('historySeek',{index:debugState.history.cursor-1});
+$('history-forward').onclick=()=>sendDebug('historySeek',{index:debugState.history.cursor+1});
+$('history-seek').onclick=()=>sendDebug('historySeek',{index:Number($('history-index').value)});
+$('history-live').onclick=()=>sendDebug('historyLive');
+$('history-reverse').onclick=()=>sendDebug('historyReverse',{breakpoints:[...debugState.breakpoints,...debugState.conditions]});
+$('history-discard').onclick=async()=>{if(confirm('Discard this timeline? The latest live experiment is kept. Historical points cannot be recovered from a trace file.'))sendDebug('historyDiscard');};

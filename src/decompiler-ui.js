@@ -1,5 +1,5 @@
 const decompileState={worker:null,engine:null,ready:false,busy:false,retry:false,timer:null,id:0,pending:null,result:null,types:[],base64:null,assembly:null,analysisWarnings:[],dependencies:[],harnessSelected:new Set(),harnessFocus:null,message:'Pick a function. The engine downloads on first use; the file never uploads.'};
-const ENGINE_ROOT='./engines/v016/';
+const ENGINE_ROOT='./engines/v017/';
 function stopDecompiler(message){decompileState.worker?.terminate();clearTimeout(decompileState.timer);Object.assign(decompileState,{worker:null,ready:false,busy:false,retry:false,engine:null,pending:null,id:decompileState.id+1});if(message)decompileState.message=message;}
 function resetDecompiler(){stopDecompiler();decompileState.restoreManaged=null;$('harness-recipe').value='';Object.assign(decompileState,{result:null,types:[],base64:null,assembly:null,analysisWarnings:[],dependencies:[],harnessSelected:new Set(),harnessFocus:null,message:'Pick a function. The engine downloads on first use; the file never uploads.'});renderDecompiler();}
 function isManagedImage(){try{const b=state.bytes,v=new DataView(b.buffer,b.byteOffset,b.byteLength);if(v.getUint16(0,true)!==0x5a4d)return false;const opt=v.getUint32(0x3c,true)+24,wide=v.getUint16(opt,true)===0x20b;return v.getUint32(opt+(wide?112:96)+14*8,true)>0;}catch{return false;}}
@@ -77,7 +77,7 @@ $('decompile-selected').onclick=()=>{const f=selectedFunction();if(f)useFunction
 $('decompile-functions').onchange=e=>{if(e.target.value){$('decompile-address').value=hex(Number(e.target.value));selectNativeAssumptions();}};$('decompile-search').oninput=renderDecompiler;
 $('decompile-copy').onclick=()=>copy(decompileState.result.code);
 $('decompile-export').onclick=()=>download(baseName()+(decompileState.result.engineKind==='managed'?'.cs':'.c'),decompileState.result.code,'text/plain');
-$('decompile-report').onclick=()=>download(baseName()+'.decompilation.json',JSON.stringify({tool:'SPECTRA 0.16',...decompileState.result},null,2));
+$('decompile-report').onclick=()=>download(baseName()+'.decompilation.json',JSON.stringify({tool:'SPECTRA 0.17',...decompileState.result},null,2));
 $('decompile-native-demo').onclick=async()=>{const job=state.job+1,b=SpectraWindows.demo();b.fill(0x90,512,1024);b.set([0x31,0xc0,0x85,0xc9,0x7e,6,1,0xc8,0xff,0xc9,0x75,0xfa,0xc3],512);await analyzeFile(new File([b],'spectra-native-loop.exe'),true);if(state.job===job)changeView('decompile');};
 $('decompile-managed-demo').onclick=async()=>{const job=state.job;try{const r=await fetch(ENGINE_ROOT+'fixtures/ManagedTraining.dll');if(!r.ok)throw Error('Demo unavailable ('+r.status+').');const bytes=await r.arrayBuffer();if(state.job!==job)return;await analyzeFile(new File([bytes],'ManagedTraining.dll'),true);if(state.job===job+1)changeView('decompile');}catch(e){toast(e.message);}};
 

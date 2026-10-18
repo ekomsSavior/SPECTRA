@@ -59,6 +59,7 @@ The **Unicorn WebAssembly debugger** keeps stepping, breakpoints, registers, mem
 - Supply data-only environment recipes, captured memory, API responses, virtual files, and supported ARM MMIO responses.
 - Compare bounded experiment batches, observed coverage, return values, and before/after buffers.
 - Save checkpoints and verify forward replay in a fresh emulator before restoring an experiment.
+- Start **routine history** for x86/x64 bare routines: step backward/forward through retained instruction attempts and edits, reverse-search breakpoints or memory accesses, and inspect verified historical registers and memory while preserving the latest live state. [Scope and walkthrough](docs/TIME-TRAVEL.md).
 
 Supported environments include a bounded **Windows x86/x64 PE model** with relocations, imports, TLS handling, and modeled APIs; **static Linux ELF** setups for x86, x64, ARM/Thumb, and AArch64; and bare integer-routine profiles for supported ARM, RISC-V, and MIPS modes. ARM/Thumb static PIE has a dedicated supported path.
 
@@ -84,7 +85,7 @@ The [evidence workflow reference](docs/EVIDENCE-WORKFLOWS.md), [recording contra
 
 The built-in **18-chapter field guide** covers the workbench's sections, controls, workflows, FAQs, and terminology. Read it in place, download the standalone book, or print it to PDF. It also ships in the offline release.
 
-The interface supports narrow layouts, touch navigation, and keyboard controls. Larger engines and recordings still need memory; a small screen does not mean a small workload. Physical iPad/iPhone Safari and assistive-technology validation remain ongoing. See the [device test route](docs/SAFARI-ACCEPTANCE.md) and [performance budgets](docs/PERFORMANCE.md).
+The interface supports narrow layouts, touch navigation, and keyboard controls. Larger engines and recordings still need memory; a small screen does not mean a small workload. The Church reports successful iPad and phone testing. Detailed device/OS records, VoiceOver coverage, and measured total-memory validation remain separate follow-ups. See the [device test route](docs/SAFARI-ACCEPTANCE.md) and [performance budgets](docs/PERFORMANCE.md).
 
 ## Run locally or offline
 

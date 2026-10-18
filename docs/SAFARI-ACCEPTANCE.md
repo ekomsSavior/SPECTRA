@@ -1,6 +1,6 @@
 # iPad / iPhone Safari acceptance route — v0.16
 
-Status: **awaiting a test on an actual device**. Desktop Chromium checks are separate. Use the built-in benign decoder; no malware or extra software is needed. Record device model, iOS/iPadOS version, Safari version if shown, normal/private mode, and which step fails. Start in normal browsing, with a few other tabs closed. Private mode is a separate test because persistence can differ.
+Status: **user-reported iPad and phone pass, 18 October 2026** (“all is well”). Device models/OS and individual route results were not supplied. This report clears the earlier hold on backlog work; it does not establish a separate VoiceOver or measured total-memory pass. The route below remains available for reproducible follow-up. Desktop Chromium checks are separate. Use the built-in benign decoder; no malware or extra software is needed. Record device model, iOS/iPadOS version, Safari version if shown, normal/private mode, and which step fails. Start in normal browsing, with a few other tabs closed. Private mode is a separate test because persistence can differ.
 
 1. Open `https://spectra.churchofmalware.org/?v=0.16#lessons`. Confirm v0.16 in the sidebar. On a narrow screen, use the navigation menu.
 2. Training ground → **Load the decoding exercise** → **Replace with exercise** if prompted. In Debugger lab, **Initialize session**. Initialization should not execute instructions.
