@@ -1,14 +1,14 @@
-## Shipped in 0.11
+# SPECTRA community RE roadmap
 
-Current follow-up: the Church reported successful iPad and phone tests on 18 October 2026 and authorized the remaining backlog. VoiceOver and measured device-memory coverage remain separate follow-ups, not an inferred pass. v0.17 routine history is implemented: verified read-only historical views for bounded x86/x64 bare routines. Process/hardware history, persistent timelines and replay acceleration remain open. The beginner/intermediate books remain private.
+Current baseline: v0.18 adds browser-local APK/DEX Java reconstruction, package evidence and a sixth resumable lesson. v0.17 routine history remains available for bounded x86/x64 bare routines. Process/hardware history, persistent timelines and replay acceleration remain open. The Church reported successful iPad and phone tests of v0.16 on 18 October 2026; Android reconstruction, VoiceOver and measured device-memory coverage need their own device checks. The beginner/intermediate books remain private.
+
+## Analysis foundations
 
 Bounded indirect targets and guarded switch tables; exact library reference/signature packs and import-thunk evidence; saved structure layouts; same-language callee signature propagation; stale reconstruction protection. See docs/ANALYSIS-DEPTH.md for tested scope. General interprocedural dataflow, automatic C++ class recovery and comprehensive vendor signature catalogs remain future work.
 
-# SPECTRA community RE roadmap
-
 Owner and home: Church of Malware, https://spectra.churchofmalware.org/. Public source destination: https://git.churchofmalware.org/ek0mssavi0r/SPECTRA. The app is not being moved to another host.
 
-Authorized scope: the six community workstreams plus ARM/RISC-V/MIPS hardware workflows. v0.7 implements a tested first release across them; it does not claim parity with every IDA/Ghidra workflow or a complete OS/device environment. The deployed baseline before this release is v0.6. Deployment and repository publication are recorded separately in release-verification.json.
+Authorized scope: the six community workstreams plus ARM/RISC-V/MIPS hardware workflows. The implementations below have explicit limits; they do not claim parity with every IDA/Ghidra workflow or a complete OS/device environment. Deployment and repository publication are recorded separately in release-verification.json.
 
 1. **Saved investigations and debugger controls — implemented and locally tested.** Hash-checked versioned ZIP bundles, original/recovered/dependency/comparison bytes, code names/notes/bookmarks, engine type assumptions, tool/harness settings and replay experiments. Explicit IndexedDB save/resume and opt-in autosave. Over/out, conditions, read/write watchpoints, verified cancellable replay and checkpoint comparison. Full document reload/resume verified in browser. Browser storage eviction still requires portable exports.
 2. **Connected analysis — implemented.** Strings → references/callers → assembly/functions → real decompilation and prepared experiments. Address-based renames follow views and native symbols. Engine-applied function signatures and type declarations change Ghidra output. Local variable hypotheses remain labeled annotations; per-variable engine editing and richer indirect-flow/type recovery remain future work.
@@ -57,3 +57,11 @@ Next priorities:
 Opt-in x86/x64 bare-routine history now supports previous/next boundary, verified seek, reverse address/conditional breakpoint and recorded-access search, and register/memory-page differences in the existing Debugger lab. Earlier states are read-only and the latest live experiment remains intact. Admission stops before the next action at explicit budgets. See docs/TIME-TRAVEL.md for the tested contract.
 
 Still open: persistent/imported timelines, periodic executable checkpoints, branch editing, process/hardware state including syscall/MMIO reversal, and physical-device history measurements. Imported observations remain inert evidence. Next work also includes source/instruction relationships, richer structures, indirect flow and library identification, dependency-aware models, comparisons and recovery recipes. The private manuals are not included.
+
+## v0.18 — Android reconstruction and connected evidence
+
+APK and standard DEX 035/037–040 now have their own browser-local reconstruction path through dex2jar and Vineflower. Multidex class inventory, declared fields/methods, method-byte evidence, decoded manifest/resource XML and bounded resource-table inspection stay in Decompile. Unambiguous source references navigate to classes across DEX files. Native libraries and DEX members can open as child investigations with their parent provenance. Selected reconstructed Java survives project/workspace and Analysis evidence export.
+
+The sixth resumable lesson connects package identity, manifest, a cross-DEX call, original method bytes, notes and an evidence inventory. Imported milestones remain historical; imported output alone cannot satisfy a newly observed step.
+
+Next Android work: precise source/DEX instruction relationships and smali views; APK signature verification; split-package and optional framework/dependency metadata; compact/complex resource coverage; newer and optimized DEX formats. Obfuscated, packed or runtime-loaded code needs separate recovery work. Android execution, ART emulation and installable-project reconstruction are not supplied. See docs/ANDROID.md.

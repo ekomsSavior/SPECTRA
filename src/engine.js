@@ -110,6 +110,7 @@
         result.warnings.push('This release identifies ELF headers; section and import parsing currently targets PE.');
       } else if(size>=4 && u32(0)===0x6d736100) { result.format='WebAssembly'; result.architecture='WASM'; }
       else if(size>=4 && [0xfeedface,0xfeedfacf,0xcefaedfe,0xcffaedfe,0xbebafeca].includes(u32(0))) { result.format='Mach-O'; result.architecture='See header'; }
+      else if(size>=8 && bytes[0]===100 && bytes[1]===101 && bytes[2]===120 && bytes[3]===10){result.format='DEX '+String.fromCharCode(...bytes.subarray(4,7));result.architecture='Dalvik bytecode';}
       else if(size>=4 && u32(0)===0x04034b50) result.format='ZIP archive';
       else if(str(0,5)==='%PDF-') result.format='PDF';
       else if(size>=8 && bytes[0]===137 && str(1,3)==='PNG') result.format='PNG image';

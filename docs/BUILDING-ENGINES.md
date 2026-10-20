@@ -44,3 +44,7 @@ Harness source lives in harness-source and harness-source/net48. Modern fixtures
 The unmodified prebuilt engines come from pinned @alexaltea/unicorn-js 2.1.4 and @alexaltea/capstone-js 5.0.9 packages. Matching Unicorn source is archived in upstream/unicorn-matching-source.tar.gz, including engine submodule files and wrapper build scripts. Extract, activate an Emscripten/Python/CMake/C++ environment, and follow its BUILDING/build.py instructions (`python3 build.py x86`, `arm`, `aarch64`, `mips`, `riscv`). Preserve original patches and GPL notices. A successful source build is not evidence that arbitrary different toolchains reproduce the prebuilt package's hash.
 
 The wrapper's Capstone detail offsets differ from the compiled native layout. SPECTRA reads only known instruction fields and asks the native group API, with additional tested RISC-V control-flow and hardware opcode checks. Do not reuse unverified structure offsets for operands/register metadata.
+
+## Android DEX and Java reconstruction
+
+See [Android bridge build](../android-source/README.md) for the pinned dex2jar/TeaVM/ASM port and Vineflower JavaScript runtime. Ordinary app/offline builds use included self-hosted assets. Engine tests use the benign multidex teaching fixture; metadata/resource parsers and worker cancellation have separate checks.

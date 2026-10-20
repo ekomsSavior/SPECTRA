@@ -11,7 +11,7 @@ function zip(entries){
  }
  const csize=central.reduce((n,b)=>n+b.length,0),end=new Uint8Array(22),v=new DataView(end.buffer);v.setUint32(0,0x06054b50,true);v.setUint16(8,entries.length,true);v.setUint16(10,entries.length,true);v.setUint32(12,csize,true);v.setUint32(16,offset,true);const out=new Uint8Array(offset+csize+22);let pos=0;for(const b of [...parts,...central,end]){out.set(b,pos);pos+=b.length;}return out;
 }
-async function unzip(bytes,{maxBytes=128*1024*1024,maxEntry=64*1024*1024,maxEntries=512,storedOnly=false}={}){
+function index(bytes,{maxBytes=128*1024*1024,maxEntry=64*1024*1024,maxEntries=512,storedOnly=false}={}){
  if(!(bytes instanceof Uint8Array)||bytes.length>maxBytes+1024*1024||bytes.length<22)throw Error('Archive size limit exceeded or ZIP is truncated.');
  const v=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength),u16=o=>v.getUint16(o,true),u32=o=>v.getUint32(o,true);let e=-1;
  for(let o=bytes.length-22;o>=Math.max(0,bytes.length-65557);o--)if(u32(o)===0x06054b50&&o+22+u16(o+20)===bytes.length){e=o;break;}
@@ -29,11 +29,18 @@ async function unzip(bytes,{maxBytes=128*1024*1024,maxEntry=64*1024*1024,maxEntr
   spans.push([local,data+compressed]);entries.push({name:path,offset:data,compressed,length,method,checksum});at+=46+n+extra+comment;
  }
  if(at!==e)throw Error('Unexpected ZIP directory data.');spans.sort((a,b)=>a[0]-b[0]);for(let i=1;i<spans.length;i++)if(spans[i][0]<spans[i-1][1])throw Error('Overlapping ZIP entries.');
- const out=[];for(const item of entries){let b=bytes.subarray(item.offset,item.offset+item.compressed);
-  if(item.method===8){const stream=new Blob([b]).stream().pipeThrough(new DecompressionStream('deflate-raw')),reader=stream.getReader(),chunks=[];let n=0;try{while(true){const {done,value}=await reader.read();if(done)break;n+=value.length;if(n>item.length||n>maxEntry)throw Error('ZIP output exceeds its declared size.');chunks.push(value);}}catch(e){await reader.cancel().catch(()=>{});throw e;}b=new Uint8Array(n);let at=0;for(const c of chunks){b.set(c,at);at+=c.length;}}
-  if(b.length!==item.length||crc(b)!==item.checksum)throw Error('ZIP member checksum or size mismatch.');out.push({...item,bytes:b.slice()});
- }
+ return entries;
+}
+async function extract(bytes,item,{maxEntry=64*1024*1024}={}){
+ if(!(bytes instanceof Uint8Array)||!item||!Number.isSafeInteger(item.offset)||!Number.isSafeInteger(item.compressed)||!Number.isSafeInteger(item.length)||item.offset<0||item.compressed<0||item.length<0||item.length>maxEntry||item.offset+item.compressed>bytes.length||![0,8].includes(item.method))throw Error('Invalid ZIP extraction span.');
+ let b=bytes.subarray(item.offset,item.offset+item.compressed);
+ if(item.method===8){const stream=new Blob([b]).stream().pipeThrough(new DecompressionStream('deflate-raw')),reader=stream.getReader(),chunks=[];let n=0;try{while(true){const {done,value}=await reader.read();if(done)break;n+=value.length;if(n>item.length||n>maxEntry)throw Error('ZIP output exceeds its declared size.');chunks.push(value);}}catch(e){await reader.cancel().catch(()=>{});throw e;}b=new Uint8Array(n);let at=0;for(const c of chunks){b.set(c,at);at+=c.length;}}
+ if(b.length!==item.length||crc(b)!==item.checksum)throw Error('ZIP member checksum or size mismatch.');return b.slice();
+}
+async function unzip(bytes,options={}){
+ const entries=index(bytes,options),out=[];
+ for(const item of entries)out.push({...item,bytes:await extract(bytes,item,options)});
  return out;
 }
-root.SpectraArchive={zip,unzip,crc,name};if(typeof module!=='undefined')module.exports=root.SpectraArchive;
+root.SpectraArchive={zip,unzip,index,extract,crc,name};if(typeof module!=='undefined')module.exports=root.SpectraArchive;
 })(globalThis);

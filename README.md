@@ -40,10 +40,11 @@ Mapping results distinguish file-backed bytes, zero-fill, allocated memory, and 
 
 Analysis can continue in bounded passes without throwing away completed work. Supported indirect-call and switch-table patterns retain their evidence; unresolved targets remain visible. Function recognition combines declared names, import thunks, and a curated exact-signature library, with local signature-pack import/export.
 
-**Decompile** brings two established engines into the browser:
+**Decompile** brings native, managed, and Android reconstruction into the browser:
 
 - **Ghidra**, through Pyre's WebAssembly bridge, reconstructs native C. Choose the architecture, ABI, byte order, load address, and raw range when needed. Validated function signatures and type declarations feed back into reconstruction and callers.
 - **ILSpy** reconstructs managed C# and exposes metadata and IL. Add local dependencies resolved by full assembly identity, without loading or executing their code.
+- **dex2jar + Vineflower** reconstruct Java from APK/DEX bytecode. Search classes across DEX files, inspect method ranges, decode the manifest and resources, follow available source references, and open native libraries as child investigations. [Android workflow and limits](docs/ANDROID.md).
 
 Function names, comments, bookmarks, structure layouts, and type hypotheses stay with the investigation. Corrections mark affected native output stale so it can be regenerated. Reconstructed source and analyst-supplied types remain interpretations to check against the bytes.
 
@@ -81,7 +82,7 @@ The [evidence workflow reference](docs/EVIDENCE-WORKFLOWS.md), [recording contra
 
 ## Learn by doing
 
-**Training ground** includes benign native, Windows, Linux, decoder, and hardware exercises with source, fixtures, hints, walkthroughs, and resumable evidence checklists. Each route ties progress to the exact exercise and distinguishes newly observed evidence from imported history.
+**Training ground** includes benign native, Windows, Linux, Android, decoder, and hardware exercises with source, fixtures, hints, walkthroughs, and resumable evidence checklists. Each route ties progress to the exact exercise and distinguishes newly observed evidence from imported history.
 
 The built-in **18-chapter field guide** covers the workbench's sections, controls, workflows, FAQs, and terminology. Read it in place, download the standalone book, or print it to PDF. It also ships in the offline release.
 
@@ -132,6 +133,6 @@ SPECTRA_DOTNET=/path/to/dotnet node tests/harness.test.mjs
 
 ## Open source, with credit where it's due
 
-SPECTRA builds on Ghidra/Pyre, ILSpy, Capstone, Unicorn, Detect It Easy, and the work of their contributors. Original Church code and lessons are **MIT licensed**. Third-party components retain their own licenses; the combined debugger distribution includes GPL-2.0 Unicorn and matching source. See [LICENSE](LICENSE), [NOTICE.md](NOTICE.md), and the distribution's third-party notices for scope and attribution.
+SPECTRA builds on Ghidra/Pyre, ILSpy, dex2jar, Vineflower, TeaVM, Capstone, Unicorn, Detect It Easy, and the work of their contributors. Original Church code and lessons are **MIT licensed**. Third-party components retain their own licenses; the combined debugger distribution includes GPL-2.0 Unicorn and matching source. See [LICENSE](LICENSE), [NOTICE.md](NOTICE.md), and the distribution's third-party notices for scope and attribution.
 
 **Church of Malware — Hackers helping hackers.**

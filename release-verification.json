@@ -1,20 +1,45 @@
 {
-  "version": "0.17",
-  "status": "Deployed; automated checks, browser flow and package integrity passed",
-  "generatedAt": "2026-10-18T17:57:29.488093+00:00",
+  "version": "0.18",
+  "status": "Deployed; automated checks, live browser reconstruction and package integrity passed",
+  "generatedAt": "2026-10-20T19:32:04.810429+00:00",
   "site": "https://spectra.churchofmalware.org/",
   "sourceRepository": "https://git.churchofmalware.org/ek0mssavi0r/SPECTRA",
   "githubRepository": "https://github.com/ekomsSavior/SPECTRA",
-  "baselineWorkerVersion": "3eacb18b-28e0-4361-9e90-436c3b8043fa",
-  "baselineGitCommit": "1ae80368d0eb96a53698fbe69341495cfb58cf70",
-  "engineAssetRoot": "/engines/v017/",
+  "baselineWorkerVersion": "715b251b-179f-42b7-aa57-b137c45728a0",
+  "baselineGitCommit": "14c0b5210230191bc1ace85ae6e84416d9252f75",
+  "engineAssetRoot": "/engines/v018/",
+  "workerVersion": "255e86d3-304f-4743-9ab0-e6729b0a12ab",
+  "checksPassed": 408,
+  "testGroups": {
+    "nodeTests": 379,
+    "managedWasm": 7,
+    "managedDependencies": 8,
+    "generatedHarnessMetadata": 14,
+    "androidTestsIncludedInNodeTests": 23,
+    "finalAndroidRerun": 23
+  },
+  "semanticVerification": {
+    "fixture": "benign Android Training and SecondDex reconstructed Java",
+    "casesPassed": 2977,
+    "method": "Compile reconstructed Java and verify expected outputs; no sample APK execution"
+  },
+  "externalFixtureVerification": {
+    "source": "https://github.com/androguard/androguard/blob/master/tests/data/APK/hello-world.apk",
+    "sha256": "f427a0ebe0bca97b9acf6cd2a2a01c37a7d3762841810fc54a7191ec637330b2",
+    "classes": 2119,
+    "members": 438,
+    "resourceEntries": 3469,
+    "outcome": "Manifest and resources decoded; MainActivity$1 reconstructed; framework dependencies explicitly missing",
+    "redistributed": false
+  },
   "browserQA": [
-    "221-instruction decoder; verified boundary before first write; forward to decoded byte; intact live result",
-    "Retroactive write watchpoint finds the boundary before the write",
-    "Read-only historical controls, capture provenance and selected checkpoint; recording mode guard",
-    "390 px layout without page overflow; full engine runs under production CSP",
-    "Public v0.17: 8-action decoder history, verified backward/forward boundary, historical execution lock and intact latest state",
-    "Discarding timeline restores normal recording availability and explanatory text"
+    "Multidex inventory and repeated worker requests; Training and SecondDex reconstruction",
+    "Cross-DEX source reference navigates to Training and reconstructs it",
+    "Original DEX method-byte evidence and decoded manifest",
+    "Android lesson 6/6, prepared evidence inventory, workspace save and full reload/resume with historical milestones",
+    "390 px viewport: page width 375 px; Java horizontally scrolls inside its panel; console errors absent; desktop layout check only",
+    "Public v0.18: normal Cloudflare verification completed; multidex inventory and SecondDex Java reconstruction run on production",
+    "Public v0.18: binary Android manifest decoded and native libtraining.so opened as an ELF child investigation"
   ],
   "deviceAcceptance": {
     "reportDate": "2026-10-18",
@@ -23,31 +48,26 @@
     "deviceModelsOSAndDetailedSteps": "not supplied"
   },
   "pendingAcceptance": [
-    "Physical-device measurements for new routine history",
+    "Physical iPad/iPhone/Android reconstruction and export checks for v0.18",
     "VoiceOver and representative assistive technology",
-    "Total browser/device memory and tab eviction"
+    "Total browser/device memory and tab eviction",
+    "Persistent/process/hardware history extensions remain separate work"
   ],
   "manualsPublished": false,
-  "timeTravelImplemented": "Session-local verified read-only x86/x64 bare-routine history; process/hardware, persisted timelines and branching remain open",
-  "checksPassed": 385,
-  "testGroups": {
-    "nodeTests": 356,
-    "managedWasm": 7,
-    "managedDependencies": 8,
-    "generatedHarnessMetadata": 14,
-    "newHistoryTestsIncludedInNodeTests": 16
-  },
   "packages": {
     "source": {
-      "bytes": 44443285,
-      "sha256": "da8a7cd15dd0d2a174b162f5dc4232015e86fce9fd3eac7d9ed10c9b692a9c5b",
-      "members": 642
+      "bytes": 47465379,
+      "sha256": "8a3993ba5f1bfb8e9d4cc6c649fbf8c773e44329f9fd3de74afdeeb92fa8d384",
+      "members": 682
     },
     "offline": {
-      "bytes": 78324589,
-      "sha256": "b874d3a4eb656639dd10c6bc3e4c7db6b577b61fc8018804fe2ee0c54e607ac3",
-      "members": 197
+      "bytes": 82231606,
+      "sha256": "09843ab1375fd47a2ee5415510b0e591d313a5067d537fa435f1fb8286904280",
+      "members": 211
     }
   },
-  "workerVersion": "715b251b-179f-42b7-aa57-b137c45728a0"
+  "sourcePublication": {
+    "github": "Prepared for publication on main; repository commit history records the pushed revision",
+    "churchGit": "Pending sign-in; existing credentials rejected on 20 October 2026"
+  }
 }

@@ -1,0 +1,56 @@
+{
+  "engine": "DEX \u2192 JVM bytecode \u2192 reconstructed Java (data only)",
+  "dex2jar": {
+    "commit": "b5bda4fb4935ae8b3869b422454ae3b3896c7bc1",
+    "url": "https://github.com/pxb1988/dex2jar",
+    "license": "Apache-2.0"
+  },
+  "teavm": "0.15.0-dev-6",
+  "asm": "9.5",
+  "vineflower": {
+    "version": "1.12.0",
+    "bridgeVersion": "0.6.4-1.12.0",
+    "bridgeCommit": "97ce2aae9f517954d4221150e0ffe5d9568b51ea",
+    "packageIntegrity": "sha512-fKKqDHVCOKed3jcbrX4aA9Za7YY+/7tq2tVlkbSPQ9NVMaGeBhqyRE/gnLc30ZJ3zKP/UYIh69FaUkrF/dmLuQ==",
+    "url": "https://github.com/katana-project/vf"
+  },
+  "build": {
+    "jdk": "Temurin 21.0.12.1+1",
+    "gradle": "9.5.1",
+    "profile": "TeaVM ES2015 JavaScript; browser workers; no WASM-GC requirement"
+  },
+  "files": {
+    "ASM-LICENSE.txt": {
+      "bytes": 1651,
+      "sha256": "34b8dd2e1b4b5f822ba633602676297fa82328d9438ba4d7336ec7393d212e06"
+    },
+    "DEX2JAR-LICENSE.txt": {
+      "bytes": 11562,
+      "sha256": "f2ffa5942b316849be283deaeb2912e2e5b5b17e91012bede8210210ff3e91e7"
+    },
+    "DEX2JAR-NOTICE.txt": {
+      "bytes": 384,
+      "sha256": "ae624867ea43c86c34d2ee37478194cafcf235309472dfdffa33f7c0f612dbe7"
+    },
+    "TEAVM-LICENSE.txt": {
+      "bytes": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    "VF-BRIDGE-LICENSE.txt": {
+      "bytes": 1072,
+      "sha256": "cea6b67588f76a7fa10e61441da0f870c8af8e6462ce61fafa0e0d1b0af01907"
+    },
+    "VINEFLOWER-LICENSE.txt": {
+      "bytes": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    "dex.mjs": {
+      "bytes": 2297416,
+      "sha256": "fbb45611a810476c4bea7c81ed2a665b8b6f69e39da721d64b08f8d9e21c04d4"
+    },
+    "vf.mjs": {
+      "bytes": 1485043,
+      "sha256": "9e1f90ff5c598087900bf031917e6d793a685c5bfa6866949c85959f35d24804"
+    }
+  }
+}
