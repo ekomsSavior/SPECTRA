@@ -73,6 +73,10 @@
       "branch": "main",
       "pushed": true
     },
-    "churchGit": "Pending sign-in; existing credentials rejected on 20 October 2026"
+    "churchGit": {
+      "release": "0.18",
+      "branch": "main",
+      "publicationEvidence": "Repository commit history; the release file tree is mirrored to GitHub."
+    }
   }
 }
