@@ -39,7 +39,8 @@
     "Android lesson 6/6, prepared evidence inventory, workspace save and full reload/resume with historical milestones",
     "390 px viewport: page width 375 px; Java horizontally scrolls inside its panel; console errors absent; desktop layout check only",
     "Public v0.18: normal Cloudflare verification completed; multidex inventory and SecondDex Java reconstruction run on production",
-    "Public v0.18: binary Android manifest decoded and native libtraining.so opened as an ELF child investigation"
+    "Public v0.18: binary Android manifest decoded and native libtraining.so opened as an ELF child investigation",
+    "Public v0.18: extracted native library spectra_add reconstructed by Ghidra as the expected addition; no browser console errors"
   ],
   "deviceAcceptance": {
     "reportDate": "2026-10-18",
@@ -67,7 +68,11 @@
     }
   },
   "sourcePublication": {
-    "github": "Prepared for publication on main; repository commit history records the pushed revision",
+    "github": {
+      "releaseCommit": "860ebc13818e10eacd80c22528a650edf31a8069",
+      "branch": "main",
+      "pushed": true
+    },
     "churchGit": "Pending sign-in; existing credentials rejected on 20 October 2026"
   }
 }
