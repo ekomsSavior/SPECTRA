@@ -1,0 +1,20 @@
+IRON VEIL / REPORT REVIEW
+A: A hash match uniquely identifies QueueNote everywhere. Its name proves
+   this sample sends traffic. The absence of a not-due record proves the gate
+   is dead code. All Windows functions use nonzero to indicate success.
+
+B: The revised image removes all callback activity for every input. A changed
+   conditional opcode alone proves the change was malicious. The provided
+   trace set describes every possible path in both images.
+
+C: In the supplied five-row catalog, the requested hash matches two names.
+   The additional length comparison selects QueueNote's target for this
+   request. The original dispatcher reaches its callback only on a particular
+   enabled, online, due path. The callback's own contract determines success.
+   The revision changes the equality boundary; the supplied runs cover only
+   their listed inputs in the original image. The QueueNote stub returns a
+   status and performs no network or filesystem operation.
+
+Choose the supported report. In your own notes cite table rows, branch VAs,
+call arguments, one controlled boundary pair and a limitation. The checker
+checks the report letter only, not the quality of your prose.

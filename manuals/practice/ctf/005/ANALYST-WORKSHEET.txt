@@ -1,0 +1,18 @@
+HOLLOW SIGNAL / REUSABLE ANALYST WORKSHEET
+Sample names + SHA-256:
+Architecture / code VA map / data coordinate systems:
+What is provided by FORMAT-NOTES versus established by instructions?
+
+HEADER: field / file offset / width / byte order / value / range end
+LOOP: iteration / source offset / encoded byte / key before / decoded / key after
+RECORDS: decoded start / tag / value length / value start / next cursor / meaning
+BOUNDARIES: total / cursor / value length / old return / fixed return / reason
+DIFF: absolute capture offset / old byte / new byte / semantic field / consequence
+
+FINDING: established behavior and evidence addresses:
+LIMITATION: what these files do not establish:
+NEXT CHECK: how you would test your hypothesis on another authorized sample:
+
+Self-check: can someone reproduce your steps from these notes without a flag?
+Explain rotating vs shifting; header length vs value length; unsigned wrap;
+why a decoded string alone cannot prove runtime behavior. Export Notebook.

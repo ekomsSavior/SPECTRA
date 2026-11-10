@@ -1,0 +1,439 @@
+SPECTRA CTF 006 / IRON VEIL
+
+Eight stages / Always open / Three free hints / No timer
+
+Start with MEMORY-MAP.txt and FORMAT-NOTES.txt. Builds on CTFs 001-005.
+
+https://spectra.churchofmalware.org/ctf/006/
+
+https://spectra.churchofmalware.org/
+
+Discord: https://discord.com/channels/1502477191093420135/1513198544025161809
+
+Use /spectra ctf:006. Complete eight stages for patch 006. Keep flags private.
+
+STAGE 01 / Recover the name hash
+
+A short routine converts a name to a 16-bit value. Recover its rule, then calculate the hash of the first NUL-terminated name in label.bin. Submit four lowercase hex digits after hash_.
+
+WHY THIS MATTERS
+
+Some programs refer to symbols by computed numbers instead of storing the requested name directly. Recovering the exact calculation lets you compare candidate names. A plausible hash is not enough: width, seed, byte order within the string, capitalization and terminator handling all affect the result.
+
+WORKFLOW
+
+Read MEMORY-MAP.txt and FORMAT-NOTES.txt. Open iron-veil.img.bin in SPECTRA Disassembly. Decode file offset 0x000, byte length 0x16 (22 decimal), base VA 0x9000, x86-64, Little endian.
+
+Trace EAX's initialization, the byte load, the terminator check, and the AX rotation/addition. In Hex explorer open label.bin and identify where the name ends.
+
+Work through its first two bytes on paper. Open the Casebook's Name hash worksheet to finish using the parameters you recovered. Keep the hash to four hex digits.
+
+DEEPER WALKTHROUGH
+
+Start with the supplied calling contract: RCX points to a readable NUL-terminated string, and EAX holds the result. This is an isolated teaching routine, not a whole loader. Select All decoded instructions if SPECTRA's function filter hides the loop.
+
+XOR EAX,EAX initializes the accumulator. MOVZX EDX,byte [RCX] reads one byte without a sign extension. TEST DL,DL and the conditional jump decide whether to stop. Because that check happens before the update, neither the NUL nor any trailing bytes contribute.
+
+ROR AX,3 rotates a 16-bit word: bits leaving the right edge return at the left edge. ADD AX,DX keeps only 16 result bits. After incrementing RCX, the next iteration uses the updated hash. For a separate worked example, AB hashes through 0041, then ROR16(0041,3)=2008, then 2008+0042=204a.
+
+Open label.bin as data and copy the first name with its exact case. The text after the NUL is deliberately outside the input. Trace two bytes in your Notebook before using the local worksheet. Enter the recovered seed and rotation there; the tool shows every intermediate value so you can compare your model.
+
+The arithmetic here is a small name hash, not encryption and not a security-grade digest. There is no secret key to recover. Many different names can produce the same 16-bit output; the next stage makes that limitation visible.
+
+CHECK YOUR REASONING
+
+Can you identify the instruction that excludes the terminator and explain why using ROR32 would produce a different answer?
+
+IF YOU GET STUCK
+
+Raw binary / Unknown is expected. Decode only the code range, not label.bin. Byte length is 0x16, not 0x22. The name worksheet works entirely in this browser and accepts at most 64 printable ASCII characters.
+
+FUTURE WORK
+
+This procedure transfers to defensive analysis of hashed imports and custom lookup schemes: reconstruct the recurrence, verify it with a small trace, then test a bounded candidate list.
+
+Flag format: SPECTRA{hash_hhhh}
+
+Enter only the full SPECTRA{...} flag. Use lowercase hex, no 0x prefixes, and no text after the closing brace.
+
+Hint 1: EAX starts at zero. AX is its low 16 bits. MOVZX makes the loaded byte an unsigned value; ROR wraps bits within AX, not a 32-bit register.
+
+Hint 2: Each nonzero byte updates h = (ROR16(h,3) + byte) modulo 65536. The zero byte stops the loop BEFORE a rotate or addition. Preserve capitalization.
+
+Hint 3: For a different name, AB: A produces 0041; rotating that right by three produces 2008; adding B (42 hex) produces 204a. Apply that process only to the name before the first NUL in label.bin.
+
+
+
+STAGE 02 / Keep both candidates
+
+request.bin supplies a target hash. In the five-row symbol table, find EVERY row whose stored hash matches it. Submit the two row IDs in ascending order, each with two hex digits. Do not use the request's name length yet.
+
+WHY THIS MATTERS
+
+Hash-based lookup is a candidate-generation step. A short hash has many possible collisions, and selecting the first familiar-looking name can send an investigation down the wrong path. Keeping the complete matching set makes the next comparison meaningful.
+
+WORKFLOW
+
+In Hex explorer read the u16 request hash at request.bin offset 0x04. Use FORMAT-NOTES.txt to interpret it as little endian.
+
+Open iron-veil.img.bin. The table starts at file offset 0x300, with five rows of 0x0c bytes. Read each row's ID at +0 and hash at +2.
+
+Follow each matching row's name FILE offset at +8, record its name and length, and recalculate the hash with the worksheet. Keep both candidates; a collision is expected.
+
+DEEPER WALKTHROUGH
+
+Use the format note as supplied knowledge, not something you are expected to guess. A row contains an ID, a length, a stored hash, a target VA and a name file offset. Write those labels above the bytes before interpreting values.
+
+For row index i starting at zero, its file offset is 0x300 + i*0x0c. The hash begins two bytes later. For an unrelated example, bytes 34 12 store u16 0x1234. The order of characters inside each printed byte does not change.
+
+Read the request's hash independently, then compare every row. Only after collecting matches should you follow the name offsets. Those offsets refer to the same image file; they are not VAs. Names end at NUL and their stored lengths exclude that NUL.
+
+Recalculate each candidate name with the recovered hash rule. Two different names really do produce the same value here; this is not a corrupted artifact. The supplied table deliberately demonstrates why a hash alone cannot prove identity.
+
+Do not discard a candidate merely because its name sounds less convincing. At this stage the evidence is the hash comparison alone. Keep both rows in your lookup ledger; the next stage asks what the resolver itself does with them.
+
+CHECK YOUR REASONING
+
+Do both stored values match a calculation over their actual names? Have you kept the candidate set separate from the final selected target?
+
+IF YOU GET STUCK
+
+Use the image's absolute FILE offsets. The name pointer field at +8 is a file offset; the target at +4 is a VA. You are reading data, so an empty automatic disassembly result does not block this stage.
+
+FUTURE WORK
+
+In a real investigation, compare a hashed value against a relevant, versioned export catalog and retain ambiguity until code or runtime evidence resolves it.
+
+Flag format: SPECTRA{rows_aa_bb}
+
+Enter only the full SPECTRA{...} flag. Use lowercase hex, no 0x prefixes, and no text after the closing brace.
+
+Hint 1: The table occupies [0x300,0x33c). Row starts are 0x300, 0x30c, 0x318, 0x324 and 0x330. Do not mistake the target VA field for the hash.
+
+Hint 2: A stored u16 with bytes cc a3 represents 0xa3cc. Compare whole byte values, not individual reversed characters.
+
+Hint 3: Two adjacent rows match the requested hash. One name has 12 characters, the other 9. Record their ID bytes, not their positions expressed as file offsets.
+
+
+
+STAGE 03 / Follow the second test
+
+The resolver tests more than a hash. Trace its comparisons using request.bin and the supplied table, then submit the selected target VIRTUAL ADDRESS as eight hex digits. This stage asks for a VA, not a file offset.
+
+WHY THIS MATTERS
+
+Real resolvers may filter candidates by multiple properties. Reading those tests explains which indirect target can actually be selected. It also prevents a common mistake: treating a useful discriminator as a universal guarantee of uniqueness.
+
+WORKFLOW
+
+Decode iron-veil.img.bin at file offset 0x080, length 0x20 (32 decimal), base VA 0x9080, x86-64, Little endian.
+
+Use the calling contract: RCX=table, EDX=5 rows, R8W=request hash, R9B=request name length. Follow both comparisons for each matching candidate.
+
+Read the selected row's target at +4. Convert its VA to a file offset only to inspect the target; submit the VA itself and explain why the other row was skipped.
+
+DEEPER WALKTHROUGH
+
+Separate caller inputs from code behavior. The request supplies the desired hash and length. The table stores precomputed metadata. This routine compares that metadata; it does not hash the strings again or perform a full string comparison.
+
+Trace the first matching hash candidate through the length comparison. If it fails, follow the next-row path: RCX advances by 12 and the remaining count decreases. Continue until both conditions match or the row count is exhausted.
+
+The successful path loads the u32 target field into EAX. A 32-bit register write clears the upper half of RAX, so this small synthetic VA is returned without high-bit residue. A failed lookup returns zero, and the harness only dispatches after a valid nonzero result.
+
+The extra length comparison separates these two supplied candidates. It does not make hash-plus-length mathematically collision-free, and the implementation returns the first matching row if duplicates exist. Record that limitation rather than claiming exact-name verification.
+
+Use the memory map to inspect the selected stub. Keep both coordinates in your notes: target VA for control flow, file offset for locating bytes on disk. The flag specifically requests the VA.
+
+CHECK YOUR REASONING
+
+Can you explain the successful and exhausted-table returns, and why the chosen target is unique only within this supplied catalog?
+
+IF YOU GET STUCK
+
+If you get a plausible value near 0x500, you probably converted to a file offset. The requested value is its mapped VA. Decode range replaces the previous routine; use the map to return to earlier code.
+
+FUTURE WORK
+
+This is the same evidence discipline needed when following indirect calls through custom dispatch tables, hashed imports or plug-in registries.
+
+Flag format: SPECTRA{va_vvvvvvvv}
+
+Enter only the full SPECTRA{...} flag. Use lowercase hex, no 0x prefixes, and no text after the closing brace.
+
+Hint 1: The resolver compares WORD [RCX+2] with R8W, then BYTE [RCX+1] with R9B. Both tests must pass.
+
+Hint 2: The requested length is the byte at request.bin +6. One hash candidate has length 12, the other 9. The successful return loads DWORD [RCX+4].
+
+Hint 3: The selected target lies in the stub region. In this image VA = 0x9000 + file offset. Pad the target VA to eight digits; do not submit its file offset.
+
+
+
+STAGE 04 / Write the path constraints
+
+For the ORIGINAL dispatcher, trace configs A, B and C in that order. Which return code does each produce? Submit three two-digit codes. Also record whether the indirect callback is reached, even though that note is not part of the flag.
+
+WHY THIS MATTERS
+
+Finding an indirect target does not prove that a program calls it for a given input. Path constraints connect configuration values to reachable behavior. This is a practical next step from decoding a configuration: explain how the program uses it.
+
+WORKFLOW
+
+Read the configs as 16-byte records using FORMAT-NOTES.txt. Decode the original image at offset 0x100, length 0x44 (68 decimal), base VA 0x9100, x86-64, Little endian.
+
+Track the enabled bit, offline bit and unsigned elapsed-versus-interval comparison in code order. Stop tracing each case when it reaches RET.
+
+Write the exact conditions required to reach CALL RDX. Use the provided dispatcher return legend, then submit results in A/B/C order.
+
+DEEPER WALKTHROUGH
+
+Build one row per config with columns for flags, elapsed, interval and status. Reserved bytes are not extra fields. Multibyte fields are little endian; ticks are abstract units, so do not silently describe them as seconds.
+
+Follow the dispatcher from its entry. It allocates stack space for an eventual call, but allocation itself is not callback activity. The first flag test can choose an early return; the next test can choose another. Later fields may exist in the input without ever being used on that path.
+
+At the time gate, CMP sets flags as if subtracting the interval from elapsed. JB uses the unsigned below condition. Write the true and false conditions in words, including equality, rather than relying on a vague label like 'time check'.
+
+For each case, stop at RET and record the dispatcher code from the supplied legend. Do not continue into the next displayed block simply because it appears below in the linear listing. Branch targets and returns determine execution order.
+
+Finally combine the three gates into one predicate for reaching CALL RDX. Distinguish that reachability predicate from successful completion: the callback can still report failure after being reached. Configs A/B/C intentionally exercise earlier exits.
+
+CHECK YOUR REASONING
+
+Does each path ledger state which later gates were not evaluated? Can you explain equality without changing from unsigned to signed arithmetic?
+
+IF YOU GET STUCK
+
+Open the ORIGINAL image as the main file. A config is data, not the code image. Your flag contains dispatcher return codes, not flags bytes, elapsed values or callback counts.
+
+FUTURE WORK
+
+Path ledgers help explain dormant features, feature flags, environment checks and delayed behavior without claiming that every discovered routine ran.
+
+Flag format: SPECTRA{paths_aa_bb_cc}
+
+Enter only the full SPECTRA{...} flag. Use lowercase hex, no 0x prefixes, and no text after the closing brace.
+
+Hint 1: Keep bit tests separate: bit 0 means enabled and bit 1 means offline. A nonzero flags byte does not mean every condition is true.
+
+Hint 2: A branch taken at an earlier gate can return before a later comparison is evaluated. Read CMP's operand order and use unsigned JB semantics.
+
+Hint 3: A fails the enabled gate; B passes enabled but takes the offline path; C passes both flag gates but has elapsed below its interval. Look up each path's return code in FORMAT-NOTES.
+
+
+
+STAGE 05 / Read the return contract
+
+Trace the ORIGINAL dispatcher with config D and the selected callback. Submit the dispatcher result followed by the number of callback entries, both two hex digits. The callback's raw status is not the requested dispatcher result.
+
+WHY THIS MATTERS
+
+Calling conventions tell you where values travel, not what those values mean. Different APIs use zero, nonzero, sign bits, counts or structured status codes differently. Assuming 'nonzero means success' is a common source of incorrect analysis.
+
+WORKFLOW
+
+Read config D. Trace dispatch using its existing range and callback VA from stage 03. Track the value copied into ECX immediately before CALL RDX.
+
+Decode the selected stub using MEMORY-MAP.txt. Follow its returned EAX back to the dispatcher's TEST and conditional branch.
+
+Apply the provided callback contract: exactly zero is success. Record callback EAX, dispatcher EAX and call count separately; submit the last two.
+
+DEEPER WALKTHROUGH
+
+Treat CALL RDX as a transfer to the target established by the resolver contract. The selected stub is not an OS API. The dispatcher reserves 0x28 stack bytes for shadow space and alignment before the call and restores its stack before returning.
+
+Track the argument transformation: RCX initially points to the config, but MOV ECX,[RCX+12] replaces it with a 32-bit status value. The stub receives that status in its first argument register. The instruction reads through the old pointer before writing ECX.
+
+Decode the stub separately. Its MOV and RET copy the argument to the return register without performing external work. Follow the return back to the instruction after CALL, then evaluate TEST/JNE using the callback contract supplied in FORMAT-NOTES.
+
+Keep three different facts in the ledger: the callback's raw 32-bit EAX, the dispatcher's small result code, and how many times the callback was entered. They answer different questions. Signed interpretation can describe the same bits, but this branch only distinguishes zero from nonzero.
+
+The name QueueNote is a label, not evidence of networking or a real queue implementation. Inspect the body before attributing behavior. This deliberately tiny stub lets you practice call reasoning without running native code or contacting a service.
+
+CHECK YOUR REASONING
+
+Can you explain why a call can be reached yet yield a failure result, and identify the source of the status contract instead of inferring it from the ABI?
+
+IF YOU GET STUCK
+
+Do not submit the eight-digit raw callback status. Use the two-digit dispatcher code plus a two-digit count. For code setup, use the exact separate dispatch and stub ranges in MEMORY-MAP.
+
+FUTURE WORK
+
+This skill helps when tracing error handling, wrappers and callback chains in unfamiliar binaries: recover the callee's contract and then inspect how the caller interprets it.
+
+Flag format: SPECTRA{result_rr_cc}
+
+Enter only the full SPECTRA{...} flag. Use lowercase hex, no 0x prefixes, and no text after the closing brace.
+
+Hint 1: Windows x64 integer arguments begin in RCX, RDX, R8 and R9. Here dispatch replaces ECX with the config's status before the call; the stub receives that value.
+
+Hint 2: The stub is MOV EAX,ECX; RET. Back in dispatch, TEST EAX,EAX checks zero versus nonzero. A value with the high bit set is still nonzero.
+
+Hint 3: Config D reaches the callback once. Its returned status takes the failure path. The flag asks for dispatch's failure code from the legend, then a call count of one.
+
+
+
+STAGE 06 / Test the exact boundary
+
+One branch opcode differs between the ORIGINAL and REVISED images. With the SAME config E, find each dispatcher's return code. Submit original then revised as two-digit codes. Explain the changed behavior at equality in your notes.
+
+WHY THIS MATTERS
+
+A byte diff tells you where a change occurred; a controlled counterexample explains why it matters. Holding every input fixed while varying one code version is a reusable way to test a behavioral hypothesis.
+
+WORKFLOW
+
+Open the original image as the main file and the revised image as the second Binary diff file. Inspect the raw changed-byte table; a blank function-matching table does not block raw comparison.
+
+Disassemble dispatch in each version separately using offset 0x100, length 0x44 (68 decimal), base VA 0x9100. Compare the changed jump's condition and destination.
+
+Trace config E through both versions with the same callback VA. Test one tick below, equal to, and above the interval on paper. Submit the two equality-case results.
+
+DEEPER WALKTHROUGH
+
+Use Binary diff first to locate the changed byte. Keep its absolute file offset separate from the mapped VA shown in disassembly. A raw comparison does not require successful function matching or a PE header.
+
+For instruction context, make each image the main Open file in turn and repeat ALL raw-range settings. Loading the second comparison file alone does not make it the main disassembly source. Record each mnemonic and destination before switching files.
+
+Read the unsigned branch condition precisely. A below test excludes equality; a below-or-equal test includes it. The surrounding CMP and target block remain the same, so the change adds one boundary case to the early return.
+
+Use config E as the controlled pair: same flags, elapsed, interval, status and callback target. Trace both versions. Then check one tick below and above: those inputs help verify that your explanation is specifically about equality, rather than a claim that all calls disappeared.
+
+A changed opcode does not establish motive. Your defensible conclusion describes the condition and its observable consequence in this supplied routine. Whether a real patch is a fix, regression or intentional policy change requires more context.
+
+CHECK YOUR REASONING
+
+Have you changed only the image version in the distinguishing test? Can you predict the below/equal/above outcomes without running the file?
+
+IF YOU GET STUCK
+
+The flag uses RETURN CODES, not the diff offset or opcode bytes. Keep original first, revised second. To see raw changes, scroll to the byte comparison table rather than relying on matched functions.
+
+FUTURE WORK
+
+Controlled boundary pairs help review patches, identify behavioral regressions and validate decompiler interpretations against machine instructions.
+
+Flag format: SPECTRA{boundary_aa_bb}
+
+Enter only the full SPECTRA{...} flag. Use lowercase hex, no 0x prefixes, and no text after the closing brace.
+
+Hint 1: There is one changed byte. Interpret it as part of the conditional jump immediately after the elapsed/interval comparison, not as a standalone config value.
+
+Hint 2: JB means unsigned below; JBE means unsigned below OR equal. The jump destination is unchanged. Equality is the input that distinguishes them.
+
+Hint 3: Config E has elapsed equal to its interval and a zero callback status. One version reaches the success path; the other returns not due before the call. Use the dispatcher legend.
+
+
+
+STAGE 07 / Find the coverage gap
+
+OBSERVED-RUNS.json contains four bounded CPU-emulated runs of the ORIGINAL image. Which dispatcher result class is missing? Submit its two-digit code, then identify a supplied config that would exercise it in your notes.
+
+WHY THIS MATTERS
+
+Static analysis and recorded runs answer different questions. Code can show a reachable path that a small trace never exercised. Conversely, a trace establishes an observation only for the recorded version, input and environment.
+
+WORKFLOW
+
+Read the trace provenance and image hashes before comparing results. Each record covers one invocation; events log entry to the teaching stub, not network activity.
+
+Inventory dispatcher_eax values and compare them with all five codes in FORMAT-NOTES. Distinguish an absent result from a statically unreachable path.
+
+Use your earlier path ledger to propose a supplied config for the missing class. Explain why covering all result codes would still not prove all possible paths or inputs were tested.
+
+DEEPER WALKTHROUGH
+
+Read provenance first. These records were generated by bounded CPU emulation of the supplied bytes, with no operating system or native execution. They are teaching evidence, not telemetry from an infected machine.
+
+For each record, associate image SHA-256, config, entry VA, callback target, events and final dispatcher EAX. A callback-entry event proves that this emulated invocation entered the stub; it does not prove an external action. The stub contains no such action.
+
+Build a set of observed result codes and compare it with the contract's five possible classes. The absent class is a coverage gap in this set of runs. Use the original dispatcher and an earlier config to demonstrate that the corresponding path is reachable.
+
+A proposed extra run should be specific: choose a supplied config and explain which gates it passes and which it takes. You do not need native execution to justify that proposal. The checker only grades the missing result code; keep the reasoning in your notes.
+
+Even all five return classes would not establish every branch combination, every callback status or every u32 boundary. Nor do original-image records describe the revised image. State the kind of coverage you measured and the questions it leaves open.
+
+CHECK YOUR REASONING
+
+Can you distinguish 'not present in these runs' from 'cannot happen'? Does every runtime claim name the version and input it applies to?
+
+IF YOU GET STUCK
+
+Use dispatcher_eax, not the ecx value inside an event. Some runs correctly have an empty event list because an early return prevented the call.
+
+FUTURE WORK
+
+This distinction is essential when combining sandbox traces with static malware analysis and when deciding which additional inputs or environments would be informative.
+
+Flag format: SPECTRA{missing_rr}
+
+Enter only the full SPECTRA{...} flag. Use lowercase hex, no 0x prefixes, and no text after the closing brace.
+
+Hint 1: The trace set uses configs A, B, D and E. It does not claim to enumerate every possible input.
+
+Hint 2: Compare observed dispatcher results against the complete five-code legend, not against callback EAX values.
+
+Hint 3: The missing class is the enabled, online, below-interval early return. One of your stage 04 configs already demonstrates that path.
+
+
+
+STAGE 08 / Write what is supported
+
+Choose the report supported by the artifacts and submit its lowercase letter. Finish your analyst worksheet with evidence locations, the controlled boundary test and one limitation. The checker grades the letter, not your written analysis.
+
+WHY THIS MATTERS
+
+The purpose of RE is a reliable explanation another person can use. This mission combines symbol recovery, control flow, call contracts and limited observations into one defensible account, with uncertainty explicitly preserved.
+
+WORKFLOW
+
+Read REPORT-CANDIDATES.txt. Audit each claim against the hash ledger, resolver comparisons, path constraints, callback body and original-image traces.
+
+Record sample hashes, coordinate systems, supplied contracts versus inferred behavior, and one reproducible boundary counterexample in ANALYST-WORKSHEET.txt or SPECTRA Notebook.
+
+Choose the supported report. After all eight stages are solved, use Collect patch 006 in your private Discord menu. Keep flags and complete solutions private.
+
+DEEPER WALKTHROUGH
+
+For each statement, attach a source. The layout and result legend are supplied contracts. Hash behavior and branch order come from instructions. Candidate values come from table bytes. Run observations come from a bounded emulator trace with a named image hash.
+
+Avoid importing behavior from labels. QueueNote is useful as a catalog name, but its three-byte stub only copies a status and returns. Similarly, the custom catalog illustrates one part of hashed-name resolution; it is not a Windows export directory or complete dynamic loader.
+
+A useful final note includes the candidate set, the additional discriminator, the predicate for reaching the indirect call, the callback's status semantics, a version-controlled equality test, and a missing coverage class with a proposed input.
+
+State limitations as precise boundaries: unique in this catalog, observed for this input, inferred under this supplied contract. These statements are stronger than a broad claim of certainty and help the next analyst decide what to test.
+
+Keep the completed worksheet as part of your RE toolkit. Future missions can remove more supplied contracts or add richer dispatch behavior while retaining the same habits: bound the evidence, reconstruct the model, test a distinguishing case, and write a reproducible finding.
+
+CHECK YOUR REASONING
+
+Could another learner reproduce your conclusion from the listed bytes and inputs without seeing your flag? Have you separated a possible path from a recorded event?
+
+IF YOU GET STUCK
+
+Submit only the lowercase report letter inside the wrapper. Do not paste the report text, a hint, or explanatory words after the closing brace.
+
+FUTURE WORK
+
+These ledgers support malware triage, patch review and incident-response handoffs, where a mistaken identity or overclaimed behavior can mislead later decisions.
+
+Flag format: SPECTRA{report_letter}
+
+Enter only the full SPECTRA{...} flag. Use lowercase hex, no 0x prefixes, and no text after the closing brace.
+
+Hint 1: Reject claims that a short hash is globally unique or that QueueNote's name proves networking. Inspect the actual comparisons and stub body.
+
+Hint 2: Reject claims that the revision blocks every input or that four observed runs describe every path in both versions.
+
+Hint 3: The supported report keeps the collision candidates, explains the length filter and equality boundary, and limits trace claims to their listed inputs and version.
+
+
+
+Primary references:
+
+https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
+
+https://learn.microsoft.com/en-us/cpp/build/x64-calling-convention
+
+https://attack.mitre.org/techniques/T1027/007/
+
+This custom table is not a PE export directory or a Windows loader. It models a small part of name-based resolution so you can reason about evidence.

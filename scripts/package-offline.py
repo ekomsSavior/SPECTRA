@@ -18,7 +18,7 @@ with out.open('rb') as f:
  while True:
   data=f.read(16*1024*1024)
   if not data:break
-  name=f'offline-part-{index:02}.bin';(folder/name).write_bytes(data);parts.append({'name':name,'bytes':len(data),'sha256':hashlib.sha256(data).hexdigest()});index+=1
+  name=f'offline-part-{index:02}-{hashlib.sha256(data).hexdigest()[:16]}.bin';(folder/name).write_bytes(data);parts.append({'name':name,'bytes':len(data),'sha256':hashlib.sha256(data).hexdigest()});index+=1
 (folder/'offline-manifest.json').write_text(json.dumps({'version':'0.18','name':out.name,'bytes':out.stat().st_size,'parts':parts},indent=2)+'\n')
 paths=sorted('/'+str(p.relative_to(root/'dist')) for p in (root/'dist/engines').rglob('*') if p.is_file())
 (root/'asset-paths.mjs').write_text('// Generated release assets.\nexport const ENGINE_PATHS=new Set('+json.dumps(paths,indent=2)+');\n')

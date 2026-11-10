@@ -1,0 +1,95 @@
+SPECTRA CTF 004 / GHOST CIRCUIT
+Seven stages / Guided intermediate / Always open / No timer
+Casebook: https://spectra.churchofmalware.org/ctf/004/
+Workbench: https://spectra.churchofmalware.org/
+Discord: https://discord.com/channels/1502477191093420135/1513198544025161809
+Use /spectra ctf:004 for private flags, saved progress and three free hints per stage.
+Complete all seven stages to collect patch 004. Hints have no penalty. Take breaks.
+Preparation: 001-003 strings, endianness, masks, calls, loops and unsigned branches.
+This mission connects those ideas across routines. Read MEMORY-MAP.txt first.
+You will learn an ABI, record-layout inference, indirect dispatch, rotation,
+volatile-register data flow, state machines and counterexample-driven validation.
+The dispatcher and state-step function are independent exercises in one synthetic
+memory image. No native execution or real malware is needed. Only these files are targets.
+
+STAGE 01 / The argument trail
+Begin with the dispatcher. At its FIRST direct CALL, identify the register explicitly written for the second integer argument and its value. Submit the lowercase 32-bit register name plus four hex digits. Learn to read a call site before guessing what the callee does.
+Open ghost-circuit.img.bin and MEMORY-MAP.txt. Decode the dispatcher using its map row; select All decoded instructions. Keep the file open for this mission.
+Windows x64 integer/pointer arguments use RCX, RDX, R8, R9. Find the MOV before the first CALL. LEA supplies a pointer as argument one; MOV supplies the integer as argument two.
+Record the first call target, both argument meanings and the expected return register in Notebook. The map explains shadow space; it is not another input record.
+Flag format: SPECTRA{register_hhhh}
+Hint 1: This is the Windows x64 ABI, not the Linux SysV ABI. RDX is argument two; EDX is its low 32-bit register.
+Hint 2: The first CALL is at VA 0x6010. Look immediately above it for the MOV to a 32-bit register.
+Hint 3: Use the register spelling shown in that MOV, then pad its immediate to four hex digits. LEA RCX loads an address; it does not read the bytes at that address.
+Takeaway: A calling convention gives arguments meaning. Separate addresses, values, stack space and return values.
+
+STAGE 02 / Recover the record
+Decode sub_6080 and infer the field it reads from the record. Recover that unsigned field value BEFORE adding argument two. Submit four lowercase hex digits. Build a small record-layout table from actual load instructions, rather than guessing from strings.
+Decode the sub_6080 map row. MOVZX reads a WORD from RCX+2: a WORD is two bytes, then zero-extended into EAX. ADD EAX,EDX is a later calculation.
+RCX points to VA 0x6140. Convert the field VA to a file offset with this image's map, then inspect two little-endian bytes in Hex explorer. Do not read a DWORD or include the following field.
+Write the offset, width and recovered value in your worksheet. Also compute and SAVE the first call's returned EAX after adding argument two; stage 05 will use it.
+Flag format: SPECTRA{field_hhhh}
+Hint 1: The field starts two bytes after the record. The record starts at file offset 0x140, so inspect file offset 0x142.
+Hint 2: The bytes at that field are 2c 01. For a little-endian WORD, the second byte contributes the higher eight bits.
+Hint 3: The requested flag is the loaded field, not the later sum. Keep both values in your notes and label them clearly.
+Takeaway: Repeated base-plus-offset loads reveal a record layout. Operand width is part of the evidence.
+
+STAGE 03 / Resolve the missing edge
+The dispatcher eventually uses CALL R11 instead of a literal destination. Resolve that function pointer for the supplied record. Submit the target VA as four lowercase hex digits. Distinguish the table slot's address from the function address stored inside it.
+Decode sub_6090. Read its BYTE field from the record, apply AND and SHR in order, and write down the returned index. The mask selects only two bits.
+Return to the dispatcher. R10 is the table base; the MOV into R11 reads [R10 + RAX*8]. Compute the slot VA and convert it to a file offset. The table contains four 8-byte absolute VAs.
+In Hex explorer, read that slot as one little-endian 64-bit pointer. Locate the resulting CODE row in the map. Record the manually recovered call edge in Notebook; an indirect edge can be missing from an automatic graph.
+Flag format: SPECTRA{target_hhhh}
+Hint 1: sub_6090 reads record byte +1, masks with 0x0c, then shifts right by 2. Masking first keeps the index between 0 and 3.
+Hint 2: The table base is VA 0x6160. Multiply the index by EIGHT, not four; these are 64-bit pointers.
+Hint 3: Read eight bytes AT the computed slot. Submit the decoded pointer VALUE, not the slot VA, record address or file offset.
+Takeaway: Resolve base, index, stride and loaded pointer separately. An indirect call is an evidence gap you can often close.
+
+STAGE 04 / Keep the width
+Decode the target recovered in stage 03. Trace its return value for the supplied record. ROR rotates bits; ADD AL wraps in eight bits. Submit the final EAX as two lowercase hex digits. This byte transform is obfuscation, not encryption.
+Use the target's CODE map row. Identify which record byte MOVZX reads and inspect that byte in Hex explorer. AL is only the low eight bits of EAX.
+For ROR AL,3, move the bottom three bits to the top and shift the others right. Write an eight-bit diagram. Then add the immediate to AL, keeping only the low eight result bits.
+The final MOVZX EAX,AL clears the upper bits. Save this return value for stage 05. Optional check: a right rotation undone by a left rotation of the same width restores the original byte.
+Flag format: SPECTRA{byte_xx}
+Hint 1: The selected routine reads record byte +4. A byte load sees only the first byte of the four-byte field there.
+Hint 2: For eight-bit x: ror8(x,3) = ((x >> 3) | (x << 5)) & 0xff. The input byte here is 0xd6.
+Hint 3: The rotated byte is 0xda. Add 0x29, discard any carry beyond eight bits, and zero-extend the remaining byte.
+Takeaway: Rotation is not shifting. Width and overflow are essential parts of a transform.
+
+STAGE 05 / Across the calls
+Return to the dispatcher and calculate its final EAX. Explain why it saved an earlier return value on the stack. Submit four lowercase hex digits. The selected transform's return is only one part of the final result.
+Trace the dispatcher from its first CALL to RET. Label each EAX value: first helper result, selector index, selected transform result, final sum.
+At VA 0x6015 the first result is stored at caller RSP+0x20. Later calls may overwrite EAX; do not assume its old value survives. The final ADD reads the saved DWORD.
+Combine your stage 02 returned sum with your stage 04 byte result. Record a short function summary with inputs, output and the evidence addresses. RCX is reloaded before each call that needs the record pointer.
+Flag format: SPECTRA{result_hhhh}
+Hint 1: There are three calls. The index returned by the middle call is for dispatch, not an extra term in the final sum.
+Hint 2: First helper: the stage 02 field plus the second argument from stage 01. That result is saved at RSP+0x20 before EAX is reused.
+Hint 3: The final result is saved_first_return + selected_transform_return. The stack allocation is released after this addition and does not change EAX.
+Takeaway: Track definitions and uses across function boundaries. Caller-saved registers are not permanent storage.
+
+STAGE 06 / Draw the machine
+Now investigate the SEPARATE sub_60e0 routine. ECX is the previous state; DL is one event byte; EAX becomes the next state. Start at state 0 and process the six event bytes at file offset 0x180 once each. Submit all six resulting states as a digit sequence, excluding the initial 0.
+Decode sub_60e0 using its map row. Follow comparisons and branches; build a table for prior states 0, 1, 2, 3 and invalid states against A, B, C and other input.
+Read the six bytes at file offset 0x180. For each byte, supply the LAST returned state as the next ECX. Record before/event/after rows. A mismatch consumes its byte; never retry it without an instruction to do so.
+Describe state 3 and reset behavior in words. This routine is not called by the dispatcher: analyze it as a separate exercise. If the graph feels busy, follow one prior-state path at a time.
+Flag format: SPECTRA{states_dddddd}
+Hint 1: Read 41, 42 and 43 as ASCII A, B and C. The event sequence is AXBABC. EAX starts at zero on each call unless a path assigns another return.
+Hint 2: The forward transitions are 0+A→1, 1+B→2 and 2+C→3. Mismatches reset to zero. Prior state 3 always returns 3; other invalid u32 states return zero.
+Hint 3: Make six rows, not seven. After the X resets the machine, the following B cannot advance state zero. Then continue through the remaining three bytes.
+Takeaway: A state machine depends on history. Trace transitions and resets explicitly instead of reading only the happy path.
+
+STAGE 07 / Break your hypothesis
+Compare sub_60e0 with the three pseudocode models in 07-models.txt. Choose the exact model, then test the tempting alternative A using input AABC. Submit the correct lowercase letter, the actual routine's final state, and model A's final state, separated by underscores.
+Read 07-models.txt. Trace AABC from state zero through the actual instructions and through model A, keeping separate columns. Do not assume a friendlier restart rule than the code implements.
+Also test X from prior state 3 against model C. Use that boundary case to confirm the terminal-state behavior. For invalid prior states, check the unsigned JA path.
+Finish your RE-TOOLKIT worksheet or export Notebook: function map, record layout, indirect edge, byte transform, call trace, state table and one counterexample. You have built a reusable analysis method, not just collected flags.
+Flag format: SPECTRA{letter_actual_modela}
+Hint 1: Models A and B differ when a mismatch byte is A. The real routine has no instruction that reprocesses that byte as a fresh start.
+Hint 2: On AABC, the second A arrives in state 1. The real routine returns zero; model A returns one. Trace B and C separately after that.
+Hint 3: Model C loses the completed state on another input. The actual routine returns three immediately whenever the prior state is three. Your flag uses the AABC final states, not this X test.
+Takeaway: Pseudocode is a hypothesis. Counterexamples and boundary cases turn a plausible story into a defensible model.
+
+PRIMARY REFERENCES
+Windows x64 calling convention: https://learn.microsoft.com/en-us/cpp/build/x64-calling-convention
+Intel instruction manuals (ROR, MOVZX, CALL, conditional jumps): https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
+

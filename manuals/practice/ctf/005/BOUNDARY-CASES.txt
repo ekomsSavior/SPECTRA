@@ -1,0 +1,20 @@
+HOLLOW SIGNAL / GUARD TEST VECTORS
+Values are unsigned 32-bit unless stated. Compute both predicates in the image.
+The guard only returns 0 or 1; it does not read anything.
+
+label         total       cursor      value_length
+empty         0           0           0
+header-only   2           0           0
+exact-fit     31          26          3
+one-too-many  31          26          4
+past-end      31          32          0
+wide-length   0x20        0x1e        0xffffffff
+
+For wide-length, the two ADD instructions operate in 32 bits: keep the low
+32 bits after each operation. CMP/SETBE uses UNSIGNED ordering.
+The fixed predicate checks cursor <= total BEFORE subtracting, and at least
+two remaining bytes BEFORE subtracting the header. Identify why both orderings
+matter. A subtraction is not automatically safe merely because it is subtraction.
+
+The wide-length vector is for the generic u32 guard API. This fixture's u8 TLV
+length cannot represent it. Keep reachability and local arithmetic separate.

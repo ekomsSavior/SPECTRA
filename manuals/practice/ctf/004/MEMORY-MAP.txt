@@ -1,0 +1,51 @@
+GHOST CIRCUIT / MEMORY MAP / READ FIRST
+This 512-byte file is a synthetic flat memory image, NOT a PE or ELF executable.
+It uses x86-64 instructions and the Windows x64 integer calling convention.
+It is safe to inspect statically; do not run it natively. No API, network, OS,
+file, or process activity is present. CC bytes between ranges are padding.
+
+Entire image: file offset 0 maps to virtual address (VA) 0x6000.
+Within this fixture only: VA = 0x6000 + file offset.
+This is not PE RVA mapping and is not a rule for arbitrary binaries.
+
+SPECTRA / Disassembly / Raw range / architecture override:
+Choose x86-64. Use the row below for FILE OFFSET, BYTE LENGTH, BASE VA;
+click Decode range, then set FUNCTION to All decoded instructions.
+Enter 0x-prefixed hex exactly as shown. Decode CODE rows individually.
+Keep the same file open; each decode replaces the previous decoded range.
+
+CODE             FILE OFFSET     BYTE LENGTH     BASE VA
+dispatcher       0x000           0x43            0x6000
+sub_6080         0x080           0x07            0x6080
+sub_6090         0x090           0x0b            0x6090
+sub_60a0         0x0a0           0x0a            0x60a0
+sub_60b0         0x0b0           0x0a            0x60b0
+sub_60c0         0x0c0           0x0d            0x60c0
+sub_60d0         0x0d0           0x06            0x60d0
+sub_60e0         0x0e0           0x3a            0x60e0
+
+DATA             FILE OFFSET     BYTE LENGTH     VA
+record           0x140           8               0x6140
+pointer table    0x160           32              0x6160
+event bytes      0x180           6               0x6180
+
+Hex explorer uses FILE OFFSETS, not these VAs. If a raw file has no useful
+automatic analysis, this map is your ground truth for the supplied fixture.
+Do not assume padding or data bytes are code. Automatic function names and
+pseudocode are hypotheses; validate them against bytes and instructions.
+For LEA with [RIP+displacement], add the displacement to the VA of the NEXT
+instruction, not the current one. LEA computes an address; it does not load
+the pointed-to bytes. Use the bytes/length column to locate that next VA.
+
+Windows x64 integer/pointer arguments 1..4: RCX, RDX, R8, R9.
+32-bit integer return: EAX (low 32 bits of RAX). Those registers are volatile:
+a later call can overwrite them. The caller reserves 32 bytes of shadow
+space; this fixture reserves 0x28 bytes for shadow space, alignment and a
+four-byte local. At this caller's RSP, its local is at +0x20.
+These rules describe this fixture's ABI, not every x64 platform.
+
+Known input contract: record and table are supplied valid readable memory.
+The table has FOUR 8-byte entries. The dispatcher has no OS entry wrapper.
+sub_60e0 is a separate state-step exercise; the dispatcher does NOT call it.
+State step: ECX = prior u32 state, DL = one event byte; EAX = next state.
+No decoder or program execution is required. Keep flags private.

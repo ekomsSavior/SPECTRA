@@ -82,6 +82,9 @@ The [evidence workflow reference](docs/EVIDENCE-WORKFLOWS.md), [recording contra
 
 ## Learn by doing
 
+Two free field manuals lead the [Training ground](https://spectra.churchofmalware.org/#lessons): [RE for beginners with SPECTRA](https://spectra.churchofmalware.org/manuals/beginner) starts with the fundamentals; [Intermediate RE with SPECTRA](https://spectra.churchofmalware.org/manuals/intermediate) develops repeatable investigations. Both include guided labs, Android workflows and walkthroughs across six SPECTRA CTF campaigns. Read them in your browser or download the PDFs and benign practice pack from the [book library](https://spectra.churchofmalware.org/manuals/).
+
+
 **Training ground** includes benign native, Windows, Linux, Android, decoder, and hardware exercises with source, fixtures, hints, walkthroughs, and resumable evidence checklists. Each route ties progress to the exact exercise and distinguishes newly observed evidence from imported history.
 
 The built-in **18-chapter field guide** covers the workbench's sections, controls, workflows, FAQs, and terminology. Read it in place, download the standalone book, or print it to PDF. It also ships in the offline release.
@@ -136,3 +139,9 @@ SPECTRA_DOTNET=/path/to/dotnet node tests/harness.test.mjs
 SPECTRA builds on Ghidra/Pyre, ILSpy, dex2jar, Vineflower, TeaVM, Capstone, Unicorn, Detect It Easy, and the work of their contributors. Original Church code and lessons are **MIT licensed**. Third-party components retain their own licenses; the combined debugger distribution includes GPL-2.0 Unicorn and matching source. See [LICENSE](LICENSE), [NOTICE.md](NOTICE.md), and the distribution's third-party notices for scope and attribution.
 
 **Church of Malware — Hackers helping hackers.**
+
+### Raw byte comparison (November 4, 2026)
+
+Binary diff compares every absolute file offset independently of code decoding and function matching. The Raw byte comparison table shows before/after hexadecimal values and modified, added, or removed bytes. It pages through all differences, 64 rows at a time, with an offset seek control. Added/removed bytes are beyond the other file’s end; this is positional comparison, not insertion/deletion alignment. File sizes remain capped at 32 MiB each and all processing stays in the browser. JSON exports contain full counts plus the first 4,096 differing offsets, with an explicit omitted count.
+
+For an HTML-only change, `node build.mjs --html-only` rebuilds the workbench while preserving existing engine assets, archive manifests, and downloadable releases.

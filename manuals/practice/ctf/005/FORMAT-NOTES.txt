@@ -1,0 +1,21 @@
+HOLLOW SIGNAL / FORMAT NOTES (analyst-provided contract, not inferred evidence)
+All offsets below are absolute FILE offsets into capture.bin.
+0x00: 4-byte magic HSG5. 0x04: u8 revision counter. 0x05: u8 seed.
+0x06: u16 little-endian encoded byte count. 0x08: u32 little-endian data offset.
+0x0c: 4 reserved bytes. Offset and count bound the data; ignore trailing bytes.
+The revision counter does not change the format or transform.
+
+DECODED BUFFER / Type-Length-Value (TLV):
+Each record: u8 type, u8 VALUE length, exactly that many value bytes.
+Length excludes the two-byte header. No terminator or alignment padding.
+Known types: 0x10 = interval in seconds (u16 little endian; length must be 2).
+0x20 = feature mask (u8; length must be 1); bits have no supplied meanings.
+0x30 = ASCII endpoint label (length-delimited, no NUL terminator).
+Other types: preserve raw value, mark semantics unknown, skip by length.
+First record begins at decoded offset 0. End when cursor equals buffer size.
+To move: next_cursor = cursor + 2 + length. First validate header and value.
+Do not use strlen or search for a NUL: unknown values may contain 00 or ff.
+An endpoint LABEL in a configuration is not evidence of any network activity.
+
+Full flag only. Example syntax: SPECTRA{range_0000_0000}.
+The example is not an answer. Never paste explanatory text after the brace.

@@ -1,0 +1,1 @@
+const input=document.querySelector('#chapter-filter');if(input){input.addEventListener('input',()=>{const q=input.value.trim().toLowerCase();let n=0;document.querySelectorAll('.contents li').forEach(li=>{li.hidden=!li.textContent.toLowerCase().includes(q);if(!li.hidden)n++});document.querySelector('#filter-status').textContent=q?n+' matching chapters':'';});}

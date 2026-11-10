@@ -1,0 +1,75 @@
+SPECTRA // THE DEAD CHANNEL
+CHURCH OF MALWARE / ALWAYS OPEN / NO TIMER
+
+Workbench: https://spectra.churchofmalware.org/
+Case files: https://spectra.churchofmalware.org/ctf/
+Discord: https://discord.com/channels/1502477191093420135/1513198544025161809
+Use /spectra in the Church server. Submit flags privately through the bot modal.
+No score penalties for hints. Do not post flags publicly. These are synthetic inert training files.
+Only analyze the supplied files. The Church infrastructure is not a target.
+Save evidence in your local Notebook; flags are case-sensitive. No native execution is required.
+
+CASE 01 / Carrier signal
+A dead relay left a small memory record. Recover the operator flag without executing anything. Record the flag and its file offset in your SPECTRA Notebook.
+
+Download 01-carrier.bin. Open SPECTRA, choose Open file, then select the downloaded file.
+Open Strings. Start with ASCII only and a minimum length of 4. Filter for SPECTRA.
+Select the matching row. Read its file offset and use View in hex to verify the surrounding bytes.
+Flag format: SPECTRA{the_text_you_find}
+
+Hint 1: A .bin extension does not mean the file must be run. Start with printable strings.
+Hint 2: The correct string begins with SPECTRA{. Search that literal prefix.
+Hint 3: Inspect file offset 0x140. The flag ends before the zero byte.
+
+CASE 02 / Wrong end of the wire
+The directory points to a message that ordinary ASCII extraction misses. Parse the header, follow the offset, and recover the text. Header: 0x00 magic (4 bytes); 0x04 version (u16 LE); 0x06 record count (u16 LE); 0x08 payload offset (u32 LE); 0x0c payload byte length (u16 LE); 0x0e encoding tag (1 = UTF-16LE, 2 = UTF-16BE). Offsets are absolute file offsets.
+
+Open 02-directory.bin in Hex explorer. Read the directory fields using the supplied layout.
+Jump to the payload offset and inspect exactly the declared number of bytes.
+In Strings, change Encoding to All encodings or UTF-16 BE. Correlate the recovered string with the directory.
+Flag format: SPECTRA{the_decoded_text}
+
+Hint 1: LE describes the integer fields. It does not necessarily describe the text.
+Hint 2: The payload-offset bytes are 80 01 00 00. Interpret them least significant byte first.
+Hint 3: The encoding tag is 02. Look for UTF-16 BE text at 0x180.
+
+CASE 03 / Wrapped transmission
+The relay wrapped a message for transport and obscured its bytes. Its configuration survived in plaintext. Recover the payload by undoing the transport encoding first, then the byte transform.
+
+Open 03-envelope.bin and inspect Strings for the transform, key, encoding, and payload.
+Send the Base64 payload to Decoder lab or paste it there. Choose Base64 to text and Run transform.
+Copy OUTPUT back into INPUT. Select UTF-8 text XOR to text, enter HEX KEY 2a, and Run transform again. This fixture deliberately decodes to ASCII at the intermediate step.
+Flag format: SPECTRA{the_recovered_text}
+
+Hint 1: The Base64 payload begins at 0x100. The nearby configuration names both layers.
+Hint 2: Undo the outer layer first: Base64 decode, then XOR each resulting byte.
+Hint 3: The single-byte XOR key is 0x2a (decimal 42). Copy the first decoded OUTPUT into INPUT before applying XOR, and set HEX KEY to 2a.
+
+CASE 04 / The gate
+This raw x86-64 routine returns EAX = 1 for one input byte and EAX = 0 otherwise. The input byte is supplied in EDI (0..255). Find the accepted byte by reading the code. Submit it as two lowercase hexadecimal digits inside the flag.
+
+Open the file in SPECTRA > Disassembly > Raw range / architecture override. Set file offset 0x0, byte length 0x13 (19 decimal / 0x13 hex), base VA 0x0, x86-64, and Little endian. Click Decode range. Do not enter 0x19: that means 25 bytes.
+EDI holds the input; mov eax, edi copies it into EAX. xor eax, 0x37 transforms it. cmp eax, 0x6d checks the transformed value, and jne jumps to the zero-return path if it differs. Equality reaches mov eax, 1 and ret.
+Write the success condition: (input XOR 0x37) == 0x6d. Undo the XOR to find the original input byte. Put its two lowercase hex digits inside SPECTRA{...}; submit the input, not the return value 1. Record your reasoning in Notebook. Native execution is not required.
+Flag format: SPECTRA{xx}
+Format instructions (not part of the flag): Replace xx with exactly two lowercase hex digits. Enter the full SPECTRA{...} flag only: no 0x prefix, dash, or explanatory words after the closing brace.
+
+Hint 1: Read from top to bottom. mov eax, edi copies your input. xor changes the copy; cmp compares it with the target. jne means jump if not equal, so success must avoid that jump. The 1 returned on success is a result, not the flag input.
+Hint 2: XORing twice with the same key restores the original value: (input XOR key) XOR key = input. So input = 0x6d XOR 0x37. XOR works on bits: equal bits give 0, different bits give 1. It is not addition or multiplication.
+Hint 3: Write 0x6d as 01101101 and 0x37 as 00110111. XOR each column, then convert the two groups of four result bits to hex. Alternatively, reconstruct this function: unaff_EDI is the incoming EDI value; the hex constant in its equality check is the accepted input. Wrap the two lowercase hex digits in SPECTRA{...}, without 0x.
+
+CASE 05 / One-byte betrayal
+A patch changed two bytes: a revision counter and a branch opcode. Find the executable change and explain how it reverses acceptance. The raw x86-64 routine begins at file offset 0x40 and is 19 bytes long. Submit the four-digit file offset, old byte, and new byte separated by underscores.
+
+Open 05-gate-before.bin as the main file. In Binary diff, use Open second binary to load 05-gate-after.bin, then click Compare. No disassembly setup is needed for the raw byte table.
+Read Raw byte comparison above Matched functions. Its columns are FILE OFFSET, BEFORE (HEX), AFTER (HEX), and CHANGE. Ignore the revision at 0x10. Record the other changed offset and both byte values. An empty Matched functions table does not block this step.
+With BEFORE still the main file, go to Disassembly > Raw range / architecture override. Set file offset 0x40, byte length 0x13 (19 decimal / 0x13 hex), base VA 0x40, x86-64, Little endian. Click Decode range. Note the conditional jump after cmp and its destination.
+Use the main Open file button to load AFTER. Repeat ALL settings from step 3 and click Decode range. Compare its jump with your BEFORE notes: what condition now takes the same branch?
+Build the flag from the absolute file offset padded to four hex digits, the BEFORE opcode byte, and the AFTER opcode byte, separated by underscores. Use lowercase hex without 0x prefixes.
+Flag format: SPECTRA{oooo_aa_bb}
+Format instructions (not part of the flag): Use lowercase hex: a four-digit absolute file offset, old byte, and new byte. Enter the full SPECTRA{...} flag only, with nothing after the closing brace.
+
+Hint 1: Binary diff > Compare > Raw byte comparison shows both changes without decoding. Use its FILE OFFSET and BEFORE/AFTER columns; no matched function is required. Disassembly then explains what the code change does.
+Hint 2: The changed opcode turns jne (jump if not equal) into je (jump if equal). The destination stays the same. Compare the jump row in each file; the first BYTES value is its opcode. The byte after it is the unchanged displacement, not the answer.
+Hint 3: The instruction begins 8 bytes into a routine starting at file offset 0x40. Pad that absolute file offset to four hex digits, followed by the original opcode byte and replacement opcode byte, separated by underscores inside SPECTRA{...}.
+

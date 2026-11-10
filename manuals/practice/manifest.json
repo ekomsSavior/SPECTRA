@@ -1,0 +1,470 @@
+{
+  "purpose": "Benign teaching artifacts only",
+  "files": [
+    {
+      "name": "AndroidTraining.apk",
+      "bytes": 4824,
+      "sha256": "20b584654d37f8902348220702d35b1e3647136467b8ecc9d591babcf9b79e4b"
+    },
+    {
+      "name": "CTF-README.txt",
+      "bytes": 542,
+      "sha256": "64ed153c7b22948fdfeed1d9102daf5a6845458cdd4d1253d205ce64809c4493"
+    },
+    {
+      "name": "LICENSE.txt",
+      "bytes": 1077,
+      "sha256": "649938846791d8bf0bc2ecd900b573235efe8bc9351120b8d26f431dcde89887"
+    },
+    {
+      "name": "ManagedTraining.cs",
+      "bytes": 2512,
+      "sha256": "a1ee6f78586bc6b85d44a5de0fb056f6837d9041c6217d229427ed0d3f51b89e"
+    },
+    {
+      "name": "ManagedTraining.dll",
+      "bytes": 8192,
+      "sha256": "0cb0c5be9f54bd746b9afd3ed22d8fbc567436ef967f452c38fcc979d6758365"
+    },
+    {
+      "name": "READ-ME.txt",
+      "bytes": 968,
+      "sha256": "27e1dea003d2cdf35c656dfa078012959edbbf90ac5923798a91cec8181a14d3"
+    },
+    {
+      "name": "aarch64-add.bin",
+      "bytes": 8,
+      "sha256": "03039bd23d144842d3aee713b1af8f07b38005873a0cbf9ad5379526cf7a64b5"
+    },
+    {
+      "name": "add-one.exe",
+      "bytes": 2048,
+      "sha256": "6217e99c793b0404148efaa88fa09693467e5d0ad26b0bb5f133fd52102375c8"
+    },
+    {
+      "name": "add-two.exe",
+      "bytes": 2048,
+      "sha256": "d2159e4f756fceaefa03c80d6efd5bd88ceee1feafcfcac33f010998ff52cf86"
+    },
+    {
+      "name": "android-source/AndroidManifest.xml.bin",
+      "bytes": 616,
+      "sha256": "06d8f6a0ac94f1c0abe9e17664f1be693ef2dc1af17c64209e46332d7e70a7db"
+    },
+    {
+      "name": "android-source/README.md",
+      "bytes": 2062,
+      "sha256": "d59f4511adf03a1ec9206e1861c360e226c66ab14ca4d944b03bb4527b6ebc18"
+    },
+    {
+      "name": "android-source/classes.dex",
+      "bytes": 1676,
+      "sha256": "926a28a58d79c5ab636dd77097f5715f7cefbdc7658718ca501dba7a986f1bad"
+    },
+    {
+      "name": "android-source/classes2.dex",
+      "bytes": 804,
+      "sha256": "c2e6d006bf73ecd0f5981a1b96b275933a08e3a857735d2e4c592d0bb30798f2"
+    },
+    {
+      "name": "android-source/libtraining.so",
+      "bytes": 16120,
+      "sha256": "0b51bc7b088329ddbc2fde68f5d474ce81b0d02f5879545876e45d6dd77d692b"
+    },
+    {
+      "name": "android-source/native.c",
+      "bytes": 145,
+      "sha256": "971acf3892e3ed7908e14d7d047582e11b6d4a74c7365c2531ba966b814c59ba"
+    },
+    {
+      "name": "android-source/package-fixture.py",
+      "bytes": 3203,
+      "sha256": "83f3a59aa09b647aaee93a85f282a2395a54d2b9008b575f7e4419f660280e57"
+    },
+    {
+      "name": "android-source/resources.arsc",
+      "bytes": 492,
+      "sha256": "3337bf8407027532bbe0e6a086dc712837e35a8e4e953411ce7770c964b4c997"
+    },
+    {
+      "name": "android-source/secondary/org/church/spectra/SecondDex.java",
+      "bytes": 212,
+      "sha256": "3f845405a76a3ddd8530608db9a2dc04c2f775b7a79a59f047f50ecaf8bafbe8"
+    },
+    {
+      "name": "android-source/source/org/church/spectra/Training.java",
+      "bytes": 1115,
+      "sha256": "d640c5aaf5d51bc261a3e82e505297ee5b0f14285507ab4920c22c910d71c110"
+    },
+    {
+      "name": "arm-add.bin",
+      "bytes": 8,
+      "sha256": "b07e2e2704ce8c323d159ab2283960209789fd5aa19952e762d59f4c2a38dad3"
+    },
+    {
+      "name": "arm-register.bin",
+      "bytes": 16,
+      "sha256": "471855c5dd62cdcb2c75ee213060b5dee432ef76e85367e041d86909e578bddd"
+    },
+    {
+      "name": "arm-static-pie.elf",
+      "bytes": 5120,
+      "sha256": "5903a19638ef848f0a10ee2f9db7745901d43e2fd9324c44e3b4cb7925047b1a"
+    },
+    {
+      "name": "base64-message.txt",
+      "bytes": 8,
+      "sha256": "333d6b3a3c1f5db6c9bdda5939b136986d170f4649172a68368d54ecb44c2ff2"
+    },
+    {
+      "name": "choose-path.bin",
+      "bytes": 15,
+      "sha256": "a6639397a2c2831a7a07d0b4835d7fe33508e6f01e7c02613e5e32019863cf4a"
+    },
+    {
+      "name": "ctf/001/01-carrier.bin",
+      "bytes": 1024,
+      "sha256": "5c8da8728d7d6c1da48b5bb54d39dcd5a5114e84d9517c65cce3983e9cc72317"
+    },
+    {
+      "name": "ctf/001/02-directory.bin",
+      "bytes": 768,
+      "sha256": "df1c42bd69674326ac026b4f5d2af60b76b2c1d3a60a15a44de379b2f159b4a9"
+    },
+    {
+      "name": "ctf/001/03-envelope.bin",
+      "bytes": 512,
+      "sha256": "070f14149341c446f3744cb4099db170a3dcd36bba375dea09c78359a20556d2"
+    },
+    {
+      "name": "ctf/001/04-gate.x64.bin",
+      "bytes": 19,
+      "sha256": "e90a020293536f23e5b35fb4b24f2e4b532856d033b33804e70f08197b53d019"
+    },
+    {
+      "name": "ctf/001/05-gate-after.bin",
+      "bytes": 256,
+      "sha256": "9dd658e46aba747fd55664384b89c5025ffc91d0adc4935e653098740da22881"
+    },
+    {
+      "name": "ctf/001/05-gate-before.bin",
+      "bytes": 256,
+      "sha256": "5f4db8bb2e19369f79a22857c167f3b4229356a1945d5faef05813c6d895f50b"
+    },
+    {
+      "name": "ctf/001/FIELD-MANUAL.txt",
+      "bytes": 7586,
+      "sha256": "a10f0630a64e9e0d196f2562408cc21f66066ed7a83c9d5ba8866ed6d3cd83f1"
+    },
+    {
+      "name": "ctf/001/SHA256SUMS.txt",
+      "bytes": 497,
+      "sha256": "cfe34a337104beebe1980ee91c92810536d80b745e040f13b9933c30d34738d6"
+    },
+    {
+      "name": "ctf/002/01-relay-map.bin",
+      "bytes": 1536,
+      "sha256": "1c24bf0514f42cbe3bf688aac6007fffa0ac83d9004169aee0a14cd05f41d0a2"
+    },
+    {
+      "name": "ctf/002/02-relay-reference.bin",
+      "bytes": 1536,
+      "sha256": "9259ac9474ecd7c3cace9f5891a2dd526b0cecfd1baae199cad15b4a298ade78"
+    },
+    {
+      "name": "ctf/002/03-switchboard.x64.bin",
+      "bytes": 25,
+      "sha256": "249452d9ba664dfa0868c9733c6b95c133782166c416479b4af7464520b07c93"
+    },
+    {
+      "name": "ctf/002/04-return-path.x64.bin",
+      "bytes": 39,
+      "sha256": "ec90f1651634bca719d1acb6149f2f4c8d63aea2891fcf000c17431a399351b8"
+    },
+    {
+      "name": "ctf/002/05-fractured-records.bin",
+      "bytes": 64,
+      "sha256": "0d6908e867ee017760b9c56e2a4352a800b487395e2ed6628da4a053e16c22b9"
+    },
+    {
+      "name": "ctf/002/FIELD-MANUAL.txt",
+      "bytes": 6192,
+      "sha256": "f871614bc44f03394ed8ad4d93027c4f95c9f63a5d9361bfcb3e0e6d9bf62ff8"
+    },
+    {
+      "name": "ctf/002/SHA256SUMS.txt",
+      "bytes": 441,
+      "sha256": "afeda8e55d3c895b59a172db3f38ce268efce7f4496c30882d0ed246b052bbcf"
+    },
+    {
+      "name": "ctf/003/01-cold-storage.bin",
+      "bytes": 2165,
+      "sha256": "b1018c30bba105bf0a09cb32fafa96ef17565f5c863756a3a04a97434877f4e3"
+    },
+    {
+      "name": "ctf/003/03-payload.hex.txt",
+      "bytes": 303,
+      "sha256": "f59890cbee866427a5195517c65c3d5ae37874e3f11b60ada6bb5b063ad41477"
+    },
+    {
+      "name": "ctf/003/04-byte-counter.x64.bin",
+      "bytes": 18,
+      "sha256": "62feba35f64368d22b03da5a682694dc57a11e632ad02c7a90f9e166fcfac81b"
+    },
+    {
+      "name": "ctf/003/04-marker.bin",
+      "bytes": 6,
+      "sha256": "e37d3b8b71e83d2b2377c3e0742dbfce319e0d19253c428fce8d0c8bd3427972"
+    },
+    {
+      "name": "ctf/003/05-stack-note.x64.bin",
+      "bytes": 32,
+      "sha256": "deb76b823f71301f600044a7a4ccf00b4e9f7c54b1d9c7f66f059c7d4aa73862"
+    },
+    {
+      "name": "ctf/003/06-route-byte.x64.bin",
+      "bytes": 20,
+      "sha256": "fa5ea79aa191cc53a446e9d24d794673b61358b354e1dab40de197580764b288"
+    },
+    {
+      "name": "ctf/003/07-report-candidates.txt",
+      "bytes": 1061,
+      "sha256": "cc72d7ad56fc5445c906640f4b1af8d13571c5801506325d78d46f445cf57232"
+    },
+    {
+      "name": "ctf/003/ANALYST-REPORT.txt",
+      "bytes": 1012,
+      "sha256": "a10ddbf3e2f5a34187830e94bd094e81236bc1e2833ac6910c46f90602e61104"
+    },
+    {
+      "name": "ctf/003/FIELD-MANUAL.txt",
+      "bytes": 9985,
+      "sha256": "a62bc4f23844791cd53b635e9cbcb6a8c4007a47edac7662be7270ecda657378"
+    },
+    {
+      "name": "ctf/003/SHA256SUMS.txt",
+      "bytes": 776,
+      "sha256": "a6a86b1fde3d16157a511e2f4e96b737d80878e31d13554c8142c5639379f338"
+    },
+    {
+      "name": "ctf/004/07-models.txt",
+      "bytes": 1233,
+      "sha256": "23a3cd7470159d580879d102454a9e88b039daf18d27d941095e5c9add7fa5a6"
+    },
+    {
+      "name": "ctf/004/FIELD-MANUAL.txt",
+      "bytes": 10799,
+      "sha256": "566c44c7eee3dccfdedbcbc80b8eed47c96e106280bbc9719891ee63013530f2"
+    },
+    {
+      "name": "ctf/004/MEMORY-MAP.txt",
+      "bytes": 2918,
+      "sha256": "02f9717fa29dd3f631ddc13dfe4e347826502bfa50f98583827ebee31e10f3ef"
+    },
+    {
+      "name": "ctf/004/RE-TOOLKIT.txt",
+      "bytes": 1625,
+      "sha256": "1adf9d50b6b2db191944543eb7fe4b8af4432e7c20230150d99afb576bdd5d61"
+    },
+    {
+      "name": "ctf/004/SHA256SUMS.txt",
+      "bytes": 413,
+      "sha256": "d2fa06af3e18137521802d0d4699d4c35842ededaab8fde4f9904e9683117b8d"
+    },
+    {
+      "name": "ctf/004/ghost-circuit.img.bin",
+      "bytes": 512,
+      "sha256": "dc5ce26bd7b27609ade5ca74edbba9a81445792f007bba0dbb4068f6ec9c5cf7"
+    },
+    {
+      "name": "ctf/005/ANALYST-WORKSHEET.txt",
+      "bytes": 995,
+      "sha256": "6ebd46094ace637ae5ae45e11da1858eecb74e052ec5dc23d20c4b4d56beeffb"
+    },
+    {
+      "name": "ctf/005/BOUNDARY-CASES.txt",
+      "bytes": 1008,
+      "sha256": "ac4c6bc4899b3dec00bc4199a176968f4105394ada7c7f253e8e46b526cdf855"
+    },
+    {
+      "name": "ctf/005/FIELD-MANUAL.txt",
+      "bytes": 26168,
+      "sha256": "346f24e14e2c588832a33030f16a50b5d48df305091abe7c6fd9c01f0befe4a9"
+    },
+    {
+      "name": "ctf/005/FORMAT-NOTES.txt",
+      "bytes": 1356,
+      "sha256": "7bf0dff247dc393e2ca26440da5845b48b67e2f40348bcae9fb08754ea8f7854"
+    },
+    {
+      "name": "ctf/005/MEMORY-MAP.txt",
+      "bytes": 2465,
+      "sha256": "e52eacc55d51cb1628406069f1897901d2253b08c9b463c2c948c3b47b8742a9"
+    },
+    {
+      "name": "ctf/005/REPORT-CANDIDATES.txt",
+      "bytes": 1264,
+      "sha256": "271dcf67649664214f4d6a8149a00e3b1395ef4126596307191388b83314cd8a"
+    },
+    {
+      "name": "ctf/005/SHA256SUMS.txt",
+      "bytes": 760,
+      "sha256": "61d155517d5abe3e45e366396001f9f8ab363e931ae59b6cb093a1a4a81a3002"
+    },
+    {
+      "name": "ctf/005/capture-revised.bin",
+      "bytes": 79,
+      "sha256": "d56569d2ffe3f5a42b5e4c637a9ec1855121be6d3e1a23abd6b726428b158588"
+    },
+    {
+      "name": "ctf/005/capture.bin",
+      "bytes": 79,
+      "sha256": "bca8b4818063d9757e93209f4681331c3c097b24abfad4e80694aea3798c2ab3"
+    },
+    {
+      "name": "ctf/005/hollow-signal.img.bin",
+      "bytes": 256,
+      "sha256": "9cc252fe1d589849a92773544bae8fa85e88ed66e0d760e874d9ce6b67557679"
+    },
+    {
+      "name": "ctf/006/ANALYST-WORKSHEET.txt",
+      "bytes": 968,
+      "sha256": "e93e57492d2221ebc9c9381e3271a47b4c31e526454d43e51abab67f58794886"
+    },
+    {
+      "name": "ctf/006/FIELD-MANUAL.txt",
+      "bytes": 28201,
+      "sha256": "a65bbf1464163116f7faeaeacd208deead268cf3d3867bd76baf6e1f44f40361"
+    },
+    {
+      "name": "ctf/006/FORMAT-NOTES.txt",
+      "bytes": 1701,
+      "sha256": "09b6726bcea0e782dc75e7aa33e7caac822670734445cda56fb39719789b4d9b"
+    },
+    {
+      "name": "ctf/006/MEMORY-MAP.txt",
+      "bytes": 3194,
+      "sha256": "09d5f75a18dd0940bf1d492cb655c5276c80c96e9c05cb6bc97cca5cb075d975"
+    },
+    {
+      "name": "ctf/006/OBSERVED-RUNS.json",
+      "bytes": 1727,
+      "sha256": "a79b455b5d66a1718c7381d0cdf3dfbd7c8770e758a4a4704cb96d6b8d2d2d28"
+    },
+    {
+      "name": "ctf/006/PATH-CASES.txt",
+      "bytes": 1254,
+      "sha256": "648249e58201bbaedc8b707f5dd9622773e834d6b80795bb78dcac62984204b4"
+    },
+    {
+      "name": "ctf/006/REPORT-CANDIDATES.txt",
+      "bytes": 1190,
+      "sha256": "47fe4e6173b5a71e4fd9116d586bc2eca1c2dc50e5e59ff5d7adbbb7581cfcd8"
+    },
+    {
+      "name": "ctf/006/SHA256SUMS.txt",
+      "bytes": 1314,
+      "sha256": "6e4c9f757a68ff4b93de4cab687a82ea7eaea685720c156f4cc0a8299bd5c77a"
+    },
+    {
+      "name": "ctf/006/config-A.bin",
+      "bytes": 16,
+      "sha256": "e5151689a146d38f056bdd3692ee74112b7a125dcda33d4f5896a6f849cdde92"
+    },
+    {
+      "name": "ctf/006/config-B.bin",
+      "bytes": 16,
+      "sha256": "c233b5a3b9bd85beff022d2d4103a542a419e407f80ce567c5b1de2d04b2b2cc"
+    },
+    {
+      "name": "ctf/006/config-C.bin",
+      "bytes": 16,
+      "sha256": "d8c72dbe132f3747d840937cff7f5e2d3996fd1bd022c6e3b5dbada4bdf52c43"
+    },
+    {
+      "name": "ctf/006/config-D.bin",
+      "bytes": 16,
+      "sha256": "bcc4ce9cd2c0131655cec1a34eeaef1fde006e873394a315b572c832f5ed191c"
+    },
+    {
+      "name": "ctf/006/config-E.bin",
+      "bytes": 16,
+      "sha256": "d0066cf2306493778bf4a2f8dc49ad1990ed8adea99d07ccc706552a22901b76"
+    },
+    {
+      "name": "ctf/006/iron-veil-revised.img.bin",
+      "bytes": 1536,
+      "sha256": "360c7a7b551c0b55d807c6199eb7ff05de5f21c3f9073e9a422afd36cbe2b792"
+    },
+    {
+      "name": "ctf/006/iron-veil.img.bin",
+      "bytes": 1536,
+      "sha256": "e59b8cb44e858cd82c5758590682dddc40e6582fd7b3049ae2543f6ca258ada4"
+    },
+    {
+      "name": "ctf/006/label.bin",
+      "bytes": 21,
+      "sha256": "977a9e176d8d1814de43ff4b4f1c888e34f423e0fdd93f1225da063dd8bfac6d"
+    },
+    {
+      "name": "ctf/006/request.bin",
+      "bytes": 8,
+      "sha256": "f033facfff2d4e55d4fd39897fe386257fb307911c6d85905314af00efa7a4b2"
+    },
+    {
+      "name": "first-reference.c",
+      "bytes": 160,
+      "sha256": "ef375a6feb94912ed3a5439376c335594e3e9e90edccac8547836a1a2d63859f"
+    },
+    {
+      "name": "first-reference.elf",
+      "bytes": 15688,
+      "sha256": "921739ab6c3134d28e94ad08c27bc3ff31560c6b431f9af7879cb5897692d426"
+    },
+    {
+      "name": "fixture-firmware.tar.gz",
+      "bytes": 284,
+      "sha256": "74527e37ab59ce0d0861bdcaa34e724eb6be8a1cee70a97582fea318389258bb"
+    },
+    {
+      "name": "linux-echo-aarch64.elf",
+      "bytes": 308,
+      "sha256": "a38de69e93a5a42c7e11d069f10635b6f76af3b5b28553627cc92dd9d5ea4cdd"
+    },
+    {
+      "name": "linux-echo-arm.elf",
+      "bytes": 304,
+      "sha256": "5d376c5ebfb7b0fbb115444bcf22b3b5d24563ad3860f650327a2530c86531f6"
+    },
+    {
+      "name": "linux-echo-x64.elf",
+      "bytes": 296,
+      "sha256": "fbd7d29bfd88cd8d572ad231c0376de20492fb76129c4b83a1f9a128e40da942"
+    },
+    {
+      "name": "record.bin",
+      "bytes": 16,
+      "sha256": "dc248bb263827c5237186028068cd5aab4b742d0e57225de6c4a60a2876b520d"
+    },
+    {
+      "name": "thumb-add.bin",
+      "bytes": 4,
+      "sha256": "472ad23997392e0017ad906c17c4eaf430acf212956f90c3cc0f9438631ab35e"
+    },
+    {
+      "name": "thumb-static-pie.elf",
+      "bytes": 5120,
+      "sha256": "14a55d705f3a16fed702e0bbccfe59918d9443f0feaf6ece7c6a8d2c09726d64"
+    },
+    {
+      "name": "windows-model-x64.exe",
+      "bytes": 2048,
+      "sha256": "99cf83be2da537aa494291243e1d460de71ae79015c7ac69c9661dce45264ee0"
+    },
+    {
+      "name": "xor-message.bin",
+      "bytes": 5,
+      "sha256": "ce1cad76ed71cbd16d3ddb05e9a1b7e31c9a7e616db809526e611a890d3fa6c6"
+    }
+  ]
+}

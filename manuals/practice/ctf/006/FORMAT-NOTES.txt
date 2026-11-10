@@ -1,0 +1,29 @@
+IRON VEIL / PROVIDED CONTRACTS (not claims inferred from bytes)
+All multibyte fields are LITTLE ENDIAN. Preserve name capitalization.
+
+SYMBOL TABLE: five rows at image FILE offset 0x300. Stride 12 bytes (0x0c).
+relative +0: u8 row ID; +1: u8 ASCII name length EXCLUDING NUL;
++2: u16 precomputed name hash; +4: u32 target VA; +8: u32 name FILE offset.
+Names are NUL terminated. Stored hashes use the name_hash routine. Some rows
+deliberately collide; no hash or length is a security/authentication check.
+
+REQUEST.BIN: +0 four-byte magic IVR6; +4 u16 target hash; +6 u8 name length;
++7 reserved. Treat these as the caller's R8W/R9B arguments to resolve.
+
+CONFIG-*.BIN: 16 bytes, already decoded.
++0 u8 flags: bit 0 = enabled; bit 1 = offline. Other bits are ignored.
++1..+3 reserved; +4 u32 elapsed ticks; +8 u32 required interval in ticks;
++12 u32 callback status to simulate. Ticks are abstract units, NOT seconds.
+elapsed is already calculated; there is no clock-reading routine in this pack.
+
+DISPATCH RETURN CONTRACT:
+0 = disabled; 1 = not due; 2 = offline; 3 = callback succeeded; 4 = callback failed.
+This is a return-code legend. Infer branch order and reachability from CODE.
+CALLBACK RETURN CONTRACT: exactly 0 = success; any nonzero u32 = failure.
+0xfffffffe is -2 if interpreted as signed 32-bit, but this contract only tests
+zero/nonzero. It is NOT a Win32 BOOL, HRESULT, NTSTATUS or byte count.
+The label QueueNote does not imply networking. The stub only returns ECX.
+
+FLAG ENTRY: enter only SPECTRA{...}, no trailing explanation or 0x prefix.
+Examples in prompts show shape, not answers. Row IDs have two hex digits;
+hashes four; VAs eight. Use lowercase hex; report letters lowercase.

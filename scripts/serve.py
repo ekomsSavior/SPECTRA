@@ -29,7 +29,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
  def do_HEAD(self):
   if not self.archive(True):super().do_HEAD()
  def end_headers(self):
-  self.send_header('Content-Security-Policy',"default-src 'none'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; style-src 'unsafe-inline'; img-src data:; font-src data:; worker-src 'self' blob:; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'")
+  self.send_header('Content-Security-Policy',"default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'" if urlsplit(self.path).path.startswith('/manuals/') else "default-src 'none'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; style-src 'unsafe-inline'; img-src data:; font-src data:; worker-src 'self' blob:; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'")
   self.send_header('X-Content-Type-Options','nosniff');self.send_header('Referrer-Policy','no-referrer');self.send_header('Cache-Control','no-store');super().end_headers()
 Handler.extensions_map.update({'.mjs':'text/javascript','.wasm':'application/wasm'})
 print(f'SPECTRA local: http://127.0.0.1:{a.port}/',flush=True)

@@ -9,7 +9,7 @@ def package(source,route,prefix):
  parts=[];whole=hashlib.sha256();size=0
  with source.open('rb') as f:
   while data:=f.read(16*1024*1024):
-   name=f'{prefix}-part-{len(parts):02}.bin';(folder/name).write_bytes(data);whole.update(data);size+=len(data)
+   name=f'{prefix}-part-{len(parts):02}-{hashlib.sha256(data).hexdigest()[:16]}.bin';(folder/name).write_bytes(data);whole.update(data);size+=len(data)
    parts.append({'path':'/engines/v018/downloads/'+name,'bytes':len(data),'sha256':hashlib.sha256(data).hexdigest()})
  if len(parts)>40:raise ValueError('Archive exceeds the streaming request budget')
  manifest={'name':source.name,'bytes':size,'sha256':whole.hexdigest(),'parts':parts}

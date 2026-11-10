@@ -1,0 +1,3 @@
+# Preserve published PDFs as binary artifacts and exact teaching-fixture bytes.
+manuals/pdf/*.pdf binary
+manuals/practice/** -whitespace

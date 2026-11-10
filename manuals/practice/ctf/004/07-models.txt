@@ -1,0 +1,31 @@
+GHOST CIRCUIT / MODEL REVIEW
+All models below use u32 state s and byte e. Return value becomes next state.
+The three intended transitions are 0 + 'A' -> 1, 1 + 'B' -> 2, 2 + 'C' -> 3.
+Determine which model exactly matches sub_60e0 for EVERY u32 state and byte.
+
+A / if s == 3: return 3
+    if s == 0 and e == 'A': return 1
+    if s == 1 and e == 'B': return 2
+    if s == 2 and e == 'C': return 3
+    if e == 'A': return 1
+    return 0
+
+B / if s == 3: return 3
+    if s == 0 and e == 'A': return 1
+    if s == 1 and e == 'B': return 2
+    if s == 2 and e == 'C': return 3
+    return 0
+
+C / if s == 0 and e == 'A': return 1
+    if s == 1 and e == 'B': return 2
+    if s == 2 and e == 'C': return 3
+    return 0
+
+Counterexample 1: from state 0, process AABC once, left to right.
+Trace the actual routine and model A separately. A mismatch consumes its byte;
+do not silently try that same byte again unless the code says to do so.
+Counterexample 2: from state 3, process X. Compare actual code with model C.
+
+Submit SPECTRA{letter_actual_modela}, e.g. SPECTRA{z_1_2} (format example only).
+Use the correct model's lowercase letter and the TWO FINAL states after AABC:
+actual routine first, model A second. The X test is for your notes.

@@ -1,0 +1,59 @@
+SPECTRA CTF 002 / GLASS RELAY
+Five guided stages / Always open / No timer
+Casebook: https://spectra.churchofmalware.org/ctf/002/
+Workbench: https://spectra.churchofmalware.org/
+Discord: https://discord.com/channels/1502477191093420135/1513198544025161809
+Use /spectra ctf:002 for private flags, hints and saved progress. Complete all five to collect patch 002.
+Synthetic static-analysis files only. No installs or native execution required. Church services and other systems are not targets.
+CTF 001 is recommended preparation; there is no prerequisite lock. Keep flags out of public chat.
+
+STAGE 01 / Map the relay
+A PE header describes where bytes live on disk and in memory. Find the absolute FILE OFFSET corresponding to RVA 0x2040. An RVA is relative to the image base, not the start of the file. Submit the offset as four lowercase hex digits.
+Open 01-relay-map.bin in SPECTRA. File structure should identify PE32+ / x86-64. Find the section containing RVA 0x2040.
+Read the section VA and subtract the image base to obtain its RVA. Use: file offset = raw offset + (target RVA - section RVA). This target is file-backed, not zero-filled memory.
+Verify with File structure > Address mapping ledger: Input space PE RVA, Location 0x2040, Resolve address. Use Inspect original bytes to confirm the GLASS RELAY record. Save your calculation in Notebook.
+Flag format: SPECTRA{rva_oooo}
+Hint 1: The image base is not a file offset. Look at the .rdata section.
+Hint 2: For .rdata, section RVA = 0x2000 and raw offset = 0x400.
+Hint 3: The target is 0x40 bytes into .rdata. Add that displacement to its raw-file offset; pad to four hex digits.
+
+STAGE 02 / Follow the reference
+Three channel strings exist, but the entry routine returns the address of only one. Identify the referenced channel value. A string's presence alone does not prove the code uses it. Submit the value after channel=, without the prefix.
+Open the file and note the three channel= strings. Open Disassembly and choose Analyze code for this PE file.
+At entry VA 0x140001000, inspect lea rax, [rip + displacement]. Use its outgoing data reference or Cross-references to follow the target; ret returns that address.
+Verify the target string using its VA/RVA and file offset. If a reference link is unavailable, calculate target RVA = next instruction RVA + signed displacement, then map it to disk as in stage 01.
+Flag format: SPECTRA{channel_value}
+Hint 1: Only the pointer loaded by the entry routine is relevant. The other strings are decoys.
+Hint 2: RIP-relative addressing uses the address AFTER the lea instruction. It is 7 bytes long.
+Hint 3: The next-instruction RVA is 0x1007 and the displacement is 0x1079. Follow their sum to the matching string; do not pick the first string.
+
+STAGE 03 / Switchboard
+The relay accepts exactly one four-bit mode (EDI from 0 through 15). Bits are numbered from zero at the least-significant bit. Read the TEST and AND checks to find the mode that returns EAX = 1. Submit it as two lowercase hex digits.
+Open Disassembly, expand Raw range / architecture override, and set file offset 0, byte length 25, base VA 0, architecture x86-64. Choose Decode range.
+TEST computes a bitwise AND for flags without changing the operands. A zero result sets ZF: je/jz follows that zero result; jne/jnz follows a nonzero result. Note which branches lead to the zero return.
+AND changes EAX. Combine the required bits with the low-two-bit equality check. Write the four-bit pattern in your Notebook, then convert it to hex.
+Flag format: SPECTRA{mode_xx}
+Hint 1: The first TEST requires bit 2 to be set; the next requires bit 3 to be clear.
+Hint 2: The low-two-bit mask is 0x03. Those two bits must equal binary 01.
+Hint 3: Combine bit 3 = 0, bit 2 = 1, and low bits = 01. Convert that four-bit pattern to one byte.
+
+STAGE 04 / Return path
+The entry routine accepts one byte in EDI and passes it in EAX to a local helper. Follow CALL and RET to discover the helper's transformation, then find the input that makes main return 1. Inputs are limited to 0..255; arithmetic here does not overflow.
+In Disassembly, expand Raw range / architecture override: file offset 0, length 39, base VA 0x4000, x86-64; Decode range.
+Follow the CALL from main to the helper at VA 0x4020 (file offset 0x20). LEA EAX,[RAX+RAX*2] computes arithmetic without reading memory; then ADD changes the result. RET returns to the instruction after CALL.
+Back in main, read the CMP target and solve the helper's expression for the original input. Record the helper expression, accepted byte and failure path. No debugger execution is required.
+Flag format: SPECTRA{call_xx}
+Hint 1: Track EAX through the helper before interpreting the comparison in main.
+Hint 2: The helper computes three times the input, then adds 7. Main compares the result to 0x7f.
+Hint 3: Convert 0x7f to decimal, subtract 7, divide by 3, then convert the input back to two hex digits.
+
+STAGE 05 / Fractured records
+One length field claims bytes beyond the file. Header: magic at 0x00 (4 bytes), total file size at 0x04 (u16 LE), record count at 0x06 (u16 LE). Records start at 0x10. Each is tag (u8), payload length (u16 LE), then that many payload bytes; no padding. Find the FIRST invalid record header offset and its claimed end offset (exclusive). Submit both as four lowercase hex digits.
+Open Hex explorer. Confirm the file size against the header, then start at the first record offset 0x10.
+For each record: payload start = header offset + 3; claimed end = payload start + length. The next record begins at that end. Check that the full header and payload fit before advancing.
+Stop when claimed end exceeds the actual file size. Record that record's HEADER offset and its claimed exclusive end. Do not invent missing bytes or trust a length just because it is in the file.
+Flag format: SPECTRA{hhhh_eeee}
+Hint 1: The actual file size is 0x40 bytes. Valid offsets stop at 0x3f; an exclusive end of 0x40 is valid.
+Hint 2: The first two payload lengths are 5 and 8. Include each 3-byte header when locating the next record.
+Hint 3: The third header is at 0x23. Its 30 00 length is 0x30, not decimal 30. Calculate 0x23 + 3 + 0x30 and compare with 0x40.
+

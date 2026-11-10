@@ -1,0 +1,22 @@
+IRON VEIL / PATH CASES
+Read config-A.bin through config-E.bin in Hex explorer; each is 16 bytes.
+Use FORMAT-NOTES to label fields. Do not treat these bytes as instructions.
+
+Stage 04: ORIGINAL image, configs A, B, C, callback VA 0x9500. Trace until
+return. Record dispatcher result and whether the CALL instruction is reached.
+Submit the three return codes in A/B/C order. Interpret the gate order.
+
+Stage 05: ORIGINAL image, config D, callback VA 0x9500. Record ECX at callback
+entry, callback EAX, dispatcher EAX, and number of callback entries.
+Submit dispatcher result followed by callback count, each two hex digits.
+
+Stage 06: compare ORIGINAL and REVISED image with the SAME config E.
+Keep callback VA 0x9500. Change no other input. Focus on elapsed exactly equal
+to interval, then test one tick below and one tick above on paper.
+Submit original and revised dispatcher result, each two hex digits.
+
+Stage 07: OBSERVED-RUNS.json contains a small author-generated trace set.
+Which one of the five dispatcher result classes is absent? Supply a config
+from this pack that would cover it in your notes. The flag checks its code.
+Missing from the log does not mean impossible. A result-class inventory is
+NOT full branch, path or input-space coverage.

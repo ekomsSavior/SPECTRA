@@ -1,0 +1,42 @@
+SPECTRA CTF 004 / RE TOOLKIT / OPTIONAL WORKSHEET
+Analyst:                          Sample SHA-256:
+Scope: synthetic static memory image; no native execution.
+Load assumptions / architecture / ABI / file-to-VA relationship:
+
+FUNCTION LEDGER
+Address | meaningful name YOU assign | inputs | outputs | evidence addresses
+
+RECORD LAYOUT (do not invent a field meaning just from its width)
+Offset | read width | observed value | used by | known role / uncertain role
+
+CALL TRACE
+Instruction | RCX/RDX meaning | EAX before/after | saved local | why saved
+
+INDIRECT DISPATCH
+Selector expression | index | table base | stride | slot VA | loaded target VA
+File offset used to read that slot | evidence the index is in bounds:
+
+TRANSFORM
+Input byte | operation width | rotate result | add result | masked result
+Explain why rotating 32 bits or ignoring wraparound would change the result:
+
+STATE TABLE
+Prior state | A | B | C | other
+0           |   |   |   |
+1           |   |   |   |
+2           |   |   |   |
+3           |   |   |   |
+invalid     |   |   |   |
+
+TRACE / initial state 0
+Input | state before | branch evidence | state after
+
+HYPOTHESIS TEST
+Candidate model | shortest useful counterexample | expected vs actual result
+Check reset behavior, absorbing terminal state, invalid states and empty input.
+
+FINAL EXPLANATION
+Describe the dispatcher and state-step routine separately in plain language.
+What behavior is established by these bytes? What is NOT established?
+Name one question you would investigate next in a real authorized sample.
+Export your SPECTRA Notebook and keep this worksheet; this method is reusable.

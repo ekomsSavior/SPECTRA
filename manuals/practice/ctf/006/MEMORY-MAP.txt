@@ -1,0 +1,52 @@
+IRON VEIL / START HERE / CTF 006
+Builds on CTF 005: a decoded field is evidence; now ask how code uses it.
+The inputs here are already decoded. No old CTF file or answer is required.
+Synthetic raw x86-64 image, NOT PE/ELF, not a real malware sample.
+All routines are isolated teaching components. Follow the manual contracts.
+There is NO loader that automatically connects these files. No OS imports,
+file writes, sockets, process creation or native execution are required.
+
+SPECTRA: main Open file > iron-veil.img.bin > Disassembly > Raw range /
+architecture override. Pick one CODE row; set x86-64, Little endian; Decode
+range; choose All decoded instructions. A new decode replaces the prior one.
+Use explicit 0x prefixes. Length is a COUNT, not an end address.
+
+CODE             FILE OFFSET    BYTE LENGTH        BASE VA
+name_hash        0x000          0x16 (22 decimal)   0x9000
+resolve          0x080          0x20 (32 decimal)   0x9080
+dispatch         0x100          0x44 (68 decimal)   0x9100
+QueueNote stub   0x500          0x03 (3 decimal)    0x9500
+Probe stub       0x510          0x03 (3 decimal)    0x9510
+Other stub       0x520          0x06 (6 decimal)    0x9520
+
+DATA             FILE OFFSET    BYTE COUNT
+symbol table     0x300          0x3c (60 decimal, five 12-byte rows)
+name strings     0x380          ends before 0x500; offsets in table
+
+For this image only: VA = 0x9000 + absolute file offset.
+CC gaps are padding. The table/strings are DATA; do not decode as instructions.
+label.bin, request.bin and config-*.bin have their own file offsets starting 0.
+Table target values are VAs; table name offsets are FILE offsets. Do not swap.
+
+WINDOWS X64 INTEGER ARGUMENTS (review): RCX, RDX, R8, R9; result EAX here.
+name_hash: RCX points to a readable NUL-terminated byte string. Returns zero-
+extended u16 in EAX; seed is zero. Caller guarantees a readable terminator.
+No bound is implemented in this deliberately small teaching routine. Analyze
+only supplied terminated strings; the browser worksheet is separately bounded.
+resolve: RCX=first table row; EDX=row count; R8W=request hash; R9B=name length.
+Returns first matching target VA in EAX, or 0. Caller validates table storage.
+It compares metadata, not strings; hash+length is not a universal unique ID.
+dispatch: RCX points to a readable 16-byte config. RDX=validated callback VA.
+No NULL callback check exists: the harness calls only after a nonzero lookup.
+QueueNote stub: ECX=status input; copies ECX to EAX. It does NOTHING else.
+dispatch allocates shadow space/alignment for its indirect call. The routines
+do not have a PE unwind directory and are not a complete Windows executable.
+
+The revised image changes ONE conditional branch. Investigate it at stage 06.
+OBSERVED-RUNS records the ORIGINAL image only. Do not apply its observations
+to the revised image without a new run or separate static reasoning.
+
+LOCAL NAME WORKSHEET: Casebook > Name hash worksheet. First recover the width,
+rotation, seed and terminator from code; trace two bytes yourself. The helper
+hashes typed ASCII locally. No upload or programming is needed. It is not a
+new SPECTRA Decoder lab mode and is not a cryptographic hash utility.

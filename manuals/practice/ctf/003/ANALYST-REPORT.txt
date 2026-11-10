@@ -1,0 +1,18 @@
+SPECTRA CTF 003 / COLD STORAGE / OPTIONAL ANALYST REPORT
+Analyst handle:
+Sample SHA-256:
+Scope: supplied synthetic fixtures; static analysis only.
+
+1. FILE / Format, architecture, sections, entry point:
+2. IMPORTS / DLL, function, suggested capability, limits of that inference:
+3. OVERLAY / Last section raw end, header offset, payload range, bounds check:
+4. CONFIG / Transform and key, recovered host/path, marker, mode:
+5. LOOP / Input bytes, count, running sum, result:
+6. STACK / Destination offsets, bytes in address order, resulting string:
+7. BRANCH / Input byte, signed vs unsigned interpretation, selected return:
+8. CONCLUSION / Facts, hypotheses, things NOT established, next safe question:
+
+Never treat strings or imports as proof that a behavior occurred. These snippets
+are separate exercises, not established reachable code in the PE. No execution,
+network contact, persistence or malware-family attribution was demonstrated.
+Keep your report and flags private while other learners are solving.

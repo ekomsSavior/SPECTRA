@@ -1,0 +1,22 @@
+HOLLOW SIGNAL / REPORT REVIEW
+Select the strongest conclusion supported by the supplied artifacts.
+
+A: A decoded endpoint label proves this sample contacted a command server.
+   The unknown record is definitely a credential. The guard bug proves SPECTRA
+   can be exploited by this capture.
+
+B: Under the supplied format contract, the bounded bytes recover TLV records.
+   The original interval is 300 seconds and the revised interval is 600 seconds.
+   The endpoint label is an observed string, not proof of contact; type f0 has
+   unknown semantics. The generic u32 guard accepts a wraparound counterexample;
+   the fixed guard rejects it. That u32 length is not reachable through this
+   capture's u8 length field. These are synthetic independent teaching routines.
+
+C: The original and revised files have different bytes, so they must have
+   completely different algorithms. Unknown tags should terminate parsing;
+   any ff byte means the input is malformed.
+
+In your Notebook support your choice with: capture range, first two key steps,
+record ledger, mutation offsets, one boundary test and one limitation.
+The flag checks the chosen report letter only, not the quality of your prose.
+The worksheet is your own reusable analyst record. Keep flags private.

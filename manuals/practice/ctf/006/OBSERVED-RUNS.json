@@ -1,0 +1,59 @@
+{
+  "provenance": "Author-generated bounded Unicorn CPU emulation of the supplied original image. No OS, network or native execution. Each record covers one invocation only. Events log QueueNote stub entry, not external activity.",
+  "runs": [
+    {
+      "run": "A",
+      "image": "iron-veil.img.bin",
+      "image_sha256": "e59b8cb44e858cd82c5758590682dddc40e6582fd7b3049ae2543f6ca258ada4",
+      "config": "config-A.bin",
+      "entry_va": "0x9100",
+      "callback_va": "0x9500",
+      "events": [],
+      "dispatcher_eax": "0x00"
+    },
+    {
+      "run": "B",
+      "image": "iron-veil.img.bin",
+      "image_sha256": "e59b8cb44e858cd82c5758590682dddc40e6582fd7b3049ae2543f6ca258ada4",
+      "config": "config-B.bin",
+      "entry_va": "0x9100",
+      "callback_va": "0x9500",
+      "events": [],
+      "dispatcher_eax": "0x02"
+    },
+    {
+      "run": "D",
+      "image": "iron-veil.img.bin",
+      "image_sha256": "e59b8cb44e858cd82c5758590682dddc40e6582fd7b3049ae2543f6ca258ada4",
+      "config": "config-D.bin",
+      "entry_va": "0x9100",
+      "callback_va": "0x9500",
+      "events": [
+        {
+          "kind": "stub_entry",
+          "va": "0x9500",
+          "ecx": "0xfffffffe",
+          "rsp_mod16": 8
+        }
+      ],
+      "dispatcher_eax": "0x04"
+    },
+    {
+      "run": "E",
+      "image": "iron-veil.img.bin",
+      "image_sha256": "e59b8cb44e858cd82c5758590682dddc40e6582fd7b3049ae2543f6ca258ada4",
+      "config": "config-E.bin",
+      "entry_va": "0x9100",
+      "callback_va": "0x9500",
+      "events": [
+        {
+          "kind": "stub_entry",
+          "va": "0x9500",
+          "ecx": "0x00000000",
+          "rsp_mod16": 8
+        }
+      ],
+      "dispatcher_eax": "0x03"
+    }
+  ]
+}

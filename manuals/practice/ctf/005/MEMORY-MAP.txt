@@ -1,0 +1,42 @@
+HOLLOW SIGNAL / START HERE
+Three separate files: hollow-signal.img.bin contains teaching code;
+capture.bin contains the original encoded data; capture-revised.bin is stage 07.
+This is a synthetic exercise, not real malware. No native execution is needed.
+The image is raw x86-64 code, not PE/ELF. No imports, network, disk or OS calls.
+Only supplied files are targets. Do not contact domains found in the data.
+
+SPECTRA: Open hollow-signal.img.bin with the MAIN Open file control.
+Disassembly > Raw range / architecture override; use a CODE row below.
+Architecture x86-64, Little endian. Click Decode range. Select All decoded
+instructions. Each decode replaces the previous range. Use 0x-prefixed hex.
+
+CODE             FILE OFFSET     BYTE LENGTH       BASE VA
+decoder          0x000           0x21 (33 decimal)  0x7000
+guard_before     0x080           0x0f (15 decimal)  0x7080
+guard_after      0x0c0           0x1b (27 decimal)  0x70c0
+
+For THIS image only: VA = 0x7000 + file offset. CC gaps are padding, not code.
+Capture files have NO virtual addresses. Decoded output begins at offset ZERO.
+Capture offset 0x20 corresponds to decoded offset 0, not VA 0x7020.
+
+DECODER CONTRACT / Windows x64 integer ABI:
+RCX points to encoded bytes; RDX points to equally large writable output;
+R8D is the u32 count; R9B is the initial 8-bit key. It returns count in EAX.
+The caller must validate both buffers. This routine does not parse headers.
+The capture header supplies count, data offset and seed; apply them manually.
+R9B and R10B are low bytes of R9/R10; EAX is low 32 bits of RAX.
+
+GUARD CONTRACT / pure predicates; no memory access:
+ECX=total buffer length, EDX=cursor, R8D=declared VALUE length (all u32).
+Two bytes of tag/length header precede the value at cursor.
+Return EAX=1 if accepted, EAX=0 if rejected. The same API is tested with
+full u32 lengths to expose arithmetic errors. The capture's length field
+is only u8, so its particular records CANNOT supply 0xffffffff.
+Do not claim that this wider API test proves an exploit in the capture parser.
+
+SPECTRA HELPER:
+Casebook > Local trace worksheet. Upload the supplied capture only; enter the
+range, seed and transform parameters you recovered. It works in your browser,
+uploads nothing, and exports decoded.bin. Open that file in SPECTRA Hex explorer.
+This is a separate lesson helper, not a rolling-key mode in Decoder lab.
+Record your first two iterations before using it. No programming prerequisite.

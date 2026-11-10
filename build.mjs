@@ -1,4 +1,5 @@
 import archive from './src/archive.js';
+import {buildManuals} from './scripts/build-manuals.mjs';
 import {guide,standaloneGuide} from './src/guide-build.mjs';
 import {createHash} from 'node:crypto';
 import {readFile,writeFile,mkdir,cp,readdir,rm} from 'node:fs/promises';
@@ -26,6 +27,8 @@ const replacements={'/*__EXPERIMENTS__*/':embed(experiments),'/*__KNOWLEDGE__*/'
 for(const [key,file]of Object.entries({HISTORY:'src/history.js',STREAM:'src/stream.js',ARCHIVE_STREAM:'src/archive-stream.js',RECORDING:'src/recording.js',RECORDING_OBSERVER:'src/recording-observer.js',TRACE_ADAPTERS:'src/trace-adapters.js',EVIDENCE:'src/evidence.js',MAPPING:'src/mapping.js',LESSONS:'src/lessons.js',RUNTIME:'src/runtime.js',NAVIGATION:'src/navigation.js',LIBRARY:'src/library.js',LAB_FORMS:'src/lab-forms.js',LINUX:'src/linux.js',LAB:'src/lab.js',HARDWARE_DEBUGGER:'src/hardware-debugger.js',COMPARE:'src/compare.js',FIRMWARE:'src/firmware.js',ARCHIVE:'src/archive.js',PROJECT:'src/project.js',WINDOWS:'src/windows.js',NATIVE_PLAN:'src/native-plan.js',DEBUGGER:'src/debugger.js',DEBUGGER_WORKER:'src/debugger-worker.js',CODE_WORKER:'src/code-worker.js',CODE:'src/code.js',CAPSTONE:'vendor/capstone/dist/capstone.js',UNICORN:'vendor/unicorn/dist/unicorn_x86.js'}))replacements['/*__'+key+'__*/']=embed((key==='CODE'?analysis:'')+await read(file));
 for(const [key,value]of Object.entries(replacements))html=html.replace(key,()=>value);
 if(/__\w+__/.test(html.slice(0,200000)))throw Error('Unresolved build placeholder');
+await buildManuals(root);
+if(process.argv.includes('--html-only')){await mkdir(path.join(root,'dist'),{recursive:true});await writeFile(path.join(root,'dist/index.html'),html);console.log('Built workbench HTML only; engine assets and download archives preserved.');process.exit(0);}
 await mkdir(path.join(root,'dist'),{recursive:true});await writeFile(path.join(root,'dist/download-archives.json'),'{}\n');await writeFile(path.join(root,'archive-manifests.mjs'),'export const ARCHIVES={};\n');await writeFile(path.join(root,'dist/index.html'),html);
 await writeFile(path.join(root,'dist/guide.html'),standaloneGuide());
 const csp="default-src 'none'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; style-src 'unsafe-inline'; img-src data:; font-src data:; worker-src 'self' blob:; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";

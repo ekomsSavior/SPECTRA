@@ -1,0 +1,17 @@
+COLD STORAGE / DRAFT CONCLUSIONS
+Choose the draft supported by static evidence. These are hypotheses, not instructions.
+
+A / The sample contacted updates.example.invalid, installed persistence and wrote files.
+Proof: a URL string and a file API are present. The raw snippets are definitely called by the PE.
+
+B / The PE imports HTTP-client APIs and carries an XOR-obfuscated configuration after
+its sections. Its entry routine returns zero without calling those imports. The
+recovered host is a configuration value, not observed network traffic. The separate
+raw snippets are learning exercises, not reachable functions established in this PE.
+Static evidence here does not prove persistence, live contact or a malware family.
+
+C / The COLD STORAGE label identifies a known malware family. Repeating XOR is strong
+encryption. The imports alone prove the recovered host was contacted successfully.
+
+Submit the lowercase draft letter plus the host recovered from the configuration,
+separated by an underscore: SPECTRA{letter_hostname}. Do not visit the hostname.

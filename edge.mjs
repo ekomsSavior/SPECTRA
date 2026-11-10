@@ -1,4 +1,5 @@
 // SPECTRA's server only gates delivery of static files. It never accepts samples.
+import {MANUAL_PATHS,MANUAL_CSP} from './manual-paths.mjs';
 import {ENGINE_PATHS} from './asset-paths.mjs';
 import {ARCHIVES} from './archive-manifests.mjs';
 import {archiveResponse} from './downloads.mjs';
@@ -34,12 +35,13 @@ export default {
     }
     if (!['GET','HEAD'].includes(request.method)) return reply(request, 'SPECTRA accepts no uploads. Open the page and inspect your file locally.', 405, {Allow:'GET, HEAD'});
     if (request.url.length > 2048) return reply(request, 'Address too long.', 414);
-    if (!PATHS.has(url.pathname)&&!ENGINE_PATHS.has(url.pathname)) return reply(request, 'Not found.', 404);
+    if (!PATHS.has(url.pathname)&&!ENGINE_PATHS.has(url.pathname)&&!MANUAL_PATHS.has(url.pathname)) return reply(request, 'Not found.', 404);
     if(Object.hasOwn(ARCHIVES,url.pathname))return archiveResponse(request,env,ARCHIVES[url.pathname],HEADERS);
     const response = await env.ASSETS.fetch(request);
     const headers = new Headers(response.headers);
     for (const [name,value] of Object.entries(HEADERS)) headers.set(name,value);
-    headers.set('Cache-Control',ENGINE_PATHS.has(url.pathname)?'public, max-age=31536000, immutable':'public, max-age=0, must-revalidate');
+    if(MANUAL_PATHS.has(url.pathname))headers.set('Content-Security-Policy',MANUAL_CSP);
+    headers.set('Cache-Control',ENGINE_PATHS.has(url.pathname)&&!url.pathname.endsWith('/offline-manifest.json')?'public, max-age=31536000, immutable':'public, max-age=0, must-revalidate');
     return new Response(response.body, {status:response.status,statusText:response.statusText,headers});
   }
 };

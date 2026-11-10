@@ -1,0 +1,429 @@
+SPECTRA CTF 005 / HOLLOW SIGNAL
+
+Eight stages / Always open / No timer / Three free hints per stage
+
+Builds on 001-004: byte order, loops, branches, record layouts and bit rotations.
+
+Casebook: https://spectra.churchofmalware.org/ctf/005/
+
+Workbench: https://spectra.churchofmalware.org/
+
+Discord: https://discord.com/channels/1502477191093420135/1513198544025161809
+
+Use /spectra ctf:005. Flags, saved progress and patch collection are private.
+
+Complete all eight stages for patch 005. Take breaks; no penalty for hints.
+
+Read MEMORY-MAP.txt and FORMAT-NOTES.txt first. No native execution.
+
+
+
+STAGE 01 / Bound the evidence
+
+An encoded configuration sits inside a larger capture. Find its absolute file offset and byte count from the header. Submit each as four hex digits. A readable string elsewhere in the file is not automatically configuration data.
+
+WHY THIS MATTERS
+
+Malware configurations and embedded resources often occupy only part of a file. Before attempting a transform, establish exactly which bytes the program would consume. Otherwise you can get plausible-looking output from the wrong region and build a false story around it.
+
+WORKFLOW
+
+Download MEMORY-MAP.txt and FORMAT-NOTES.txt. Open capture.bin in SPECTRA Hex explorer. Inspect header fields at file offsets 0x06 and 0x08.
+
+Read the count as a two-byte little-endian value, and the data offset as a four-byte little-endian value. Calculate the exclusive end: offset + count.
+
+Record the bounded range and last included byte in Notebook. Open the Casebook link for the full lesson and coordinate-system explanation.
+
+DEEPER WALKTHROUGH
+
+Treat FORMAT-NOTES as a supplied analyst contract. You are not expected to infer this whole format from nothing. In Hex explorer, use the file-offset column; do not decode the header as instructions.
+
+A count is a quantity, not an address. A half-open interval [start,end) includes start and excludes end. For a different example, start 0x10 and count 3 include 0x10, 0x11, 0x12; end is 0x13.
+
+There are three coordinate systems in this mission: capture file offsets; decoded buffer offsets starting at zero; and code virtual addresses starting at 0x7000. A decoded byte i corresponds to capture offset data_offset+i, because this transform preserves length. That does not make it a code VA.
+
+Write a small header ledger: field, width, stored bytes, interpreted value, and source of meaning. Check start <= file_size and count <= file_size-start before taking a slice. Do not include padding before the data or the readable tail after it.
+
+CHECK YOUR REASONING
+
+Can you explain why the last included offset is one less than the exclusive end, and why the flag asks for a count instead of that end?
+
+IF YOU GET STUCK
+
+Seeing Raw binary / Unknown is expected. Use Hex explorer, not automatic PE structure analysis. Put 0x before hexadecimal input when a SPECTRA field accepts either decimal or hex.
+
+FUTURE WORK
+
+This habit transfers to overlay extraction, resource recovery, packet parsing and memory carving: bound the evidence before interpreting it.
+
+Flag format: SPECTRA{range_oooo_nnnn}
+
+Enter only the full SPECTRA{...} flag, with no 0x prefixes or trailing explanation. Use lowercase hex.
+
+Hint 1: FORMAT-NOTES identifies field widths. The u16 at +6 is COUNT; the u32 at +8 is OFFSET. Both are little endian.
+
+Hint 2: For bytes aa bb, a little-endian u16 is aa + 256*bb. Do not reverse the characters within each byte.
+
+Hint 3: The range ends just before 0x3f. The flag uses its START and COUNT, not its last offset or exclusive end.
+
+
+
+STAGE 02 / Recover the moving key
+
+The decoder changes its key after every byte. Trace the first iteration and find the key used for the SECOND byte. Submit two hex digits. This builds on CTF 004's rotations, now with state carried around a loop.
+
+WHY THIS MATTERS
+
+A fixed XOR key is a useful first model, but not every decoder repeats a constant. A loop has state: the value used on iteration i can differ from the one used on i+1. Recovering the recurrence is more useful than guessing keys until text looks readable.
+
+WORKFLOW
+
+Open hollow-signal.img.bin. Decode the decoder row in MEMORY-MAP: offset 0x0, length 0x21 (33 decimal), base VA 0x7000, x86-64, Little endian; select All decoded instructions.
+
+Use the register contract in the map. Follow source load, XOR, destination store, key rotation, key addition and index update in instruction order. Get the initial key from capture header +5.
+
+Trace one eight-bit key update on paper. The key BEFORE the update decodes byte zero; the updated key decodes byte one. Save both values for the next stage.
+
+DEEPER WALKTHROUGH
+
+Read the map before the assembly. RCX and RDX are pointers, R8D is a count, and R9B holds an eight-bit key. EAX starts at zero and indexes both source and destination. R10B is temporary storage for one byte.
+
+Separate the data transform from the key update. The data path loads source[index], XORs with the current key, and stores one output byte. Only then does the key path rotate and add. Reversing that order shifts the entire key stream.
+
+ROL is a rotation, not a shift: the high bit wraps around. Because the operand is R9B, the operation is eight bits wide. ADD to that same register discards carry beyond eight bits. A 32-bit rotation is a different function even if the seed fits in a byte.
+
+The INC/CMP/JB sequence controls the loop count. With a zero count the initial TEST/JE (JE is also called JZ) skips all reads. With a positive count, indices are 0 through count-1. The routine trusts its caller to provide real buffers of that size; this is not validation of the capture header.
+
+CHECK YOUR REASONING
+
+Label key_before and key_after in your trace. Which one is used by the XOR on the first iteration? What prevents a read for count zero?
+
+IF YOU GET STUCK
+
+A blank function table does not mean no code. Decode the exact raw row and select All decoded instructions. R9B is not a typo for R9D; that suffix changes the arithmetic width.
+
+FUTURE WORK
+
+Stateful decode loops appear in obfuscated strings and configuration loaders. A register ledger lets you reconstruct them without running the original program.
+
+Flag format: SPECTRA{key_xx}
+
+Enter only the full SPECTRA{...} flag, with no 0x prefixes or trailing explanation. Use lowercase hex.
+
+Hint 1: The initial seed is a7. R9B is eight bits. XOR uses the current key before ROL and ADD change it.
+
+Hint 2: ROL8 by one moves bit 7 into bit 0: ((key << 1) | (key >> 7)) & 0xff. Then add the immediate and keep the low eight bits.
+
+Hint 3: Rotating a7 left by one gives 4f. Add the immediate shown in ADD R9B, then submit that new key, not the first decoded byte.
+
+
+
+STAGE 03 / Recover a typed value
+
+Decode the original bounded configuration, then recover the first interval value. Submit its u16 value as four hex digits. Use the local trace worksheet after tracing the first two bytes yourself; no programming is required.
+
+WHY THIS MATTERS
+
+Recovering readable output is only the beginning. Analysts need to turn bytes into typed fields while keeping the original evidence. A numeric interval can be more important than the most obvious string, and the wrong width can make a correct decode look wrong.
+
+WORKFLOW
+
+Open the Casebook's Local trace worksheet. Choose capture.bin and enter the offset, count and seed from its header, plus the rotate count and add constant from the decoder. Trace, then save decoded.bin.
+
+Open decoded.bin in SPECTRA Hex explorer. FORMAT-NOTES defines each record as type, VALUE length, then value bytes. Find type 0x10 and read its two value bytes as little endian.
+
+Record the type, length, value and next record offset. The format notes supply the meaning: seconds. Do not include the two header bytes in the interval value.
+
+DEEPER WALKTHROUGH
+
+Use the helper to check your model, not to choose it. It implements: output byte = input byte XOR current key; then rotate the key left in eight bits, add your constant, keep eight bits. Enter the actual constants from your disassembly. It displays each input, key, result and next key.
+
+Before trusting the full output, compare its first two rows with your own trace. A plausible first byte alone is weak evidence. The known record lengths and the rest of the structure provide independent checks.
+
+Save the output and use the MAIN Open file button to inspect decoded.bin in SPECTRA. Its first byte is offset zero. That byte originally came from the capture's data offset, but the exported file has no capture header.
+
+TLV means Type-Length-Value. Here both type and length are one byte. The length counts the value only. For the first record, mark the two-byte header separately from the two-byte number; then apply the little-endian rule from CTF 001. Write decimal seconds in your notes and hexadecimal in the requested flag.
+
+CHECK YOUR REASONING
+
+Can you explain where the unit 'seconds' came from? It is supplied by the format contract, not something an arbitrary two-byte value proves on its own.
+
+IF YOU GET STUCK
+
+If the output starts with nonsense, check the original capture (not revised), byte range, eight-bit rotate, seed and update order. Keep the helper's numbers explicitly 0x-prefixed. Use the hints as a checkpoint rather than restarting the whole mission.
+
+FUTURE WORK
+
+This is how configuration extractors become reproducible: a bounded transform, explicit types and validation against more than one known field.
+
+Flag format: SPECTRA{interval_hhhh}
+
+Enter only the full SPECTRA{...} flag, with no 0x prefixes or trailing explanation. Use lowercase hex.
+
+Hint 1: The helper is linked above the stages in the web casebook. SPECTRA's ordinary XOR decoder does not implement this rolling-key recurrence.
+
+Hint 2: The first four decoded bytes are 10 02 2c 01. The first TWO are tag and length; only the last two hold the interval.
+
+Hint 3: A little-endian WORD formed from 2c 01 is 0x0100 + 0x002c. Pad the resulting hex value to four digits.
+
+
+
+STAGE 04 / Walk past the unknown
+
+Walk every TLV record in the original decoded buffer. Find the final cursor and the LAST record's unknown type. Submit the cursor as four hex digits and the type as two. Unknown semantics do not prevent you from locating the next record.
+
+WHY THIS MATTERS
+
+Real formats evolve. A parser or extractor that invents meaning for unknown fields—or stops at every unfamiliar byte—loses evidence. Length-delimited records let you preserve unknown values while still recovering known fields safely.
+
+WORKFLOW
+
+Keep the original decoded.bin in Hex explorer. Start cursor at 0; read a one-byte tag and one-byte VALUE length. Write each row in ANALYST-WORKSHEET.txt or Notebook.
+
+For each record, validate and advance by 2 + length. Do not align, search for a NUL, or stop on an unknown type. The endpoint label has no terminator.
+
+Stop when cursor equals the decoded size. Submit that final cursor and the final record's unknown tag. Keep its raw bytes and label its meaning unknown.
+
+DEEPER WALKTHROUGH
+
+Draw columns: record start, tag, value length, value start, next cursor and interpretation. At every row, value_start = cursor+2. The next cursor is value_start+length. Each row should start exactly where the previous row ended.
+
+Count bytes, not displayed characters. A field may contain NUL, non-ASCII values or arbitrary binary data. The hex pane is the authoritative representation; a text preview is just one interpretation.
+
+For the supplied format, unknown tags use the same length convention. You may skip them only after the declared value fits. 'Unknown' describes semantics, not whether its bytes exist. Preserve the raw tag and value in your notes.
+
+There is no end sentinel. Reaching exactly buffer_size is success. Cursor beyond buffer_size is a malformed record, and a single byte left is a truncated header. The final cursor is not an offset you should read.
+
+CHECK YOUR REASONING
+
+Why is stopping at the first 00 byte wrong here? Why can you compute a record boundary without knowing what that record means?
+
+IF YOU GET STUCK
+
+If you reach the readable TAIL text, you decoded beyond the range from stage 01. If your third record seems to overlap the last, check that length excludes its two header bytes.
+
+FUTURE WORK
+
+The same ledger works for tagged configuration blobs, binary protocols, resource chunks and extensible file formats. Preserve uncertainty without losing your place.
+
+Flag format: SPECTRA{end_oooo_tt}
+
+Enter only the full SPECTRA{...} flag, with no 0x prefixes or trailing explanation. Use lowercase hex.
+
+Hint 1: Record starts are decoded offsets 0, 4, 7 and 0x1a. These are NOT capture offsets or code VAs.
+
+Hint 2: The third record's length is 0x11 (17 decimal). Its value is exactly that many bytes; the following byte begins a new tag.
+
+Hint 3: The last value is three bytes and includes 00. Skip by length anyway. Final cursor is an exclusive end, so it equals the 31-byte output size.
+
+
+
+STAGE 05 / Prove the boundary
+
+Analyze guard_after, a pure length-check predicate. With total=31 and cursor=26, what is the largest VALUE length it accepts? Submit two hex digits. Account for the two-byte record header before reasoning about the payload.
+
+WHY THIS MATTERS
+
+Knowing a field's declared length is not enough; the bytes must actually fit. This is where reverse engineering connects to defensive code review. The branch direction, arithmetic width and order of checks determine whether malformed input is rejected.
+
+WORKFLOW
+
+Open hollow-signal.img.bin. Decode guard_after: offset 0xc0, length 0x1b (27 decimal), base VA 0x70c0, x86-64, Little endian. Select All decoded instructions.
+
+Use the map's contract: ECX=total, EDX=cursor, R8D=value length. Trace each compare before its subtraction. JA means unsigned above; JB means unsigned below.
+
+Work through exact-fit and one-too-many in BOUNDARY-CASES.txt. Record the largest valid value length and explain why the next larger value fails.
+
+DEEPER WALKTHROUGH
+
+Rewrite the routine in plain language one branch at a time: reject a cursor beyond total; calculate remaining bytes; reject fewer than two header bytes; subtract the header; reject a value length larger than the remainder. The initial zero return becomes one only on the accepted path.
+
+Do not treat SUB as automatically safer than ADD. If cursor were larger than total, unsigned total-cursor would wrap to a huge value. The preceding comparison is what makes this subtraction valid. The same reasoning applies before subtracting the header.
+
+Distinguish the header-fit question from the value-fit question. With zero total bytes, even a zero-length VALUE does not fit because its header still needs space. With two total bytes, a zero-length value at cursor zero does fit.
+
+JA and JB use unsigned ordering. They do not mean signed greater/less. At the final CMP R8D,ECX, equality is allowed because the code branches only on above. Record accepted and rejected examples so your explanation covers the boundary, not just the middle.
+
+CHECK YOUR REASONING
+
+Can a zero-length value be valid? Under which total/cursor conditions? Why must cursor be checked before subtraction?
+
+IF YOU GET STUCK
+
+Keep all vector numbers in the units given: decimal 31/26 or hex 0x1f/0x1a. The question asks for maximum VALUE bytes, not total record bytes.
+
+FUTURE WORK
+
+These checks help you review configuration parsers and distinguish actual out-of-bounds risks from code that only looks suspicious. MITRE's CWE-125 describes the class of reads beyond an intended buffer; this predicate itself performs no read.
+
+Flag format: SPECTRA{limit_xx}
+
+Enter only the full SPECTRA{...} flag, with no 0x prefixes or trailing explanation. Use lowercase hex.
+
+Hint 1: First establish cursor <= total. Only then is total-cursor a valid remaining-byte count.
+
+Hint 2: At cursor 26 of total 31, five bytes remain. The tag and length header consumes two of them.
+
+Hint 3: The final comparison accepts equality and rejects unsigned values ABOVE the remaining payload space. Test the exact fit and then add one.
+
+
+
+STAGE 06 / Find the counterexample
+
+Compare guard_before with guard_after using the wide-length vector. Submit the old and fixed return values, separated by an underscore. This is a paper trace of two predicates, not a request to trigger a crash or execute a file.
+
+WHY THIS MATTERS
+
+A check can look correct in ordinary arithmetic and fail at the machine's integer width. A counterexample proves the flaw in a local model. It does not automatically prove that an attacker can supply that value through the surrounding format or application.
+
+WORKFLOW
+
+Decode guard_before: offset 0x80, length 0x0f (15 decimal), base VA 0x7080. Inputs are total=0x20, cursor=0x1e and value length=0xffffffff.
+
+Trace both ADD instructions in 32 bits, then the unsigned comparison and SETBE. Separately trace guard_after with the same inputs. Record each return.
+
+Explain why the old check is wrong, then state the scope limit: this u32 API vector is not representable by the capture's u8 length field.
+
+DEEPER WALKTHROUGH
+
+Keep the arithmetic width visible in your notes. EDX and R8D are 32-bit registers. When an addition exceeds 0xffffffff, the stored value wraps modulo 2^32. The processor does not preserve an unlimited mathematical integer for the later CMP.
+
+The old code checks a sum AFTER it has already wrapped. A very large length can therefore look like a small end position. SETBE only knows the final unsigned comparison result; it cannot recover the intended mathematical sum.
+
+The fixed code compares length against an already-validated remainder. For this vector, only the header fits, so no value bytes remain. The large length is rejected without needing to add it to the cursor.
+
+Now ask whether this counterexample can reach the function in a real call chain. In our capture, the TLV length is one byte, so 0xffffffff cannot come from that field. The generic u32 helper is a separate exercise. Your report must not turn a wider API bug into an unsupported claim about the supplied capture, SPECTRA, or real malware.
+
+CHECK YOUR REASONING
+
+What did the counterexample prove locally? What additional caller/input evidence would you need before claiming an exploitable parser issue?
+
+IF YOU GET STUCK
+
+Do not use a calculator's unbounded result without masking to 32 bits. Do not interpret 0xffffffff as signed -1: this contract and comparison are unsigned.
+
+FUTURE WORK
+
+Counterexamples, operand widths and reachability analysis belong together in vulnerability research. A credible report explains both the failure and the conditions required to reach it.
+
+Flag format: SPECTRA{guard_old_fixed}
+
+Enter only the full SPECTRA{...} flag, with no 0x prefixes or trailing explanation. Use lowercase hex.
+
+Hint 1: 32-bit ADD retains only the low 32 bits. SETBE writes 1 if the preceding unsigned comparison is below OR equal, otherwise 0.
+
+Hint 2: For the old guard, calculate (0x1e + 2 + 0xffffffff) modulo 0x100000000. Compare that small wrapped result with total 0x20.
+
+Hint 3: The old guard sees 0x1f <= 0x20. The fixed guard sees no value bytes left after the header and rejects the huge declared length. Submit the two boolean return values.
+
+
+
+STAGE 07 / Explain the mutation
+
+The revised capture changes three bytes. Separate metadata from the decoded configuration change and recover the NEW interval. Submit four hex digits. A byte diff locates changes; decoding explains what they mean.
+
+WHY THIS MATTERS
+
+Version comparisons are often full of distracting changes: build metadata, counters, timestamps and encoded bytes. Good RE connects raw differences to fields and behavior instead of declaring that every changed byte is a new feature.
+
+WORKFLOW
+
+Open capture.bin as the MAIN file. In Binary diff, Open second binary > capture-revised.bin > Compare. Use Raw byte comparison; no function matching is needed for these data files.
+
+Record each absolute changed offset and before/after byte. Use FORMAT-NOTES to classify header metadata separately from encoded data. Convert encoded offsets to decoded offsets by subtracting the data start.
+
+Decode capture-revised.bin in the Local trace worksheet using its header and the same code-derived transform. Save it separately, open in Hex explorer and read the interval field. Compare your notes with the original.
+
+DEEPER WALKTHROUGH
+
+Use the byte table even if Matched functions is empty. Both captures are data, not executable images, so function recovery adds nothing to this comparison. The raw table compares bytes at the same absolute offsets; it is not an insertion-alignment algorithm.
+
+Map each change back to the format. A revision byte may help label versions but does not itself tell you what behavior changed. Data-offset and count fields should also be checked before assuming both payloads occupy the same range.
+
+The rolling key depends on prior KEY state, not prior plaintext or ciphertext. Therefore a changed data byte does not change all subsequent keys. With the same seed, offset, count and recurrence, compare the recovered fields directly.
+
+Keep original and revised decoded files distinguishable. A hash, filename and small record ledger prevent you from reading the old file while believing it is the new one. Describe the numeric interval change only under the supplied seconds contract; the files do not implement a timer or prove runtime network behavior.
+
+CHECK YOUR REASONING
+
+Why did only two encoded payload bytes change? Would that still be guaranteed for a decoder whose next key depends on the previous plaintext byte?
+
+IF YOU GET STUCK
+
+Use MAIN Open file for capture.bin, then Open second binary for the revised copy. If SPECTRA shows decoded.bin as the main file, you are comparing different coordinate systems. No raw code decode is required here.
+
+FUTURE WORK
+
+This method helps compare malware configurations, protocol captures and firmware resources while separating metadata churn from meaningful changes.
+
+Flag format: SPECTRA{interval_hhhh}
+
+Enter only the full SPECTRA{...} flag, with no 0x prefixes or trailing explanation. Use lowercase hex.
+
+Hint 1: The three changed capture offsets are 0x04, 0x22 and 0x23. The first is the revision counter, outside the encoded range.
+
+Hint 2: The encoded data still starts at 0x20. Changes at 0x22 and 0x23 therefore affect decoded offsets 2 and 3, the first record's value.
+
+Hint 3: The revised interval bytes decode to 58 02. Read them as one little-endian u16, not two unrelated numbers or the old interval.
+
+
+
+STAGE 08 / Write what you can prove
+
+Review the three candidate reports and choose the one supported by the artifacts. Submit its lowercase letter. Finish your analyst worksheet: the checked letter earns progress, but the explanation is the skill you take into future work.
+
+WHY THIS MATTERS
+
+RE produces decisions other people may rely on. An impressive-looking result is less valuable than a reproducible finding that clearly separates evidence from assumptions. This final stage asks you to audit your own narrative.
+
+WORKFLOW
+
+Read REPORT-CANDIDATES.txt. Check each claim against your header ledger, key trace, record map, boundary tests and mutation notes.
+
+Separate observed bytes, supplied format meanings, derived results and unproven runtime behavior. A string is not a connection; an unknown tag is not a credential by default.
+
+Choose the defensible report, export your SPECTRA Notebook, then use Collect patch 005 after all eight stages are solved. The flag checker does not grade your written report.
+
+DEEPER WALKTHROUGH
+
+For each statement, attach its evidence source. Header bounds come from capture bytes interpreted under the format notes. Key recurrence comes from instructions. Numeric values come from the decoded record widths. The code and data alone do not establish a live campaign, actor or network session.
+
+Use limitations as precision, not as an apology. 'Unknown type f0, raw value retained' is a stronger statement than inventing a meaning. 'This vector demonstrates wraparound in the generic predicate; reachability through the u8 field is absent' is stronger than an unsupported exploit claim.
+
+A useful final note includes sample hashes, exact ranges, a short pseudocode model, a record ledger, a boundary counterexample, the changed field, and the next question you would investigate. Another analyst should be able to reproduce your conclusion without needing your flag.
+
+You have combined earlier CTF skills into a small configuration-analysis workflow. Keep your worksheet as a template. In future missions you can replace supplied schema notes with inferred field meanings and compare several captures, while keeping the same evidence discipline.
+
+CHECK YOUR REASONING
+
+Can you distinguish supplied knowledge from inferred behavior in every paragraph of your report? Can another person reproduce your decode?
+
+IF YOU GET STUCK
+
+There is one supported candidate. The flag uses only its lowercase letter inside the stated wrapper. Do not paste the candidate text, explanations or punctuation after the closing brace.
+
+FUTURE WORK
+
+These notes can become the basis of a configuration extractor, a defensive signature review or an incident-response handoff. Clear scope protects downstream analysts from acting on claims the evidence does not support.
+
+Flag format: SPECTRA{report_letter}
+
+Enter only the full SPECTRA{...} flag, with no 0x prefixes or trailing explanation. Use lowercase hex.
+
+Hint 1: Reject claims of network activity: none of the supplied teaching code makes a network call. The endpoint is only recovered data.
+
+Hint 2: Reject models that treat any unknown tag, NUL or ff byte as automatically invalid. Length and the supplied schema control parsing.
+
+Hint 3: The strongest report preserves the unknown type's raw bytes and distinguishes the generic u32 guard flaw from the capture's one-byte length field.
+
+
+
+Primary references:
+
+Intel instruction reference: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
+
+Windows x64 ABI: https://learn.microsoft.com/en-us/cpp/build/x64-calling-convention
+
+CWE-125: https://cwe.mitre.org/data/definitions/125.html
+
+CWE-190: https://cwe.mitre.org/data/definitions/190.html

@@ -1,0 +1,17 @@
+IRON VEIL / REUSABLE INVESTIGATION NOTES
+Sample name / SHA-256 / version:
+Coordinate map (VA versus file offset):
+Provided contracts versus independently inferred behavior:
+
+HASH LEDGER: input byte / hash before / rotated word / sum / retained word
+LOOKUP LEDGER: row ID / name / length / stored hash / recalculated hash / target VA
+DISCRIMINATOR: candidate set / next comparison / surviving candidate / uncertainty
+PATH LEDGER: config / gate 1 / gate 2 / gate 3 / call reached / argument / result
+RETURN CONTRACT: source of contract / width / zero, nonzero or signed interpretation
+PATCH LEDGER: file offset / old and new opcode / same input / changed outcome
+TRACE COVERAGE: observed result classes / missing class / proposed additional input
+
+FINDING: what the evidence establishes:
+LIMITATION: what it does not establish:
+NEXT CHECK: how to distinguish the remaining hypotheses on an authorized sample:
+Can another analyst reproduce this without seeing your flag?

@@ -1,0 +1,14 @@
+SPECTRA field manual practice files - benign only
+
+Open files as data inside SPECTRA. No host execution or build tools are required.
+The ELF, PE, managed and raw CPU examples are teaching fixtures, not malware.
+The add-one/add-two PE files are routine-analysis fixtures: start at entry as a function, not as a complete Windows process.
+Raw ARM/AArch64/Thumb use load VA 0x1000, little endian. choose-path.bin is x64/System V at 0x1000.
+record.bin and encoded messages are plain exercise data.
+fixture-firmware.tar.gz is a synthetic archive, not a bootable device image.
+
+Fixture origins: original Church SPECTRA v0.14 fixtures are preserved.
+AndroidTraining.apk and android-source come from the current v0.18 fixtures.
+ctf/001 through ctf/006 contain the six public campaigns checked on 10 November 2026.
+See CTF-README.txt, the manuals' sources and the review notes for scope.
+Source counterpart files are for reading; compiling is optional and may change addresses.

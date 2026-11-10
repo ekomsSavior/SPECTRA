@@ -1,0 +1,91 @@
+SPECTRA CTF 003 / COLD STORAGE
+Seven guided stages / Always open / No timer
+Casebook: https://spectra.churchofmalware.org/ctf/003/
+Workbench: https://spectra.churchofmalware.org/
+Discord: https://discord.com/channels/1502477191093420135/1513198544025161809
+Use /spectra ctf:003 for private flags, hints and progress. Complete all seven to collect patch 003.
+CTFs 001 and 002 are recommended preparation, not requirements. Take breaks; hints have no penalty.
+Synthetic fixtures, including a minimal PE and separate raw teaching snippets. No native execution, installation or network contact is needed. Only supplied fixtures are targets. The raw snippets are NOT called by the PE. No live malware is included.
+Learning goal: a careful static investigation, not a claim of observed malware behavior. Keep flags and reports private.
+
+STAGE 01 / First look
+Start a static investigation. Which imported DLL owns WinHttpSendRequest? Submit its name in lowercase, including .dll. An import suggests a capability; it does not prove the function was called.
+Open 01-cold-storage.bin in SPECTRA. In File structure, note PE32+, x86-64, three sections and the imports. Find WinHttpSendRequest and its library.
+Inspect Disassembly > Analyze code at the PE entry. Record what the entry actually does. Keep that separate from what the import names suggest.
+Save two Notebook observations: the imported capability and the observed entry instructions. Do not run the sample or browse any extracted URLs.
+Flag format: SPECTRA{library.dll}
+Hint 1: Use the parsed import table, not just the string list.
+Hint 2: Find WinHttpSendRequest under the HTTP-client library. CreateFileW belongs to a different library.
+Hint 3: DLL spelling is case-insensitive on Windows, but flags are case-sensitive: lowercase the owning DLL name and keep .dll.
+Takeaway: Imports describe available APIs. Reachability and observed behavior require separate evidence.
+
+STAGE 02 / After the image
+Find the bytes appended after the PE sections. Compute the largest raw offset + raw size, then inspect that offset. The overlay header is 16 bytes: magic[4], key length u8, transform u8, payload length u16 LE, key bytes at +8, padding. Payload follows at +0x10. Submit overlay offset and payload offset, four lowercase hex digits each.
+Use File structure section raw ranges. Calculate max(raw offset + raw size); do not use SizeOfImage, which describes mapped memory.
+In Hex explorer inspect the calculated file offset for CST3. Read key length, payload length and key bytes. Record the payload start and exclusive end; verify the full payload fits the file.
+This fixture has no certificate table. In real PE files, trailing data may be legitimate; an overlay alone is not proof of malware. Save the offsets for stage 03.
+Flag format: SPECTRA{overlay_hhhh_pppp}
+Hint 1: The final raw section is .idata, starting at 0x600 with raw size 0x200.
+Hint 2: Raw offset + raw size gives the first byte after that section. The overlay starts there, not at the larger SizeOfImage.
+Hint 3: Add the fixed 0x10-byte overlay header to obtain the payload start. Use four digits for each offset.
+Takeaway: File layout and mapped memory differ. Validate an appended payload against actual file size.
+
+STAGE 03 / Unwrap the configuration
+Transform 1 means repeating-key XOR. Use the key length and key bytes from the overlay header; start at key index zero for the payload. Recover the profile value and submit it. The configuration is obfuscated ASCII, not a live destination.
+Use the payload range from stage 02. For easier copying, 03-payload.hex.txt contains exactly those ciphertext bytes as hex; open it as text and copy its contents.
+In Decoder lab, choose Hex → UTF-8 text and run the transform. COPY the output back into the INPUT field. This fixture deliberately has printable ciphertext, so this text conversion is lossless.
+Choose UTF-8 text XOR → text. Enter the header key as hex bytes and run. Read the semicolon-separated fields; save profile, host, marker and mode in Notebook. Repeating XOR wraps the key after its final byte.
+Flag format: SPECTRA{profile_value}
+Hint 1: The key length is 3. The key begins eight bytes after CST3; the payload begins sixteen bytes after CST3.
+Hint 2: The key bytes are 01 02 03. They are hexadecimal bytes, not the ASCII characters 0, 1, 0, 2, 0, 3.
+Hint 3: Hex decoding and XOR are two separate transforms. Replace INPUT with the first output before running XOR, then take only the value after profile=, before the next semicolon.
+Takeaway: Encoding changes representation; XOR changes bytes. Recover and validate a configuration before interpreting it.
+
+STAGE 04 / Count the bytes
+Trace this separate teaching routine with RSI pointing at the six bytes in 04-marker.bin (the config marker). EAX and ECX start at zero inside the routine. It returns a simple sum, not a cryptographic hash. Submit final EAX as four lowercase hex digits.
+Open the raw code in Disassembly > Raw range / architecture override: file offset 0, byte length 18, base VA 0, x86-64; Decode range. Set FUNCTION to All decoded instructions.
+MOVZX reads one byte at [RSI+RCX] and zero-extends it into EDX. ADD accumulates it in EAX; INC advances ECX. CMP and JB decide whether to repeat.
+Read the six marker bytes in Hex explorer. Make a Notebook table: index, byte value, running sum. Stop at the loop bound and convert the final sum to four hex digits.
+Flag format: SPECTRA{sum_hhhh}
+Hint 1: RCX is the byte index. The comparison is against 6, and JB loops only while the index is below that bound.
+Hint 2: The six byte values are 52 41 56 45 4e 37 in hex. MOVZX means values 0..255, not signed bytes.
+Hint 3: Add 0x52 + 0x41 + 0x56 + 0x45 + 0x4e + 0x37 once each. Check six iterations and convert the sum, not the text, to hex.
+Takeaway: Track data and loop bounds together. A simple checksum is not encryption or a secure integrity check.
+
+STAGE 05 / Words on the stack
+This separate routine builds a null-terminated string on its stack using immediate writes. Recover the string at RSP before the stack allocation is released. Submit the lowercase text, without the null byte. The writes are intentionally out of address order.
+Decode the raw x86-64 file at offset 0, length 32, base VA 0x5000. Set FUNCTION to All decoded instructions. SUB RSP,0x10 reserves sixteen bytes; ADD RSP,0x10 later releases them.
+For each MOV dword ptr [rsp+offset], immediate, expand the immediate into four little-endian bytes. Put those bytes at their destination offsets in a sixteen-byte Notebook grid.
+Read increasing addresses from offset zero until the first 00 byte. Do not concatenate values in instruction order. No native execution is needed.
+Flag format: SPECTRA{stack_string}
+Hint 1: Writes target RSP+4, RSP+8 and then RSP+0. Memory order differs from instruction order.
+Hint 2: For each 32-bit immediate, the least significant byte occupies the lowest address. For example 0x44434241 stores ASCII ABCD.
+Hint 3: After arranging the writes by destination, read offsets 0 through 10. Offset 11 terminates the string; uninitialized bytes after it are irrelevant.
+Takeaway: Stack strings may evade ordinary string extraction. Reconstruct destination memory, not just instruction text.
+
+STAGE 06 / Signed or unsigned
+Supply the recovered config mode (0x80) in DIL to this separate teaching routine. Determine the final EAX return code. DIL is the low byte of RDI. Submit the return code as two lowercase hex digits.
+Decode the raw x86-64 file at offset 0, length 20, base VA 0. Set FUNCTION to All decoded instructions. Follow MOVZX EAX,DIL and CMP AL,0x7f.
+JBE means unsigned below-or-equal (CF=1 or ZF=1). Decide whether the branch is taken, then follow that path to its MOV EAX and RET.
+Write down both possible interpretations of 0x80: unsigned 128 or signed -128. This routine uses zero extension and an unsigned condition. Explain why the signed interpretation gives the wrong path.
+Flag format: SPECTRA{route_xx}
+Hint 1: The compare operates on AL, one byte. MOVZX copies DIL without sign extension.
+Hint 2: Unsigned 0x80 is larger than unsigned 0x7f. JBE is different from signed JLE.
+Hint 3: When JBE is not taken, execution falls through to the next MOV EAX. Use that immediate as the return code, padded to two hex digits.
+Takeaway: The same bits can mean different numbers. Use the actual branch condition and operand width.
+
+STAGE 07 / Close the case
+Choose the draft conclusion in 07-report-candidates.txt that matches the evidence. Submit its lowercase letter plus the hostname recovered in stage 03. Then, optionally, complete the report template or export your Notebook. A good analyst distinguishes facts, hypotheses and unknowns.
+Review the PE entry and imports, overlay offsets and decoded config. The separate raw snippets teach patterns; they are not established reachable functions in this PE.
+Compare the three report drafts. Reject claims of actual network contact, persistence or a named malware family that this static exercise did not demonstrate.
+Combine the supported draft letter and the recovered host field with an underscore. Use the host alone: no protocol, path or semicolon. Keep your report private so others can investigate.
+Flag format: SPECTRA{letter_hostname}
+Hint 1: An imported function or embedded URL is a lead, not a behavior log. A training label is not malware-family attribution.
+Hint 2: The PE entry returns zero without calling imports. These exercises never demonstrate execution or live network traffic.
+Hint 3: Select the draft that explicitly separates static evidence from unsupported claims. Pair its lowercase letter with the host= value from your decoded configuration, not the visible decoy URL.
+Takeaway: A defensible conclusion explains both what the evidence supports and what it cannot prove.
+
+PRIMARY REFERENCES
+PE format: https://learn.microsoft.com/en-us/windows/win32/debug/pe-format
+WinHTTP: https://learn.microsoft.com/en-us/windows/win32/winhttp/about-winhttp
+
