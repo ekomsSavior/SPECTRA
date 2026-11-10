@@ -54,7 +54,7 @@
     "Total browser/device memory and tab eviction",
     "Persistent/process/hardware history extensions remain separate work"
   ],
-  "manualsPublished": false,
+  "manualsPublished": true,
   "packages": {
     "source": {
       "bytes": 47465379,
@@ -77,6 +77,33 @@
       "release": "0.18",
       "branch": "main",
       "publicationEvidence": "Repository commit history; the release file tree is mirrored to GitHub."
+    }
+  },
+  "manualPublication": {
+    "date": "2026-11-10",
+    "edition": 2,
+    "workerVersion": "8534ef54-da84-446e-805c-ec855b8e0332",
+    "previousWorkerVersion": "adb00b07-e578-43bc-8c0c-32431cb5912b",
+    "sourceCommit": "896bf06",
+    "githubPushed": true,
+    "churchGitPushed": false,
+    "checksPassed": 23,
+    "pdfPagesChecked": 167,
+    "practiceFilesChecked": 93,
+    "browserChecks": [
+      "Desktop Training ground cards, beginner and intermediate chapter filters",
+      "390 px browser viewport reading; not a physical-device test"
+    ],
+    "liveBrowserVerification": "pending normal Cloudflare verification",
+    "packages": {
+      "source": {
+        "bytes": 50912511,
+        "sha256": "1312a008ceadd75b0cf1ca58d4d414a8fcadafa4720fc930af8b092b55717a79"
+      },
+      "offline": {
+        "bytes": 89108115,
+        "sha256": "a7b6d2db109e075325c0b3541391330844db788b0e1cc7e16a0c15e9e817929c"
+      }
     }
   }
 }
