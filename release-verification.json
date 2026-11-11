@@ -86,7 +86,7 @@
     "previousWorkerVersion": "adb00b07-e578-43bc-8c0c-32431cb5912b",
     "sourceCommit": "896bf06",
     "githubPushed": true,
-    "churchGitPushed": false,
+    "churchGitPushed": true,
     "checksPassed": 23,
     "pdfPagesChecked": 167,
     "practiceFilesChecked": 93,
@@ -106,6 +106,6 @@
       }
     },
     "livePdfVerification": "Published PDFs passed local checks (167 pages). Live in-app PDF viewer rendered blank and download event was not exposed; live PDF viewing/download not confirmed.",
-    "churchGitStatus": "Pending sign-in: session expired at token submission; no temporary token created."
+    "churchGitStatus": "Church Git accepted the manual release through commit 3cdaf61; sign-in blocker resolved."
   }
 }
