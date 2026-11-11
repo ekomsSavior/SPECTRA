@@ -94,7 +94,7 @@
       "Desktop Training ground cards, beginner and intermediate chapter filters",
       "390 px browser viewport reading; not a physical-device test"
     ],
-    "liveBrowserVerification": "pending normal Cloudflare verification",
+    "liveBrowserVerification": "Passed live Training ground cards, both HTML manuals, chapter search and resources library after normal Cloudflare verification.",
     "packages": {
       "source": {
         "bytes": 50912511,
@@ -104,6 +104,8 @@
         "bytes": 89108115,
         "sha256": "a7b6d2db109e075325c0b3541391330844db788b0e1cc7e16a0c15e9e817929c"
       }
-    }
+    },
+    "livePdfVerification": "Published PDFs passed local checks (167 pages). Live in-app PDF viewer rendered blank and download event was not exposed; live PDF viewing/download not confirmed.",
+    "churchGitStatus": "Pending sign-in: session expired at token submission; no temporary token created."
   }
 }
