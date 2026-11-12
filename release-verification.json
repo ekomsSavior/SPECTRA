@@ -137,11 +137,11 @@
     },
     "deployment": "published",
     "githubPushed": true,
-    "churchGitPushed": false,
+    "churchGitPushed": true,
     "previousWorkerVersion": "a652fec9-9d09-4719-a963-a9318f883876",
     "workerVersion": "61321dd0-4b5c-42a9-9b90-99d26bf764b5",
     "sourceCommit": "f2b7ceb",
-    "churchGitStatus": "Awaiting action-time approval for a public-repository read/write temporary token; existing browser session is signed in.",
+    "churchGitStatus": "Church Git accepted the tested field-guide update through commit fdf0fb5; publication is synchronized with GitHub.",
     "liveBrowserVerification": "Published 24-chapter edition and standalone guide verified; search, cross-chapter navigation, current book links and edition 3 cards confirmed.",
     "liveScreenshot": "work/field-guide-november/guide-live.jpg"
   },
