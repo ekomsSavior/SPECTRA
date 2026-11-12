@@ -1,0 +1,41 @@
+PUPPET CORE / PROVIDED FORMAT AND SEMANTIC REFERENCE
+Use this sheet when a concept is new. Verify each rule in interpreter.bin.
+Container fields, little endian, at absolute file offsets:
+00: magic PPC8 (4 bytes); 04: version u8; 05: initial counter u8;
+06: bytecode file start u16; 08: bytecode byte count u16;
+0a: entry virtual PC u16 (0); 0c: captured bytecode memory base u32.
+Only [start,start+count) is bytecode. Padding and footer are outside it.
+
+Dispatch: opcode must be 10..17 hex. Index=opcode-10 hex.
+At native VA c400, eight signed 32-bit offsets are stored little endian.
+Handler VA = table VA + sign-extended entry. Offsets are not pointers.
+
+Virtual instructions (all numbers below are HEX):
+10 xx  LOAD: A=xx, Z unchanged
+11 xx  XOR: A=A XOR xx, Z unchanged
+12 xx  ADD: A=(A+xx) modulo 256, Z unchanged
+13 xx  ROL: rotate the 8-bit A left by (xx AND 7), Z unchanged
+14     DEC: N=(N-1) modulo 256, Z=(N==0)
+15 dd  JNZ: if saved Z=0, PC=next_PC+signed8(dd); otherwise fall through
+16 xx  CMP: Z=(A==xx), A unchanged
+17     HALT: return status 0 and A as a separate result
+Widths include opcode and operand. The byte at an operand position is data,
+even if its value is also a valid opcode. There is no stack instruction.
+
+signed8(b)=b for b<128; otherwise b-256. Relative branch base is AFTER both
+bytes. Branch destinations must be inside the selected window, but this
+teaching interpreter does NOT verify that they are instruction boundaries.
+Keep that limitation in your report. No safety claim for arbitrary bytecode.
+Missing operands fail before an instruction changes A. Earlier steps remain
+visible in a trace. The budget is checked before fetching the next opcode;
+64 completed dispatches without HALT produce status 4, not an infinite-loop
+proof and not an input-rejection result.
+
+ROL8 inverse: ROR8. ADD8 inverse: subtract modulo 256. XOR is self-inverse.
+To undo a sequence, undo its operations in reverse order. Do not undo an
+8-bit rotation using a 32-bit register width. Preserve input/output roles.
+
+FLAGS: submit only the literal SPECTRA{...} text. Lowercase hexadecimal, no
+0x prefixes. The displayed pattern is a template, not text to copy whole.
+Do not append the format explanation. Notes are local; the checker checks
+flags, not the quality of your written analysis.

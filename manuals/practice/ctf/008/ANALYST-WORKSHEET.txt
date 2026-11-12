@@ -1,0 +1,13 @@
+PUPPET CORE / REUSABLE BYTECODE INVESTIGATION
+Artifacts / SHA-256 / original versus variant:
+Provided contracts versus independent findings:
+Three coordinates: container file offset / virtual PC / native handler VA:
+Opcode ledger: byte / width / handler / reads / writes / next-PC rule:
+Instruction boundaries: PC / bytes / meaning / successors:
+State trace: PC / A / N / saved Z / next PC / evidence:
+Loop summary and arithmetic width:
+Inverse derivation and forward check:
+Variant: absolute changed offset / operand or opcode / consequence:
+Coverage: inputs and paths actually checked / unchecked assumptions:
+Errors: status versus program result / finite observation versus proof:
+Report: conclusion / evidence / uncertainties / useful next experiment:

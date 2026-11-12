@@ -28,9 +28,11 @@ for(const [key,file]of Object.entries({HISTORY:'src/history.js',STREAM:'src/stre
 for(const [key,value]of Object.entries(replacements))html=html.replace(key,()=>value);
 if(/__\w+__/.test(html.slice(0,200000)))throw Error('Unresolved build placeholder');
 await buildManuals(root);
+// Both publication paths must ship the same guide as the embedded reader.
+await mkdir(path.join(root,'dist'),{recursive:true});
+await writeFile(path.join(root,'dist/guide.html'),standaloneGuide());
 if(process.argv.includes('--html-only')){await mkdir(path.join(root,'dist'),{recursive:true});await writeFile(path.join(root,'dist/index.html'),html);console.log('Built workbench HTML only; engine assets and download archives preserved.');process.exit(0);}
 await mkdir(path.join(root,'dist'),{recursive:true});await writeFile(path.join(root,'dist/download-archives.json'),'{}\n');await writeFile(path.join(root,'archive-manifests.mjs'),'export const ARCHIVES={};\n');await writeFile(path.join(root,'dist/index.html'),html);
-await writeFile(path.join(root,'dist/guide.html'),standaloneGuide());
 const csp="default-src 'none'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; style-src 'unsafe-inline'; img-src data:; font-src data:; worker-src 'self' blob:; connect-src 'self'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
 await writeFile(path.join(root,'dist/_headers'),`/*\n  Content-Security-Policy: ${csp}\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: no-referrer\n  Permissions-Policy: camera=(), microphone=(), geolocation=()\n  Strict-Transport-Security: max-age=2592000\n  Cache-Control: public, max-age=0, must-revalidate\n`);
 await writeFile(path.join(root,'dist/THIRD-PARTY-LICENSES.txt'),licenses);

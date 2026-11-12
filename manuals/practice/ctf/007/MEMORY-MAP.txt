@@ -1,0 +1,50 @@
+BLACK LOOM / START HERE / CTF 007
+Builds on 001-006: track how stored bytes become a reconstructed image.
+All files are inert fixtures. No native execution, uploads or network targets.
+BLM7 is a custom teaching container, NOT PE/ELF or a real Windows loader.
+Routines are separate teaching components, connected by the documented
+exercise contracts. There is no automatic OS allocation, import resolution,
+permission change or executable loading. The output is a 256-byte raw image.
+
+SPECTRA SETUP: main Open file > chosen file > Disassembly > Raw range /
+architecture override. Set ALL fields from one row, x86-64, Little endian;
+click Decode range; select All decoded instructions. Decoding replaces the
+previous range. Unknown / Raw binary is expected. Use 0x prefixes explicitly.
+
+FILE                    ROUTINE     FILE OFFSET   BYTE LENGTH       BASE VA
+loader-code.bin         token       0x000         0x1e (30 decimal)  0xa000
+loader-code.bin         decode      0x080         0x82 (130 decimal) 0xa080
+loader-code.bin         handoff     0x200         0x07 (7 decimal)   0xa200
+memory-decoded.bin       payload     0x040         0x19 (25 decimal)  0x400040
+memory-rebased.bin       payload     0x040         0x19 (25 decimal)  0x600040
+Your reconstructed image uses the memory-decoded row until rebased.
+Do NOT disassemble the container header or compressed stream as payload code.
+
+Coordinate spaces:
+loader-code VA = 0xa000 + its file offset.
+Reconstructed image VA = chosen image base + reconstructed file offset.
+Packed input offset is NOT generally equal to reconstructed output offset.
+There is no one constant offset delta across a variable-length token stream.
+For the supplied memory snapshots, file offset 0 maps to the image base.
+Preferred base: 0x400000. Captured test base: 0x600000.
+Image size: 0x100. Entry offset: 0x40. QWORD relocation slot: 0x18.
+The four-byte data table is at image offset 0xc0. CC bytes are padding.
+
+Contracts (supplied by exercise, not guessed):
+token: CL=control byte. EDX=kind (0 end,1 literal,2 repeat); EAX=output count.
+decode: RCX=readable source; EDX=source length; R8=disjoint writable output;
+R9D=capacity. Caller validates storage and restricts lengths to 0..4096.
+Returns produced count in EAX on success, 0xffffffff on malformed/truncated/
+over-capacity input. Preserves RBX,RSI,RDI. Earlier complete token writes are
+NOT rolled back on error. End token must be the LAST byte in selected input.
+This assembly decoder is a small reference loop, not a hardened general API.
+handoff: EDX=validated entry OFFSET, R8=actual base, RCX=payload input index.
+The caller has already validated decoding, output size, relocation and entry
+range. The 7-byte handoff does no validation by itself.
+payload: RCX=index 0..3 (caller checked). Reads one signed byte through the
+QWORD pointer at image offset 0x18 and returns arithmetic in EAX. No OS calls.
+
+The local Reconstruction worksheet models the token transform only. Set the
+input window from the header; it does not guess parameters or award flags.
+Compare its trace with your manual trace and reference decode instructions.
+Full output download is enabled only for a successful, exact-size decode.

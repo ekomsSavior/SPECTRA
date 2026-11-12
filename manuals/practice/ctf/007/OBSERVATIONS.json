@@ -1,0 +1,61 @@
+{
+  "provenance": "Author-generated bounded Unicorn x86-64 CPU emulation of the supplied bytes. Synthetic maps and initial registers are test inputs. No OS, network, executable loader, allocation permissions or actual infection is modeled. Snapshot rebasing is an author-applied QWORD edit, not a call made by loader-code.bin.",
+  "decode": {
+    "entry_va": "0xa080",
+    "source_file": "black-loom.blm",
+    "selected_stream_sha256": "c896a540f9df52f56ac2489fb583a178d42d7dbf64385e4116253819703123b0",
+    "capacity": 256,
+    "eax_hex": "00000100",
+    "byte_writes": 256,
+    "output_sha256": "3072ba48b120bb0552df098e078e23c454c5b3a9bd3bbfa065881bb1dce68b87"
+  },
+  "broken_decode": {
+    "entry_va": "0xa080",
+    "source_file": "broken-tokens.bin",
+    "capacity": 8,
+    "initial_destination_hex": "a5 a5 a5 a5 a5 a5 a5 a5 ",
+    "eax_hex": "ffffffff",
+    "writes": [
+      {
+        "offset": "0000",
+        "size": 1,
+        "value_hex": "41"
+      },
+      {
+        "offset": "0001",
+        "size": 1,
+        "value_hex": "41"
+      },
+      {
+        "offset": "0002",
+        "size": 1,
+        "value_hex": "41"
+      }
+    ],
+    "destination_after_hex": "41 41 41 a5 a5 a5 a5 a5",
+    "control_policy": "A caller must reject a failed decode; this run does not hand off."
+  },
+  "handoff": {
+    "entry_va": "0xa200",
+    "initial_registers": {
+      "EDX": "0x40",
+      "R8": "0x600000",
+      "RCX": "0x02"
+    },
+    "loaded_snapshot": "memory-rebased.bin",
+    "instruction_addresses": [
+      "0xa200",
+      "0xa202",
+      "0xa205",
+      "0x600040",
+      "0x600047",
+      "0x60004b",
+      "0x60004d",
+      "0x600053",
+      "0x600055",
+      "0x600058"
+    ],
+    "returned_eax": "00000042",
+    "scope": "One bounded invocation for index 2, not all inputs."
+  }
+}

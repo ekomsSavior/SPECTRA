@@ -87,7 +87,7 @@ Two free field manuals lead the [Training ground](https://spectra.churchofmalwar
 
 **Training ground** includes benign native, Windows, Linux, Android, decoder, and hardware exercises with source, fixtures, hints, walkthroughs, and resumable evidence checklists. Each route ties progress to the exact exercise and distinguishes newly observed evidence from imported history.
 
-The built-in **18-chapter field guide** covers the workbench's sections, controls, workflows, FAQs, and terminology. Read it in place, download the standalone book, or print it to PDF. It also ships in the offline release.
+The built-in **24-chapter field guide** covers the workbench's sections, controls, workflows, FAQs, and terminology, with dedicated chapters for Android, routine history, recordings, mapping, evidence bundles and the live CTF collection. Read it in place, download the standalone book, or print it to PDF. It also ships in the offline release.
 
 The interface supports narrow layouts, touch navigation, and keyboard controls. Larger engines and recordings still need memory; a small screen does not mean a small workload. The Church reports successful iPad and phone testing. Detailed device/OS records, VoiceOver coverage, and measured total-memory validation remain separate follow-ups. See the [device test route](docs/SAFARI-ACCEPTANCE.md) and [performance budgets](docs/PERFORMANCE.md).
 
@@ -144,4 +144,4 @@ SPECTRA builds on Ghidra/Pyre, ILSpy, dex2jar, Vineflower, TeaVM, Capstone, Unic
 
 Binary diff compares every absolute file offset independently of code decoding and function matching. The Raw byte comparison table shows before/after hexadecimal values and modified, added, or removed bytes. It pages through all differences, 64 rows at a time, with an offset seek control. Added/removed bytes are beyond the other file’s end; this is positional comparison, not insertion/deletion alignment. File sizes remain capped at 32 MiB each and all processing stays in the browser. JSON exports contain full counts plus the first 4,096 differing offsets, with an explicit omitted count.
 
-For an HTML-only change, `node build.mjs --html-only` rebuilds the workbench while preserving existing engine assets, archive manifests, and downloadable releases.
+For an HTML-only change, `node build.mjs --html-only` rebuilds the workbench and standalone field guide while preserving existing engine assets, archive manifests, and downloadable releases.

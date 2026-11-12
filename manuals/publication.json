@@ -1,10 +1,10 @@
 {
-  "edition": 2,
+  "edition": 3,
   "status": "published",
-  "date": "2026-11-10",
+  "date": "2026-11-11",
   "spectra": "0.18",
-  "ctfCampaigns": 6,
-  "ctfStages": 40,
+  "ctfCampaigns": 8,
+  "ctfStages": 57,
   "sourceCommit": "860ebc13818e10eacd80c22528a650edf31a8069",
   "books": [
     {
@@ -12,18 +12,18 @@
       "level": "Beginner",
       "html": "beginner.html",
       "pdf": "pdf/RE-for-beginners-with-SPECTRA.pdf",
-      "chapters": 33,
-      "words": 25987,
-      "pages": 91
+      "chapters": 35,
+      "words": 27080,
+      "pages": 96
     },
     {
       "title": "Intermediate RE with SPECTRA",
       "level": "Intermediate",
       "html": "intermediate.html",
       "pdf": "pdf/Intermediate-RE-with-SPECTRA.pdf",
-      "chapters": 22,
-      "words": 22429,
-      "pages": 76
+      "chapters": 25,
+      "words": 32192,
+      "pages": 107
     }
   ]
 }

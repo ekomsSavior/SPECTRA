@@ -1,0 +1,18 @@
+BLACK LOOM / REPORT REVIEW
+A: The compressed data proves malicious intent. Every input byte has a fixed
+   offset delta to its output byte. Any write means decoding succeeded, and
+   the changed pointer proves the recovered code was patched maliciously.
+B: The declared source window reconstructs a 256-byte image using the supplied
+   token grammar. The captured base requires adjusting one absolute pointer;
+   its RIP-relative instruction stays unchanged. A bounded handoff trace
+   reaches the entry and executes arithmetic on signed table bytes. A separate
+   truncated stream leaves partial writes but reports failure. These fixtures
+   establish only their modeled behavior, not a complete OS loader, an actor
+   attribution, persistence, networking, or a rule for every packed program.
+C: The short handoff validates all input lengths and relocations. JMP pushes
+   a new return address just like CALL. The recovered data bytes must be
+   unsigned because Hex explorer displays them as positive hexadecimal.
+
+Choose the supported report. In Notebook cite the packed window, hash,
+coordinate conversion, pointer-slot change, handoff instruction and a failed
+run. The checker verifies the report letter only; it cannot assess your prose.

@@ -1,0 +1,15 @@
+PUPPET CORE / REPORT REVIEW
+A: All bytes in the container are x86 instructions. A zero EDX proves the
+   input was rejected, even if EAX reports a truncated or timed-out run.
+B: Virtualization proves malicious intent. Any in-range branch is guaranteed
+   to land on an instruction boundary. One recorded trace proves all inputs.
+C: A bounded native dispatcher interprets a separate bytecode window. Handler
+   state writes define an 8-bit accumulator, counter and saved virtual Z.
+   Signed virtual branches use the next instruction's PC. This program makes
+   three transform rounds before comparison; the variant changes one ADD
+   operand without changing native handlers. Only status 0 makes EDX a valid
+   result. The provided partial trace covers one input, not the entire input
+   domain. Bounds checks do not validate instruction boundaries. This model
+   does not establish OS behavior, attribution, networking or malicious intent.
+Choose the supported report and cite evidence for at least four claims in
+Notebook. The final flag checks the letter only, not your prose.

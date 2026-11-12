@@ -17,6 +17,11 @@ function showGuideChapter(id,focus=false){
  if(focus){const url=new URL(location.href);url.searchParams.set('guide',id);url.hash='lessons';history.replaceState(null,'',url);$('guide-article').focus({preventScroll:true});$('guide-article').scrollIntoView({block:'start'});}
 }
 $('guide-search').oninput=renderGuideContents;
+$('guide-article').addEventListener('click',e=>{
+ const link=e.target.closest('a[data-guide-link]');
+ if(!link||!SPECTRA_GUIDE.chapters.some(c=>c.id===link.dataset.guideLink))return;
+ e.preventDefault();showGuideChapter(link.dataset.guideLink,true);
+});
 $('guide-clear').onclick=()=>{$('guide-search').value='';renderGuideContents();$('guide-search').focus();};
 for(const [id,delta]of [['guide-previous',-1],['guide-next',1]])$(id).onclick=()=>showGuideChapter(SPECTRA_GUIDE.chapters[SPECTRA_GUIDE.chapters.findIndex(c=>c.id===guideChapter)+delta]?.id,true);
 $('guide-edition').textContent=SPECTRA_GUIDE.edition;

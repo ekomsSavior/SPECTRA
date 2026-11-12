@@ -412,6 +412,141 @@
       "sha256": "f033facfff2d4e55d4fd39897fe386257fb307911c6d85905314af00efa7a4b2"
     },
     {
+      "name": "ctf/007/ANALYST-WORKSHEET.txt",
+      "bytes": 987,
+      "sha256": "236cacdf21320f2693f9b6ba668331732c8552e2b26f080901c73e738fbcb45e"
+    },
+    {
+      "name": "ctf/007/FIELD-MANUAL.txt",
+      "bytes": 25604,
+      "sha256": "03acd464a3a0bfc5b62522abfa6691219f6cf48502daf54a48e8288cc0eb5870"
+    },
+    {
+      "name": "ctf/007/FORMAT-NOTES.txt",
+      "bytes": 2209,
+      "sha256": "e0e088149ba1187dc4d8cf5eced10ef28b62a248555aafadb1730c59df560f84"
+    },
+    {
+      "name": "ctf/007/MEMORY-MAP.txt",
+      "bytes": 3203,
+      "sha256": "8bb8823d4b2bb339609c1e0051b1b883d0d076c99c5fce8937d09b2b6d551491"
+    },
+    {
+      "name": "ctf/007/OBSERVATIONS.json",
+      "bytes": 1799,
+      "sha256": "ab290e3405b52c677a88f20d5ccd7d352b1609a8eca207475b85445ccb48e970"
+    },
+    {
+      "name": "ctf/007/REPORT-CANDIDATES.txt",
+      "bytes": 1244,
+      "sha256": "50b98f28f602225541549b6b10ad86cb67f4c5939509db537fbe75ba13fb72fc"
+    },
+    {
+      "name": "ctf/007/SHA256SUMS.txt",
+      "bytes": 1010,
+      "sha256": "b24bcf4c895ee66a9c35252e284f66bd2476ee9346fd8fc1b4c3f743b97971e5"
+    },
+    {
+      "name": "ctf/007/black-loom.blm",
+      "bytes": 149,
+      "sha256": "15b6ad642ed8ecb1bfac07d439470925a2467b2cb0b92b7dde862206ee781ee2"
+    },
+    {
+      "name": "ctf/007/broken-tokens.bin",
+      "bytes": 2,
+      "sha256": "bb7da4284ad73337a8c212fa589982d283a75ec0f322661edd02b854358b5776"
+    },
+    {
+      "name": "ctf/007/loader-code.bin",
+      "bytes": 519,
+      "sha256": "b6c343726440d89845e2ab33170037c97254ee75e40be72122f8bec2cb7f668d"
+    },
+    {
+      "name": "ctf/007/memory-decoded.bin",
+      "bytes": 256,
+      "sha256": "3072ba48b120bb0552df098e078e23c454c5b3a9bd3bbfa065881bb1dce68b87"
+    },
+    {
+      "name": "ctf/007/memory-rebased.bin",
+      "bytes": 256,
+      "sha256": "f88b19b615c99fbfc9e6c0de6794f3aa132395774d29382bee6ea8fb2a0037da"
+    },
+    {
+      "name": "ctf/007/practice-tokens.bin",
+      "bytes": 9,
+      "sha256": "0d67df1fb0dcbb177d8ac1b5e6c2f673e40e70f5b9d7b6f1ae803a988834bf88"
+    },
+    {
+      "name": "ctf/008/ANALYST-WORKSHEET.txt",
+      "bytes": 756,
+      "sha256": "c43c86c7edaddf46912d9588e24fad3b411ff9db234180cd1b0f3d5a964ef8c8"
+    },
+    {
+      "name": "ctf/008/FIELD-MANUAL.txt",
+      "bytes": 28583,
+      "sha256": "7f4ce73da814f396442a8d83cf68a945d35273a2088047e8a63b499da4ca68d1"
+    },
+    {
+      "name": "ctf/008/FORMAT-NOTES.txt",
+      "bytes": 2304,
+      "sha256": "11d2579c205918ebf25622255517fa7f77128333ee763305dab9ae6f48ec4973"
+    },
+    {
+      "name": "ctf/008/MEMORY-MAP.txt",
+      "bytes": 2905,
+      "sha256": "63d31eb81991ee3684e4db566c29620de836137e7cab9def43ef714137e6516b"
+    },
+    {
+      "name": "ctf/008/OBSERVATIONS.json",
+      "bytes": 1055,
+      "sha256": "ffa5b6e17157496891f0943997a420d83c76a37b9b16d86eb260a467b3939274"
+    },
+    {
+      "name": "ctf/008/REPORT-CANDIDATES.txt",
+      "bytes": 1080,
+      "sha256": "589e97bf3a3a0a1d6a652b235c0a5068a78784acaa91c1747f2090c8fcd7cae0"
+    },
+    {
+      "name": "ctf/008/SHA256SUMS.txt",
+      "bytes": 1073,
+      "sha256": "264f84d160504f1bf67ba56ea28e9b80b07ba6309a653e13a4823325e0ce76d0"
+    },
+    {
+      "name": "ctf/008/cycle.bin",
+      "bytes": 2,
+      "sha256": "3b0aae5acf0e46bf04f08c692efdb8b313286b4311c982da91a0b7c854c18d43"
+    },
+    {
+      "name": "ctf/008/interpreter.bin",
+      "bytes": 1056,
+      "sha256": "aa4a8e351aa311e99a68db58af619d416e543e8f5f4a3fa8f1b20c900cce4c98"
+    },
+    {
+      "name": "ctf/008/outside.bin",
+      "bytes": 2,
+      "sha256": "ae63c59da72e5b4e6a756524f9d0fbf24083187240e93c2edbb9f78dfb86d45d"
+    },
+    {
+      "name": "ctf/008/puppet-core-variant.ppc",
+      "bytes": 178,
+      "sha256": "85dab58807b4a230f86d447a542b34b95ca10a2904c9737a5334c600dc2217f8"
+    },
+    {
+      "name": "ctf/008/puppet-core.ppc",
+      "bytes": 178,
+      "sha256": "34c66ba86926435eda872f135ee2c6f0cd78c09ec1e5b6efd3847710a62c63a6"
+    },
+    {
+      "name": "ctf/008/truncated.bin",
+      "bytes": 1,
+      "sha256": "f299791cddd3d6664f6670842812ef6053eb6501bd6282a476bbbf3ee91e750c"
+    },
+    {
+      "name": "ctf/008/unknown.bin",
+      "bytes": 1,
+      "sha256": "a8100ae6aa1940d0b663bb31cd466142ebbdbd5187131b92d93818987832eb89"
+    },
+    {
       "name": "first-reference.c",
       "bytes": 160,
       "sha256": "ef375a6feb94912ed3a5439376c335594e3e9e90edccac8547836a1a2d63859f"

@@ -1,0 +1,47 @@
+PUPPET CORE / SPECTRA SETUP
+CTF 008 builds on 004's indirect calls/state and 007's coordinate discipline.
+This is a custom accumulator bytecode machine, NOT a real malware sample,
+a PE file, Java/.NET, or a VM that runs an operating system.
+Do not run any supplied file natively. All routines are inert arithmetic.
+
+NATIVE CODE: Open interpreter.bin > Disassembly > Raw range / architecture
+override. File offset 0x0, byte length 0x326 (806 decimal / 0x326 hex),
+base VA 0xc000, x86-64, Little endian. Click Decode range; choose All decoded
+instructions. CC bytes are padding, not useful instructions. The table at
+file offset 0x400 is DATA: inspect it in Hex explorer, not as x86 code.
+For less clutter decode each row separately. Set ALL fields each time.
+ROUTINE           FILE OFFSET   LENGTH (HEX / DECIMAL)   BASE VA
+entry+dispatcher  0x000         0x61 / 97               0xc000
+handler 10        0x100         0x16 / 22                0xc100
+handler 11        0x140         0x15 / 21                0xc140
+handler 12        0x180         0x15 / 21                0xc180
+handler 13        0x1c0         0x18 / 24                0xc1c0
+handler 14        0x200         0x0c / 12                0xc200
+handler 15        0x240         0x2d / 45                0xc240
+handler 16        0x280         0x19 / 25                0xc280
+handler 17        0x2c0         0x08 / 8                0xc2c0
+error+epilogue    0x300         0x26 / 38                0xc300
+Each row gives the exact instruction window; padding between rows is excluded.
+
+STATE REGISTER LEDGER (exercise scaffolding, confirm writes in code):
+RDI = pointer to selected bytecode, RSI = bytecode length
+R10D = virtual PC; R11B = accumulator A; R12B = counter N
+R13B = stored virtual zero condition Z; R8D = dispatched instruction count
+R14D = remaining 64-instruction budget. RBX anchors the handler table.
+Native CPU flags are temporary; they are NOT the saved virtual Z value.
+
+INPUT CONTRACT: RCX=readable bytecode pointer, EDX=length (0..4096),
+R8B=one caller input byte, R9B=initial counter from container header.
+The harness selects the window and checks the container; interpreter.bin
+itself does not parse PPC8 headers. Program entry is virtual PC 0.
+OUTPUT: EAX=status; EDX=final accumulator only if status=0, otherwise zero.
+Status 0=HALT, 1=invalid opcode, 2=missing opcode/operand,
+3=taken branch outside selected window, 4=64-instruction budget exhausted.
+A HALT result 1 is acceptance for THIS program; HALT result 0 is rejection.
+A failed run is neither. RBX,RSI,RDI,R12,R13,R14 and stack are preserved.
+
+ADDRESS SPACES: native VA = 0xc000 + interpreter.bin file offset.
+Virtual PC is an index into a DIFFERENT selected bytecode window.
+Container file offset = bytecode_start + virtual PC.
+Captured bytecode memory address = 0x10000 + virtual PC.
+Do not add the container header twice, or confuse native RIP and virtual PC.

@@ -1,0 +1,53 @@
+{
+  "provenance": "Author-generated bounded Unicorn CPU emulation of interpreter.bin. No OS or native execution. Initial registers are supplied exercise inputs. Only one partial trace is published; it is not coverage of all inputs.",
+  "bytecode_file": "puppet-core.ppc",
+  "bytecode_window": "[0x0080,0x0093)",
+  "input_byte_hex": "42",
+  "counter": 3,
+  "trace_position": "BEFORE next virtual instruction; PC is relative to bytecode start. Decimal numeric fields.",
+  "first_iteration": [
+    {
+      "pc": 0,
+      "a": 66,
+      "n": 3,
+      "z": 0,
+      "steps": 0
+    },
+    {
+      "pc": 2,
+      "a": 97,
+      "n": 3,
+      "z": 0,
+      "steps": 1
+    },
+    {
+      "pc": 4,
+      "a": 116,
+      "n": 3,
+      "z": 0,
+      "steps": 2
+    },
+    {
+      "pc": 6,
+      "a": 232,
+      "n": 3,
+      "z": 0,
+      "steps": 3
+    },
+    {
+      "pc": 7,
+      "a": 232,
+      "n": 2,
+      "z": 0,
+      "steps": 4
+    },
+    {
+      "pc": 0,
+      "a": 232,
+      "n": 2,
+      "z": 0,
+      "steps": 5
+    }
+  ],
+  "trace_truncated": true
+}

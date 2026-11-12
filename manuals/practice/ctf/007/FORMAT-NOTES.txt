@@ -1,0 +1,39 @@
+BLACK LOOM / FORMAT AND CAPTURE NOTES
+All multibyte fields are little endian. Header starts at container offset 0.
++0x00  four bytes: magic BLM7
++0x04  u8: version (1)
++0x05  u8: header byte count / packed-stream start
++0x06  u16: packed-stream byte count INCLUDING its final end token
++0x08  u16: expected reconstructed image byte count
++0x0a  u16: entry offset WITHIN reconstructed image
++0x0c  u32: preferred image base
++0x10  u16: offset of one absolute QWORD pointer needing rebasing
++0x12..0x1f reserved zeros
+A text footer follows the selected packed stream. It is not compressed input.
+A range [start,end) includes start and excludes end. end=start+count.
+
+TOKEN GRAMMAR (confirm control classification in loader-code.bin):
+00: end. Must be the final byte of the selected source window.
+01..7f: literal. Copy that many following source bytes to the output.
+80..ff: repeat. Read ONE following value byte; output (control & 7f)+3 copies.
+Lengths are bounded before each token writes. No dictionary, XOR key, back
+references or encryption are involved. A value byte 00 inside a literal or
+repeat is DATA, not an end control. Classification occurs only at token edges.
+
+Independent practice input: practice-tokens.bin. Trace in a ledger:
+control source offset / kind / source consumed / output start / output count.
+Source consumed includes control+data; output count does not include control.
+
+Snapshots: memory-decoded.bin is the correct 256-byte decompressed image,
+before rebasing. memory-rebased.bin is an author-created capture at base
+0x600000: only the absolute QWORD at offset 0x18 is adjusted by base delta.
+Its RIP-relative instruction encoding is unchanged. This is not a complete
+PE relocation table, and the container has no import table or OS loader.
+
+OBSERVATIONS.json records real bounded CPU-model results for the supplied
+routines. Initial memory/registers and the rebased snapshot are authored test
+inputs. It cannot prove behavior outside those inputs or in a real OS.
+
+Flag entry: submit only SPECTRA{...}. Use lowercase hex without 0x prefixes.
+Offsets are four hex digits; image bases/pointers are eight in these flags.
+The pointer in memory is still eight BYTES (a 64-bit QWORD).

@@ -107,5 +107,52 @@
     },
     "livePdfVerification": "Published PDFs passed local checks (167 pages). Live in-app PDF viewer rendered blank and download event was not exposed; live PDF viewing/download not confirmed.",
     "churchGitStatus": "Church Git accepted the manual release through commit 3cdaf61; sign-in blocker resolved."
+  },
+  "fieldGuidePublication": {
+    "date": "2026-11-11",
+    "edition": "SPECTRA 0.18 \u00b7 Field guide, 11 November 2026",
+    "chapters": 24,
+    "words": 22097,
+    "ctfCampaigns": 8,
+    "ctfStages": 57,
+    "lessonRoutes": 6,
+    "automatedChecksPassed": 19,
+    "browserChecks": [
+      "24 chapters render",
+      "Search x64dbg resolves recording chapter",
+      "In-place chapter link preserves loaded sample",
+      "Open this section routes Android to Decompile without sample replacement",
+      "Standalone contents and anchors work",
+      "390 px viewport: no page overflow; reference tables scroll within keyboard-focusable regions"
+    ],
+    "packages": {
+      "source": {
+        "bytes": 51082507,
+        "sha256": "6fc6a1537821654192569878c618d943f914c29cd3afa300ddfd684e61ebc842"
+      },
+      "offline": {
+        "bytes": 89457563,
+        "sha256": "78ee6cac342416ccdeab308f1fa9f44a4857f9a502487c60a7643b705c2b5b4d"
+      }
+    },
+    "deployment": "prepared",
+    "githubPushed": false,
+    "churchGitPushed": false,
+    "previousWorkerVersion": "a652fec9-9d09-4719-a963-a9318f883876"
+  },
+  "manualPublicationEdition3": {
+    "date": "2026-11-11",
+    "edition": 3,
+    "workerVersion": "a652fec9-9d09-4719-a963-a9318f883876",
+    "beginner": {
+      "chapters": 35,
+      "pages": 96
+    },
+    "intermediate": {
+      "chapters": 25,
+      "pages": 107
+    },
+    "validation": "PDF bounds, headings, links, previous-chapter preservation and rendered visual review passed. 12 edge/manual tests passed. Both live PDF downloads byte-identical to final files. 245 nonmanual engine/archive assets preserved.",
+    "source": "Existing publication from the CTF/manual update; preserved by the field-guide release."
   }
 }

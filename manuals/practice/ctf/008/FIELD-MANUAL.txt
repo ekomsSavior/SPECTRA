@@ -1,0 +1,199 @@
+SPECTRA CTF 008 / PUPPET CORE
+Nine guided stages. Start with CTF 001; 008 builds on 004–007.
+Read MEMORY-MAP.txt and FORMAT-NOTES.txt first. Static analysis only.
+The casebook contains a local bytecode trace worksheet. No uploads.
+
+01 / Separate the address spaces
+A recovered image contains another instruction language. Locate the JNZ byte at virtual PC 0x07 inside puppet-core.ppc. Submit its absolute container offset and its virtual PC, each as four hex digits.
+WHY: After unpacking, recovered bytes may still represent a custom language. A disassembler can turn almost any bytes into plausible instructions; that does not prove the processor executes them. Establishing which component reads which region prevents a false analysis from its first step.
+1. Open puppet-core.ppc in Hex explorer. Use FORMAT-NOTES.txt to read the little-endian start and byte count; write the half-open bytecode window in Notebook.
+2. Convert virtual PC 0x07 into an absolute file offset. Check the byte there against the opcode reference. Do not disassemble the container as x86-64.
+3. Read MEMORY-MAP.txt. Keep container offset, bytecode memory address and interpreter native VA in separate columns.
+DEEPER WALKTHROUGH
+Start with the header, not the apparent instructions. The provided format gives field types; the bytes give this artifact’s actual values. In Hex explorer read the u16 at file 0x06 as low byte plus 256 times high byte. Do the same at 0x08 for the count. The header’s bytecode start is not the native image base.
+Write the selected interval as [start, start + count). A half-open interval includes its first byte and excludes its end. Padding before it and the text footer after it are outside the program. This is the same bounds discipline used in 007, but now the recovered content has its own instruction set.
+A virtual PC counts bytes from the selected program’s start. To locate PC 0x07 on disk, add that index to the header’s start. The captured memory pointer uses its own base, so its numeric address is different again. An x86 handler lives in interpreter.bin, a separate file mapped at 0xc000.
+Verify rather than trust the formula: inspect the resulting container byte and compare it with the instruction sheet. Add the preceding and following bytes to your notes so you can prove the location is an instruction boundary later. The flag asks for file offset then virtual PC; it does not ask for either memory address.
+CHECK: The calculated offset must lie within the declared bytecode window. Resolving back by subtraction must recover the same virtual PC. State which file each offset belongs to.
+STUCK: Unknown / Raw binary is expected for PPC8. Use Hex explorer, not File structure’s PE mapping. If your result starts with c000 or 10000, you have answered in a memory space rather than a container offset.
+FUTURE USE: Use a coordinate ledger whenever native code interprets scripts, configuration commands or embedded bytecode. Distinguish structural mapping from execution evidence.
+Flag template: SPECTRA{map_oooo_pppp}
+Enter only the full SPECTRA{...} flag. Use lowercase hex without 0x prefixes; nothing after the closing brace.
+
+Hint 1: The start field is the u16 at absolute file offset 0x06. Little endian puts the low byte first.
+Hint 2: Container offset = declared bytecode start + virtual PC. The requested PC is 0x07; the start is 0x80.
+Hint 3: Add 0x80 and 0x07, pad that result to four hex digits, then put the four-digit virtual PC after the underscore. Neither field includes 0x.
+
+02 / Recover a handler
+Find the native handler for virtual opcode 0x13. The dispatcher uses signed 32-bit offsets relative to its table, not absolute pointers. Submit the handler VA as eight hex digits.
+WHY: An indirect jump hides a control-flow edge until its target computation is reconstructed. Relative tables are common because they can move with their containing image. Treating a signed displacement as an unsigned absolute pointer produces a convincing but impossible target.
+1. Open interpreter.bin in Disassembly. Decode the entry/dispatcher row from MEMORY-MAP.txt; follow opcode subtraction, range check, MOVSXD, ADD and indirect JMP.
+2. In Hex explorer inspect table entry (0x13 - 0x10) at file 0x400 + index × 4. Interpret its four bytes as a signed little-endian value.
+3. Add that displacement to native table VA 0xc400. Decode the resulting handler using the map and confirm which state register it changes.
+DEEPER WALKTHROUGH
+Decode file offset 0x000, length 0x61 (97 decimal), base VA 0xc000, x86-64, Little endian. Select All decoded instructions. The dispatcher reads a byte, subtracts the lowest supported opcode and checks the result before indexing the table. This establishes both the index and the table’s eight-entry bound.
+For opcode 0x13 the zero-based index is three. Each entry occupies four bytes. Locate that entry at table file offset plus index times four. Read those bytes in little-endian order. MOVSXD means a 32-bit value is sign-extended to 64 bits; if its top bit is set, subtract 2^32 to express its signed value.
+The ADD uses RBX, which holds table VA 0xc400. It does not add the address after JMP, the current entry’s address, or the container base. Calculate table VA plus the signed displacement. Convert the result back to an interpreter.bin offset by subtracting 0xc000.
+Decode the map row at that offset. Its ROL instruction operates on R11B, the byte-sized accumulator. The fetched operand supplies the rotation count. Record both the recovered control-flow edge and the state effect; a correct address with an unexplained handler is incomplete analysis.
+CHECK: The destination must be inside interpreter.bin’s native code region and on a real instruction boundary. Recalculate the stored displacement as handler VA minus table VA.
+STUCK: An empty automatically recovered indirect-target list does not block the exercise. Resolve this documented table manually in Hex explorer. Decode only the handler range after finding its target.
+FUTURE USE: Relative dispatch tables appear in compiler switch statements and custom interpreters. Recover the index bounds, entry width, signedness and anchor before assigning targets.
+Flag template: SPECTRA{handler_vvvvvvvv}
+Enter only the full SPECTRA{...} flag. Use lowercase hex without 0x prefixes; nothing after the closing brace.
+
+Hint 1: Opcode 0x13 becomes index 3 after subtracting 0x10. Entry file offset is 0x400 + 3×4.
+Hint 2: The entry bytes c0 fd ff ff represent signed -0x240, not a huge positive address.
+Hint 3: Subtract 0x240 from table VA 0xc400. Decode that target to check for ROL on R11B. Format the VA using eight hex digits.
+
+03 / Build the virtual edges
+The virtual branch at PC 0x07 has operand 0xf7. Find its fall-through PC and taken destination. Submit those virtual PCs in that order, each as four hex digits.
+WHY: Correct instruction boundaries are the foundation of a control-flow graph. A branch can be numerically inside a file but still point into an operand. Recovering both successors also stops one observed path from masquerading as the whole program.
+1. Annotate puppet-core.ppc’s bytecode using FORMAT-NOTES.txt: opcode, operand bytes, total width and next PC. Treat operands as data even when they resemble opcodes.
+2. Decode interpreter.bin’s handler 15. Follow MOVSX, the PC increment and ADD. Identify exactly which PC anchors the relative displacement.
+3. Draw both successors from virtual PC 0x07. Check that each lands on one of your instruction boundaries.
+DEEPER WALKTHROUGH
+Begin at virtual PC zero and advance by each virtual instruction’s width. Most instructions here are two bytes; DEC and HALT are one. The value 0x13 occurs both as an opcode and as an operand in this program. Its role depends on the decoding boundary, not its appearance.
+The dispatcher consumes the opcode before entering a handler. Handler 15 then sign-extends the operand byte, consumes that operand and tests the saved virtual condition. Therefore the relative base is the PC after the entire two-byte instruction.
+Convert 0xf7 to signed8: its high bit is set, so subtract 256 from its unsigned value. Add that signed displacement to the fall-through PC. Do not add it to the branch opcode’s location or to the native handler VA.
+Draw two labeled edges: Z=0 takes the relative branch; Z=1 falls through. Both destinations should match instruction starts in your ledger. The interpreter checks range, but not instruction alignment, so that last check is your responsibility.
+CHECK: An edge should name a virtual PC and condition, not just an arrow. Converting either destination to a container offset is a separate operation.
+STUCK: If you get a negative target, you probably used the opcode PC instead of next PC. If your result is 0x100, you likely treated f7 as unsigned. The flag requests fall-through first.
+FUTURE USE: Use this same decode-boundary and successor ledger when lifting bytecode into pseudocode or reviewing a decompiler’s recovered loop.
+Flag template: SPECTRA{edge_ffff_tttt}
+Enter only the full SPECTRA{...} flag. Use lowercase hex without 0x prefixes; nothing after the closing brace.
+
+Hint 1: The branch is two bytes long. Start PC 0x07 plus two gives its fall-through PC.
+Hint 2: signed8(0xf7) is -9 decimal. Add it to the PC after opcode AND operand.
+Hint 3: Your taken edge returns to the first virtual instruction. Submit the fall-through PC followed by that entry PC, both padded to four hex digits.
+
+04 / Trace the byte-sized state
+For input A=0x42 and initial counter from the header, find A and N when execution first reaches virtual PC 0x09. Submit two hex digits for each. OBSERVATIONS.json gives only the first round.
+WHY: A familiar instruction can still be misread when its operand width changes. Repeated transformations magnify a small mistake: forgetting a carry wrap or resetting state can make every later branch seem inexplicable.
+1. Make a trace with PC, A, N and saved Z. Follow XOR, ADD, ROL, DEC and JNZ in the declared bytecode window.
+2. Use 8-bit arithmetic: wrap ADD at 256 and rotate eight bits, not 32. Carry the new accumulator into the next round; do not reset it to the input.
+3. Compare your first round with OBSERVATIONS.json, then complete the remaining rounds. The local Trace worksheet can check your work after you predict it.
+DEEPER WALKTHROUGH
+The initial accumulator is the caller’s byte 0x42. The counter comes from the PPC8 header. The loop XORs A with the operand at PC 1, adds the operand at PC 3, rotates by the operand at PC 5, decrements N and tests the saved zero condition. Write the transformation as a function of the previous A.
+For ADD8 keep only the low eight bits: (A + operand) & 0xff. ROL8 by one shifts bit 7 into bit 0 as well as shifting the other bits left. This is not a shift that discards the high bit, and not a 32-bit rotation. Inspect R11B in the native handlers to confirm width.
+OBSERVATIONS.json is labeled BEFORE the next virtual instruction and uses decimal numeric fields. Convert carefully before comparing with your hexadecimal worksheet. It includes the first loop re-entry, not the final answer. A trace row at PC 0 after five steps describes the state entering round two.
+Continue until DEC makes N zero and JNZ falls through to PC 9. Record the state before CMP changes Z. A final HALT result is not what this question asks for. Use the local worksheet only after predicting the state; compare the first differing row if your prediction fails.
+CHECK: Counter decreases once per complete round. The input accumulator is not reloaded on a back edge. Record exactly where in the execution the requested state is sampled.
+STUCK: If the first round matches but later rounds differ, check state carry-over and rotations with bit 7 set. If you find A=0 at the end, you have read the later rejection result instead of the state at PC 9.
+FUTURE USE: Small state tables make decoder loops and interpreters auditable. Preserve width, sampling point and recurrence before replacing a loop with a high-level formula.
+Flag template: SPECTRA{state_aa_nn}
+Enter only the full SPECTRA{...} flag. Use lowercase hex without 0x prefixes; nothing after the closing brace.
+
+Hint 1: Each round is ROL8((A XOR 0x23) + 0x13, 1), with the addition reduced to a byte. The counter starts at 3.
+Hint 2: Your first-round accumulator should be 0xe8. Feed it into the same transformation again; do not use 0x42 again.
+Hint 3: The second-round accumulator is 0xbd. Apply one more XOR, wrapped ADD and ROL; N is zero at the first visit to PC 9.
+
+05 / Separate the two zero flags
+On the same input, examine the LAST DEC and the JNZ at PC 0x07. Submit saved virtual Z and the next virtual PC. A is nonzero here, but that alone does not decide this branch.
+WHY: An interpreter has guest state as well as the host CPU state used to implement it. Confusing those layers can reverse your interpretation of a branch even when every disassembled instruction is correct.
+1. Decode handler 14 and find where SETE stores the condition. Decode handler 15 and find which stored value its TEST reads.
+2. Track the final counter decrement. Ignore unrelated native flags changed by the dispatcher between virtual instructions.
+3. Write why nonzero A does not force this JNZ to loop. Submit saved Z as two hex digits and next PC as four.
+DEEPER WALKTHROUGH
+Handler 14 decrements R12B and immediately executes SETE R13B. This turns the native zero flag from that decrement into an explicit stored byte, 0 or 1. R13B is now the guest condition. Later native arithmetic can change CPU flags without changing this stored byte.
+Follow the dispatch path to handler 15. It consumes the branch operand and then TESTs R13B. The native JNZ goes back to dispatch when saved Z is nonzero, which implements the virtual JNZ NOT taking its relative edge. Read the effect, not merely the shared mnemonic.
+After the final decrement the counter is zero, so saved Z is true. The virtual branch falls through. The accumulator is not the tested value. This is a useful point to distinguish a guest instruction called JNZ from the multiple native instructions implementing it.
+As a local follow-up, trace the bytes 16 42 12 01 15 02 10 01 17 on paper with input 0x42. CMP saves true, ADD changes A but leaves saved Z alone, and the virtual branch follows that saved value. Predict before tracing; this optional example is not another flag.
+CHECK: Point to the writer of saved Z and the later reader. A statement such as “JNZ means A is nonzero” is incomplete unless you have proved what set its condition.
+STUCK: Native condition flags are implicit; virtual Z here is explicit in R13B. Do not substitute a debugger’s current CPU ZF at the dispatcher for the stored guest condition.
+FUTURE USE: When lifting interpreted code, model guest registers and condition state explicitly. Host instructions are the implementation, not the guest semantics.
+Flag template: SPECTRA{branch_zz_pppp}
+Enter only the full SPECTRA{...} flag. Use lowercase hex without 0x prefixes; nothing after the closing brace.
+
+Hint 1: DEC writes the counter, then SETE stores whether that counter became zero into R13B.
+Hint 2: At the final iteration N becomes zero. R13B becomes 1 even though the accumulator remains nonzero.
+Hint 3: Virtual JNZ takes its displacement only when saved Z=0. With Z=1 it continues immediately after the two-byte branch.
+
+06 / Invert the acceptance path
+Recover the one input byte that makes the ORIGINAL bytecode halt with result 1. Derive it from the comparison and inverse loop, then validate it forward. Do not patch the program.
+WHY: Being able to translate a trace into a reversible expression is a practical step beyond reading instructions one at a time. It lets you recover a condition analytically and then test the explanation rather than guessing at a flag.
+1. Find the CMP operand and the two result-setting paths in puppet-core.ppc. Explain which path represents acceptance.
+2. Undo one loop round in reverse order: ROR8, subtract modulo 256, then XOR. Repeat for the header’s number of rounds.
+3. Trace your candidate forward, including CMP, virtual JNZ and HALT. Check status=0 separately from result=1. Submit the original input byte.
+DEEPER WALKTHROUGH
+Start at the end: the program compares transformed A against an immediate. When equality holds, saved Z is true, the following JNZ falls through, LOAD sets A to 1 and HALT returns it. The alternate branch loads 0. Verify these paths in your virtual control-flow graph.
+The target is the value BEFORE CMP, not the later result 1. One round applies XOR, ADD and ROL in that order. To invert a composition, reverse both the order and the operations: rotate right, subtract the addition operand modulo 256, then XOR with the same XOR operand.
+Apply that inverse once per round. Keep each intermediate value as a byte and annotate which round you are undoing. A wrap in subtraction is expected. ROR8 is a circular rotation, not a right shift and not a rotation of a whole machine word.
+Run the candidate through your forward ledger or the local worksheet. You should reach the comparison target after the last round and a valid HALT with result 1. Change the input by one and observe another path. An optional exhaustive check covers 256 inputs, but do not replace the explanation with a brute-force result.
+CHECK: Prove the candidate both backwards and forwards. Distinguish input, transformed comparison value and final result. Only the input belongs inside this flag.
+STUCK: If you obtained the comparison immediate itself, you skipped the inverse rounds. If you obtained 01, you found the result. If a negative subtraction remains negative, reduce it modulo 256.
+FUTURE USE: Inverse operations help recover checks, encodings and simple key schedules. They apply only when the modeled operation is reversible; a lossy mask or hash requires different reasoning.
+Flag template: SPECTRA{input_xx}
+Enter only the full SPECTRA{...} flag. Use lowercase hex without 0x prefixes; nothing after the closing brace.
+
+Hint 1: The target comparison value is 0xa7. The forward round is XOR 0x23, ADD 0x13 modulo 256, then ROL8 by 1.
+Hint 2: Undo a round as (ROR8(value,1) - 0x13) modulo 256, then XOR 0x23. Do this three times.
+Hint 3: The first inverse round produces 0xe3, and the second produces 0xfd. Apply the same inverse once more, then validate that candidate through all three forward rounds.
+
+07 / Diff the interpreted behavior
+The variant changes one byte. Find its absolute container offset and the VARIANT’s accepted input. Submit the four-digit file offset and two-digit input; explain whether the change is an opcode or an operand.
+WHY: A tiny data patch can change program behavior without changing a single native instruction. A byte diff tells you where evidence differs; its semantic effect comes from the interpreter and instruction boundaries you already recovered.
+1. Open puppet-core.ppc as the main file. Binary diff > Open second binary: puppet-core-variant.ppc > Compare > Raw byte comparison.
+2. Convert the changed file offset to virtual PC using the header. Locate the owning instruction in your boundary ledger; do not decode that byte as a new instruction.
+3. Update the loop expression with the changed operand. Derive and forward-check the new accepted input using the variant. The native interpreter is unchanged.
+DEEPER WALKTHROUGH
+The Raw byte comparison table works without matched functions. Keep ORIGINAL as the main file and VARIANT as the comparison so before/after direction is clear. Expect one modified byte and no size change. Do not infer that an empty function table means the files are identical.
+Subtract the bytecode start from the modified container offset. Find the virtual instruction whose byte span includes that PC. It is an operand to the preceding instruction. In this language that byte value could also be an opcode elsewhere, but its role here is determined by the established boundary.
+Write the old and new loop expressions with explicit 8-bit arithmetic. Keep the XOR operand, rotation, loop count and comparison target fixed. Only one addition operand changes. Derive the new input with the same inverse method as stage 06.
+Validate the new input against the variant, then test the old accepted input against it. Record artifact names and hashes so the two runs cannot be confused. The flag contains the absolute file offset, not virtual PC and not the new operand itself.
+CHECK: You should explain the changed behavior without claiming the native handler changed. One raw-byte difference can affect every iteration of the interpreted loop.
+STUCK: If the worksheet still gives the old accepted input, check which file was selected. If the offset is 0003, you have used a virtual PC where the flag requests an absolute container offset.
+FUTURE USE: Classify a patch in the layer that consumes it: instruction, operand, metadata or unrelated data. Combine byte-level differences with recovered semantics before concluding what changed.
+Flag template: SPECTRA{patch_oooo_xx}
+Enter only the full SPECTRA{...} flag. Use lowercase hex without 0x prefixes; nothing after the closing brace.
+
+Hint 1: The modified byte belongs to the two-byte ADD instruction beginning at virtual PC 2. The following byte is its operand.
+Hint 2: The ADD operand changes from 0x13 to 0x14. Use subtraction by 0x14 when reversing each of the three rounds.
+Hint 3: Reverse from comparison target 0xa7: the first two intermediate inverse values are 0x9c and 0x19. Undo one more round, then verify on the variant. Add the bytecode start to operand PC 3 for the file offset.
+
+08 / Keep failure separate
+Analyze truncated.bin and cycle.bin as RAW BYTECODE, starting A=0 and N=3. Find each interpreter status. Submit two hex digits for the truncated case, then the cycle case. Neither EDX=0 alone means rejection.
+WHY: A checker or analysis script can silently turn a timeout or malformed input into a false “not accepted” result. Preserving the error contract protects your conclusions from incomplete execution.
+1. Read the status contract in MEMORY-MAP.txt. These tiny files have no PPC8 header; their entire contents are bytecode starting at PC 0.
+2. For truncated.bin, identify the required missing operand and the guard that rejects it. For cycle.bin, compute its taken target with initial saved Z=0.
+3. Trace them with the worksheet in Raw bytecode mode. Separate status from result and explain what a step cap establishes—and what it does not.
+DEEPER WALKTHROUGH
+The first file contains an ADD opcode without its one-byte operand. The dispatcher can fetch the opcode, but the handler’s bounds guard fails before changing A. The returned status identifies a truncated instruction. A zeroed result register is only an error convention here.
+The second file is a two-byte JNZ with signed displacement -2. Initial saved Z is zero. Its next PC is 2 and the taken edge returns to zero. No instruction updates saved Z on this path, so your static model predicts repeated branching.
+The native dispatcher has a 64-instruction budget. A bounded trace ends with the corresponding status. That observation alone means only that no HALT occurred within the budget. For this tiny stream you can additionally justify nontermination in the unbounded model by showing the repeated PC and invariant Z; keep proof and observation separate.
+The optional unknown.bin and outside.bin isolate other failures. Also note a remaining limitation: the interpreter checks target range but not whether a target is an instruction start. A complete validation layer would need to address that. This lesson does not claim the teaching interpreter is a hardened sandbox.
+CHECK: Write a three-way classification: valid acceptance, valid rejection, or unsuccessful analysis. The result byte is meaningful only in the first two cases, both with status zero.
+STUCK: Use Raw bytecode mode, offset 0, length equal to the tiny file size; do not ask the helper to parse them as PPC8. A status 4 is not the same as a wall-clock browser timeout.
+FUTURE USE: Preserve exit reason, budget and partial state in emulation reports. Negative security conclusions require successful, relevant coverage, not merely the absence of an observed success.
+Flag template: SPECTRA{status_tt_cc}
+Enter only the full SPECTRA{...} flag. Use lowercase hex without 0x prefixes; nothing after the closing brace.
+
+Hint 1: truncated.bin contains opcode 12 but no immediate byte. Find the missing-operand status in the contract.
+Hint 2: cycle.bin is 15 fe. Signed fe is -2, and the saved Z starts at zero, so the virtual PC returns to zero every dispatch.
+Hint 3: The contract assigns status 2 to missing bytes and status 4 to exhausted instruction budget. Format each as a two-digit hex field, in the requested order.
+
+09 / Write the interpreter report
+Choose the supported report in REPORT-CANDIDATES.txt. Before submitting, write your own short explanation of the virtual machine, the original and changed behavior, and the limits of the evidence.
+WHY: Reverse engineering is useful when someone else can reproduce your findings and understand their limits. The final artifact is an evidence-backed model, not a collection of opaque flags.
+1. Collect your coordinate, opcode and control-flow ledgers. Cite at least four concrete offsets, state transitions or status checks in Notebook.
+2. Review the report candidates. Reject claims that confuse bytecode with x86, infer malicious intent from virtualization, or equate errors with normal results.
+3. Submit the supported report letter in lowercase. Your written report stays local; the bot checks the letter, not your prose. Finish all nine stages to unlock patch 008.
+DEEPER WALKTHROUGH
+Describe the relationship between interpreter.bin and the selected PPC8 bytecode window in one paragraph. State the accumulator and counter widths, the stored virtual zero condition, the signed branch convention and the relative dispatch table. Distinguish supplied format scaffolding from properties you checked in instructions.
+Summarize the original loop and acceptance path. Explain how the variant changes an operand while preserving the native interpreter and control-flow structure. Include both forward validation and a counterexample, with exact artifact identity. Do not include a real malware attribution claim: these are authored teaching fixtures.
+Describe your coverage honestly. The provided OBSERVATIONS.json is a partial trace of one input. Any additional traces you generate are your own tests with their stated inputs. Even an exhaustive byte-input test is exhaustive only for that program, initial counter and bounded model—not arbitrary bytecode or a real operating system.
+End with one limitation and one next experiment. Examples include checking instruction-boundary validation, testing different initial counters, or comparing your lifted model with more CPU traces. Keep user input recovery, error classification and threat conclusions separate.
+CHECK: Could another learner reproduce your reasoning from your artifact hashes, maps and trace inputs? Can they tell what you observed, what you inferred and what remains untested?
+STUCK: The final answer is a report letter, not a hash or the accepted input. Only one candidate keeps the address layers and error contract straight. Do not append your explanation to the flag.
+FUTURE USE: These ledgers form a reusable devirtualization toolkit: recover semantics, lift a small model, validate it against evidence, document scope and preserve uncertainty.
+Flag template: SPECTRA{report_x}
+Enter only the full SPECTRA{...} flag. Use lowercase hex without 0x prefixes; nothing after the closing brace.
+
+Hint 1: Any report claiming all container bytes are native code ignores the interpreter/bytecode split.
+Hint 2: An in-range target is not automatically an instruction boundary; a single partial trace is not complete input coverage.
+Hint 3: Choose the candidate that preserves separate native and virtual state, byte-width behavior, operand changes, status versus result, and explicit coverage limits.
+
+REFERENCES
+Intel instruction manuals: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
+Microsoft x64 ABI: https://learn.microsoft.com/en-us/cpp/build/x64-calling-convention
+MITRE MBC code virtualization: https://github.com/MBCProject/mbc-markdown/blob/main/anti-static-analysis/executable-code-virtualization.md
+PPC8 is our teaching format; these references do not define its custom bytecode.

@@ -1,0 +1,17 @@
+BLACK LOOM / REUSABLE UNPACKING NOTES
+Original artifact name / SHA-256 / origin:
+Provided contracts and captures versus independent observations:
+Packed input [start,end) / count / header evidence:
+TOKEN LEDGER: input offset / control / input consumed / output offset / count
+Reconstructed length / SHA-256 / validation result:
+COORDINATE LEDGER: packed offset vs output offset vs preferred VA vs actual VA
+RELOCATION: slot offset / old QWORD / base delta / new QWORD / unchanged code
+CONTROL TRANSFER: instruction VA / target calculation / target offset / JMP or CALL
+RECOVERED BEHAVIOR: input / signed value / branch / arithmetic / return
+FAILURE: return code / partial writes / why output must be rejected
+TRACE LIMIT: image hash / input / observed path / untested alternatives
+
+FINDING / evidence references:
+LIMITATION / what is not proved:
+NEXT CHECK / an authorized way to distinguish remaining explanations:
+Could another analyst reproduce your result without knowing your flag?
